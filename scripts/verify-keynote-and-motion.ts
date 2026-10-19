@@ -206,7 +206,7 @@ async function runVerificationSuite() {
       )
     }
 
-    const tableFixture = 'C:\\Users\\holondo\\AppData\\Local\\Temp\\keynot-research-2300824faf7846f7a166993e824abbeb\\keynote-parser\\tests\\data\\table.key'
+    const tableFixture = 'C:\\Users\\holondo\\AppData\\Local\\Temp\\keynot-research-2300824faf7846f7a166993e824abbeb\\KeynoteKit\\Tests\\KeynoteModelTests\\Fixtures\\tabledeck.key'
     if (fs.existsSync(tableFixture)) {
       const tableBytes = fs.readFileSync(tableFixture)
       const tableBuffer = tableBytes.buffer.slice(tableBytes.byteOffset, tableBytes.byteOffset + tableBytes.byteLength)
@@ -214,6 +214,15 @@ async function runVerificationSuite() {
       const sourceTable = tableImport.slides.flatMap(slide => slide.elements).find(element => element.type === 'table')
       assert.ok(sourceTable && sourceTable.type === 'table', 'Native Keynote table must import as an editable table shell')
       assert.equal(sourceTable.sourceType, 'IWA:6000', 'Imported table must retain native table provenance')
+      assert.deepEqual(
+        sourceTable.data.map(row => row.map(cell => cell.text)),
+        [
+          ['Product', 'Units', 'Revenue'],
+          ['Widget', '1200', '24000'],
+          ['Gadget', '800', '56000'],
+        ],
+        'Native table dimensions and text/number cell values must decode from TST tile storage'
+      )
 
       const editedTableSlides = structuredClone(tableImport.slides)
       const editedTable = editedTableSlides.flatMap(slide => slide.elements).find(element => element.id === sourceTable.id)!
@@ -226,7 +235,7 @@ async function runVerificationSuite() {
       const reimportedTable = tableReimport.slides.flatMap(slide => slide.elements).find(element => element.sourceId === sourceTable.sourceId)
       assert.ok(reimportedTable && reimportedTable.type === 'table', 'Native-only re-import must preserve the table object')
       assert.equal(reimportedTable.left, editedTable.left, 'Edited table geometry must survive through native IWA')
-      console.log('  PASS: Native Keynote table imports as editable and preserves geometry through native-only export.')
+      console.log('  PASS: Native Keynote table cells import as editable and geometry survives native-only export.')
     }
   } else {
     console.log('  INFO: External research-transdeck.key not found in Temp; testing synthesized .key archive...')

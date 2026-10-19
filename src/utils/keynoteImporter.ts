@@ -557,6 +557,112 @@ const findReferencedObjectId = (
   return null
 }
 
+interface NativeTableGrid {
+  rows: number
+  columns: number
+  cells: (string | null)[][]
+}
+
+const readUInt16LE = (bytes: Uint8Array, offset: number) => bytes[offset] | (bytes[offset + 1] << 8)
+const readUInt32LE = (bytes: Uint8Array, offset: number) => (
+  bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)
+) >>> 0
+
+const decodeTableDecimal = (bytes: Uint8Array, offset: number): number => {
+  const exponent = ((bytes[offset + 15] & 0x7f) << 7 | bytes[offset + 14] >> 1) - 6176
+  let mantissa = bytes[offset + 14] & 1
+  for (let index = 13; index >= 0; index--) mantissa = mantissa * 256 + bytes[offset + index]
+  return (bytes[offset + 15] & 0x80 ? -1 : 1) * mantissa * 10 ** exponent
+}
+
+const decodeNativeTableGrid = (
+  tableArchive: IWAObjectRecord,
+  allObjects: ReadonlyMap<number, IWAObjectRecord>
+): NativeTableGrid | null => {
+  const modelId = extractReferenceId(scanProtoFields(tableArchive.data).find(field => field.fieldNumber === 2)?.bytes)
+  const model = modelId !== null ? allObjects.get(modelId) : undefined
+  if (!model || model.type !== 6001) return null
+  const modelFields = scanProtoFields(model.data)
+  const rows = modelFields.find(field => field.fieldNumber === 6)?.varint ?? 0
+  const columns = modelFields.find(field => field.fieldNumber === 7)?.varint ?? 0
+  const store = modelFields.find(field => field.fieldNumber === 4)?.bytes
+  if (!store || rows < 1 || columns < 1 || rows > 1000 || columns > 1000) return null
+
+  const storeFields = scanProtoFields(store)
+  const stringTableId = extractReferenceId(storeFields.find(field => field.fieldNumber === 4)?.bytes)
+  const strings = new Map<number, string>()
+  const stringTable = stringTableId !== null ? allObjects.get(stringTableId) : undefined
+  if (stringTable?.type === 6005) {
+    for (const entry of scanProtoFields(stringTable.data).filter(field => field.fieldNumber === 3 && field.bytes)) {
+      const fields = scanProtoFields(entry.bytes!)
+      const key = fields.find(field => field.fieldNumber === 1)?.varint
+      const value = tryDecodeUtf8String(fields.find(field => field.fieldNumber === 3)?.bytes)
+      if (key !== undefined && value !== null) strings.set(key, value)
+    }
+  }
+
+  const tileStorage = storeFields.find(field => field.fieldNumber === 3)?.bytes
+  const tileRefs = tileStorage
+    ? scanProtoFields(tileStorage).filter(field => field.fieldNumber === 1 && field.bytes).map(field => {
+      const fields = scanProtoFields(field.bytes!)
+      return {
+        tileId: fields.find(item => item.fieldNumber === 1)?.varint ?? 0,
+        recordId: extractReferenceId(fields.find(item => item.fieldNumber === 2)?.bytes),
+      }
+    })
+    : []
+  const cells: (string | null)[][] = Array.from({ length: rows }, () => new Array(columns).fill(null))
+  const fieldSizes: [number, number][] = [
+    [0x1, 16], [0x2, 8], [0x4, 8], [0x8, 4], [0x10, 4], [0x20, 4], [0x40, 4],
+    [0x80, 4], [0x100, 4], [0x200, 4], [0x400, 4], [0x800, 4], [0x1000, 4],
+    [0x2000, 4], [0x4000, 4], [0x8000, 4], [0x10000, 4], [0x20000, 4],
+    [0x40000, 4], [0x80000, 4], [0x100000, 4],
+  ]
+  const fieldOffset = (buffer: Uint8Array, cellOffset: number, wantedFlag: number): number | null => {
+    const flags = readUInt32LE(buffer, cellOffset + 8)
+    if ((flags & wantedFlag) === 0) return null
+    let offset = cellOffset + 12
+    for (const [flag, size] of fieldSizes) {
+      if (flag === wantedFlag) return offset
+      if (flags & flag) offset += size
+    }
+    return null
+  }
+
+  for (const tileRef of tileRefs) {
+    const tile = tileRef.recordId !== null ? allObjects.get(tileRef.recordId) : undefined
+    if (!tile || tile.type !== 6002) continue
+    for (const rowField of scanProtoFields(tile.data).filter(field => field.fieldNumber === 5 && field.bytes)) {
+      const rowFields = scanProtoFields(rowField.bytes!)
+      const row = tileRef.tileId * 256 + (rowFields.find(field => field.fieldNumber === 1)?.varint ?? 0)
+      const buffer = rowFields.find(field => field.fieldNumber === 6)?.bytes
+      const offsets = rowFields.find(field => field.fieldNumber === 7)?.bytes
+      if (!buffer || !offsets || row >= rows) continue
+      for (let column = 0; column < columns && column * 2 + 1 < offsets.length; column++) {
+        const cellOffset = readUInt16LE(offsets, column * 2)
+        if (cellOffset === 0xffff || cellOffset + 12 > buffer.length || buffer[cellOffset] !== 5) continue
+        const type = buffer[cellOffset + 1]
+        if (type === 3 || type === 9) {
+          const offset = fieldOffset(buffer, cellOffset, 0x8)
+          if (offset !== null && offset + 4 <= buffer.length) cells[row][column] = strings.get(readUInt32LE(buffer, offset)) ?? null
+        }
+        else if (type === 2 || type === 10) {
+          const offset = fieldOffset(buffer, cellOffset, 0x1)
+          if (offset !== null && offset + 16 <= buffer.length) cells[row][column] = String(decodeTableDecimal(buffer, offset))
+        }
+        else if (type === 6) {
+          const offset = fieldOffset(buffer, cellOffset, 0x2)
+          if (offset !== null && offset + 8 <= buffer.length) {
+            const value = new DataView(buffer.buffer, buffer.byteOffset + offset, 8).getFloat64(0, true)
+            cells[row][column] = value > 0 ? 'TRUE' : 'FALSE'
+          }
+        }
+      }
+    }
+  }
+  return { rows, columns, cells }
+}
+
 interface ParsedGeometry {
   x: number
   y: number
@@ -1262,14 +1368,15 @@ export const importKeynoteArchive = async (
         // TST.TableInfoArchive. Cell values live in versioned packed tile buffers;
         // keep the native object identity and geometry while exposing a safe editable
         // table shell until its specific tile version can be decoded.
-        const rowCount = 5
-        const columnCount = 4
+        const nativeGrid = decodeNativeTableGrid(drawable, allObjects)
+        const rowCount = nativeGrid?.rows ?? 5
+        const columnCount = nativeGrid?.columns ?? 4
         const tableData: PPTTableElement['data'] = Array.from({ length: rowCount }, (_, rowIndex) =>
           Array.from({ length: columnCount }, (_, columnIndex) => ({
             id: `key-cell-${refId}-${rowIndex}-${columnIndex}`,
             colspan: 1,
             rowspan: 1,
-            text: '',
+            text: nativeGrid?.cells[rowIndex]?.[columnIndex] ?? '',
             style: {
               fontname: 'Inter',
               color: '#1d1d1f',
@@ -1310,7 +1417,9 @@ export const importKeynoteArchive = async (
           slideIndex: sIdx + 1,
           objectId: String(refId),
           feature: 'Keynote Native Table',
-          message: 'Preserved as an editable table shell with native identity and geometry; packed native cell values remain unchanged in the source archive.',
+          message: nativeGrid
+            ? 'Decoded native table dimensions and supported text/number/boolean cells into an editable table while preserving native identity and geometry.'
+            : 'Preserved as an editable table shell with native identity and geometry; this packed cell version remains unchanged in the source archive.',
         })
       }
       else if (drawable.type === 5021) {
@@ -1461,9 +1570,9 @@ export const importKeynoteArchive = async (
         summary: `${findings.filter(f => f.severity === 'preserved').length} native transitions/builds preserved; ${approxCount} approximated.`,
       },
       editability: {
-        score: 68,
+        score: 74,
         status: 'Partial',
-        summary: 'Decoded text, images, and shapes are editable; native tables retain editable geometry and a table shell while packed cell data, masters, charts, and advanced effects may be approximated.',
+        summary: 'Decoded text, images, shapes, and supported native table cells are editable; native table cell writes, masters, charts, and advanced effects may be approximated.',
       },
       exportRoundTrip: {
         score: 80,

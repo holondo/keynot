@@ -807,7 +807,7 @@ These capabilities should appear as coherent KeyNot extensions in the same comma
 
 | Step | Status | Evidence / commit | Human approval | Notes |
 |---|---|---|---|---|
-| P00 | COMPLETE | Native-only geometry/text/transition/table re-import plus native image asset comparison | Not required | Text, general geometry, table geometry, images, and transitions are patched natively; packed table cell data remains Partial |
+| P00 | COMPLETE | Native-only geometry/text/transition/table re-import plus native image asset comparison | Not required | Text, general geometry, images, transitions, and table cell reads are native; table cell value writes remain Partial |
 | P01 | IN PROGRESS | 9 menus / 73 unique commands; stacking and keyboard traversal fixed; unsupported actions disabled; core Insert and Arrange actions share existing hooks | Not required | Media/Equation/Comment and rich-text Format commands remain before COMPLETE |
 | P02 | TODO | | Not required | M1 |
 | P03 | TODO | | Not required | M2 |
