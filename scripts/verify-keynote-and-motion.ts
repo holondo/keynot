@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
+import JSZip from 'jszip'
 import {
   decompressIWAStream,
   compressIWAStream,
@@ -92,6 +93,9 @@ async function runVerificationSuite() {
     assert.ok(result.compatibilityReport.measures.visualFidelity.score > 0, 'visualFidelity score must be > 0')
     assert.ok(result.compatibilityReport.measures.editability.score > 0, 'editability score must be > 0')
     assert.ok(result.compatibilityReport.measures.exportRoundTrip.score > 0, 'exportRoundTrip score must be > 0')
+    assert.equal(result.compatibilityReport.measures.exportRoundTrip.status, 'Partial')
+    assert.match(result.compatibilityReport.measures.exportRoundTrip.summary, /geometry/i)
+    assert.doesNotMatch(result.compatibilityReport.measures.exportRoundTrip.summary, /text patching/i)
 
     console.log(`  PASS: Imported "${result.title}" (${result.slides.length} slides, ${result.compatibilityReport.iwaFileCount} .iwa archives, ${result.compatibilityReport.messageCount} protobuf objects) from ${path.basename(existingFixture)}`)
     console.log(`  PASS: 4-Measure Compatibility Report:`)
@@ -99,6 +103,51 @@ async function runVerificationSuite() {
     console.log(`    - Visual Fidelity  : ${result.compatibilityReport.measures.visualFidelity.score}% (${result.compatibilityReport.measures.visualFidelity.status}) — ${result.compatibilityReport.measures.visualFidelity.summary}`)
     console.log(`    - Editability      : ${result.compatibilityReport.measures.editability.score}% (${result.compatibilityReport.measures.editability.status}) — ${result.compatibilityReport.measures.editability.summary}`)
     console.log(`    - Export Round-Trip: ${result.compatibilityReport.measures.exportRoundTrip.score}% (${result.compatibilityReport.measures.exportRoundTrip.status}) — ${result.compatibilityReport.measures.exportRoundTrip.summary}`)
+
+    // A source-preserving export is only Keynote-compatible when edits are written into
+    // the native IWA object graph. The private Slate sidecar must not be required.
+    const editableSlide = result.slides.find(slide => slide.elements.some(element => element.type === 'image'))
+    const editableImage = editableSlide?.elements.find(element => element.type === 'image')
+    assert.ok(editableSlide && editableImage, 'Real Keynote fixture must expose an image with native geometry')
+
+    const nativeEditedSlides = structuredClone(result.slides)
+    const editedSlide = nativeEditedSlides.find(slide => slide.id === editableSlide.id)!
+    const editedImage = editedSlide.elements.find(element => element.id === editableImage.id)!
+    editedImage.left += 37
+
+    const nativeExport = await buildKeynoteArchiveBlob(
+      nativeEditedSlides,
+      result.title,
+      result.rawArchiveBase64
+    )
+    const nativeZip = await JSZip.loadAsync(await nativeExport.arrayBuffer())
+    const sourceZip = await JSZip.loadAsync(keyBytes)
+    const sourceIwaPaths = Object.keys(sourceZip.files).filter(name => name.endsWith('.iwa'))
+    const changedIwaPaths: string[] = []
+    for (const iwaPath of sourceIwaPaths) {
+      const [before, after] = await Promise.all([
+        sourceZip.file(iwaPath)!.async('uint8array'),
+        nativeZip.file(iwaPath)!.async('uint8array'),
+      ])
+      if (!Buffer.from(before).equals(Buffer.from(after))) changedIwaPaths.push(iwaPath)
+    }
+    assert.ok(changedIwaPaths.length > 0, 'At least one native IWA stream must change')
+    assert.ok(
+      changedIwaPaths.length < sourceIwaPaths.length,
+      'Unrelated native IWA streams must remain byte-identical'
+    )
+    nativeZip.remove('Metadata/slate-model.json')
+    const nativeOnlyBytes = await nativeZip.generateAsync({ type: 'arraybuffer', compression: 'DEFLATE' })
+    const nativeOnlyResult = await importKeynoteArchive(nativeOnlyBytes, 'native-only-roundtrip.key')
+    const nativeOnlySlide = nativeOnlyResult.slides.find(slide => slide.sourceId === editableSlide.sourceId)
+    const nativeOnlyImage = nativeOnlySlide?.elements.find(element => element.sourceId === editableImage.sourceId)
+    assert.ok(nativeOnlyImage, 'Native-only re-import must preserve the edited source image')
+    assert.equal(
+      nativeOnlyImage.left,
+      editedImage.left,
+      'Edited geometry must survive through native IWA data without Metadata/slate-model.json'
+    )
+    console.log('  PASS: Native IWA geometry edit survives after removing the private Slate sidecar.')
   } else {
     console.log('  INFO: External research-transdeck.key not found in Temp; testing synthesized .key archive...')
   }

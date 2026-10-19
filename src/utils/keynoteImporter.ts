@@ -242,6 +242,7 @@ export const compressIWAStream = (raw: Uint8Array): Uint8Array => {
 export interface ProtoField {
   fieldNumber: number
   wireType: number
+  valueOffset: number
   varint?: number
   fixed32?: number
   fixed64?: bigint
@@ -284,8 +285,9 @@ export const scanProtoFields = (buf: Uint8Array): ProtoField[] => {
 
     if (wireType === 0) {
       try {
+        const valueOffset = pos
         const v = Number(readVarintBig())
-        fields.push({ fieldNumber, wireType, varint: v })
+        fields.push({ fieldNumber, wireType, valueOffset, varint: v })
       }
       catch {
         break
@@ -293,8 +295,9 @@ export const scanProtoFields = (buf: Uint8Array): ProtoField[] => {
     }
     else if (wireType === 1) {
       if (pos + 8 > buf.length) break
+      const valueOffset = pos
       const view = new DataView(buf.buffer, buf.byteOffset + pos, 8)
-      fields.push({ fieldNumber, wireType, fixed64: view.getBigUint64(0, true) })
+      fields.push({ fieldNumber, wireType, valueOffset, fixed64: view.getBigUint64(0, true) })
       pos += 8
     }
     else if (wireType === 2) {
@@ -306,13 +309,14 @@ export const scanProtoFields = (buf: Uint8Array): ProtoField[] => {
         break
       }
       if (len < 0 || pos + len > buf.length) break
-      fields.push({ fieldNumber, wireType, bytes: buf.subarray(pos, pos + len) })
+      fields.push({ fieldNumber, wireType, valueOffset: pos, bytes: buf.subarray(pos, pos + len) })
       pos += len
     }
     else if (wireType === 5) {
       if (pos + 4 > buf.length) break
+      const valueOffset = pos
       const view = new DataView(buf.buffer, buf.byteOffset + pos, 4)
-      fields.push({ fieldNumber, wireType, fixed32: view.getUint32(0, true) })
+      fields.push({ fieldNumber, wireType, valueOffset, fixed32: view.getUint32(0, true) })
       pos += 4
     }
     else {
@@ -515,6 +519,88 @@ const findGeometryInObject = (data: Uint8Array): ParsedGeometry | null => {
   return null
 }
 
+const findGeometryBytesInObject = (data: Uint8Array): Uint8Array | null => {
+  const topFields = scanProtoFields(data)
+  for (const field of topFields) {
+    if (!field.bytes) continue
+    const direct = parseGeometryArchive(field.bytes)
+    if (direct && direct.width >= 4 && direct.height >= 4 && direct.width <= 4096 && direct.height <= 4096) {
+      return field.bytes
+    }
+    for (const nestedField of scanProtoFields(field.bytes)) {
+      if (!nestedField.bytes) continue
+      const nested = parseGeometryArchive(nestedField.bytes)
+      if (nested && nested.width >= 4 && nested.height >= 4 && nested.width <= 4096 && nested.height <= 4096) {
+        return nestedField.bytes
+      }
+    }
+  }
+  return null
+}
+
+const writeFloat32Field = (message: Uint8Array, fieldNumber: number, value: number): boolean => {
+  const field = scanProtoFields(message).find(item => item.fieldNumber === fieldNumber && item.wireType === 5)
+  if (!field) return false
+  new DataView(message.buffer, message.byteOffset + field.valueOffset, 4).setFloat32(0, value, true)
+  return true
+}
+
+interface NativeGeometryElement {
+  left: number
+  top: number
+  width: number
+  height: number
+  rotate: number
+}
+
+const patchGeometryArchive = (
+  geometryBytes: Uint8Array,
+  geometry: NativeGeometryElement,
+  scaleFactor: number
+): boolean => {
+  const fields = scanProtoFields(geometryBytes)
+  const position = fields.find(field => field.fieldNumber === 1 && field.bytes)?.bytes
+  const size = fields.find(field => field.fieldNumber === 2 && field.bytes)?.bytes
+  if (!position || !size || scaleFactor <= 0) return false
+
+  const inverseScale = 1 / scaleFactor
+  const updated = [
+    writeFloat32Field(position, 1, geometry.left * inverseScale),
+    writeFloat32Field(position, 2, geometry.top * inverseScale),
+    writeFloat32Field(size, 1, geometry.width * inverseScale),
+    writeFloat32Field(size, 2, geometry.height * inverseScale),
+  ]
+  const angleField = fields.find(field => field.fieldNumber === 4 && field.wireType === 5)
+  if (angleField) {
+    new DataView(geometryBytes.buffer, geometryBytes.byteOffset + angleField.valueOffset, 4)
+      .setFloat32(0, geometry.rotate, true)
+  }
+  return updated.every(Boolean)
+}
+
+const patchNativeGeometryRecords = (decompressed: Uint8Array, slides: Slide[], iwaPath: string): number => {
+  const editableBySourceId = new Map<number, NativeGeometryElement>()
+  for (const slide of slides) {
+    for (const element of slide.elements) {
+      if (!element.sourceId || !element.sourceType?.startsWith('IWA:') || !('height' in element) || !('rotate' in element)) continue
+      const sourceId = Number(element.sourceId)
+      if (Number.isSafeInteger(sourceId)) editableBySourceId.set(sourceId, element)
+    }
+  }
+
+  let patched = 0
+  for (const record of parseIWAObjects(decompressed, iwaPath)) {
+    const element = editableBySourceId.get(record.id)
+    if (!element) continue
+    const geometryBytes = findGeometryBytesInObject(record.data)
+    const original = parseGeometryArchive(geometryBytes ?? undefined)
+    if (!geometryBytes || !original) continue
+    const scaleFactor = original.x > 1050 || original.width > 1050 ? 1000 / 1920 : 1
+    if (patchGeometryArchive(geometryBytes, element, scaleFactor)) patched++
+  }
+  return patched
+}
+
 const mapKeynoteTransitionEffect = (
   effectIdentifier: string
 ): { turningMode: TurningMode; severity: 'preserved' | 'approximated' | 'fallback'; note: string } => {
@@ -681,9 +767,9 @@ export const importKeynoteArchive = async (
               summary: `Restored ${restoredSlides.length} slides losslessly from embedded Slate-Keynote bridge metadata.`,
             },
             visualFidelity: {
-              score: 100,
+              score: 96,
               status: 'High',
-              summary: 'All Object Transitions (Magic Move), Action Builds, and element styles preserved 1:1.',
+              summary: 'KeyNot-native styles, Object Transitions, and Action Builds restored from bridge metadata.',
             },
             editability: {
               score: 100,
@@ -691,17 +777,17 @@ export const importKeynoteArchive = async (
               summary: 'All elements, continuityIds, and animations restored as native editable objects.',
             },
             exportRoundTrip: {
-              score: 100,
-              status: 'High',
-              summary: 'Full source-preserving .key archive and Slate model retained.',
+              score: 58,
+              status: 'Partial',
+              summary: 'KeyNot bridge data is lossless; Apple Keynote receives native geometry updates for existing supported objects.',
             },
           },
           findings: [
             {
               category: 'roundTrip',
-              severity: 'preserved',
-              feature: 'Lossless Slate-Keynote Bridge Archive',
-              message: `Restored ${restoredSlides.length} slides with 100% continuityId and Magic Move fidelity.`,
+              severity: 'approximated',
+              feature: 'KeyNot Bridge Archive',
+              message: `Restored ${restoredSlides.length} slides from KeyNot metadata; this does not prove Apple Keynote round-trip fidelity.`,
             },
           ],
         }
@@ -1107,9 +1193,9 @@ export const importKeynoteArchive = async (
   })
   findings.push({
     category: 'roundTrip',
-    severity: 'preserved',
-    feature: 'Source-Preserving .key Archive Patching',
-    message: 'Original .key ZIP + IWA bundle retained in project store for lossless text-storage patching on export.',
+    severity: 'approximated',
+    feature: 'Native IWA Geometry Patching',
+    message: 'Existing supported objects receive native position, size, and rotation updates. Unsupported edits remain available through KeyNot bridge metadata.',
   })
 
   const approxCount = findings.filter(f => f.severity === 'approximated' || f.severity === 'fallback').length
@@ -1135,14 +1221,14 @@ export const importKeynoteArchive = async (
         summary: `${findings.filter(f => f.severity === 'preserved').length} native transitions/builds preserved; ${approxCount} approximated.`,
       },
       editability: {
-        score: 94,
-        status: 'High',
-        summary: 'All text storages, shapes, and continuity links mapped to native editable canvas objects.',
+        score: 55,
+        status: 'Partial',
+        summary: 'Supported images and decoded shapes are editable; masters, complex text, tables, charts, and effects may be approximated.',
       },
       exportRoundTrip: {
-        score: 92,
-        status: 'High',
-        summary: 'Source .key archive retained for in-place IWA text patching, plus full .slate and .pptx export.',
+        score: 58,
+        status: 'Partial',
+        summary: 'Native geometry patching is verified for existing supported IWA objects; other changes use KeyNot bridge metadata.',
       },
     },
     findings,
@@ -1196,6 +1282,14 @@ export const buildKeynoteArchiveBlob = async (
   if (rawArchiveBase64) {
     const sourceBytes = base64ToUint8(rawArchiveBase64)
     const zip = await JSZip.loadAsync(sourceBytes)
+    for (const [path, entry] of Object.entries(zip.files)) {
+      if (entry.dir || !path.toLowerCase().endsWith('.iwa')) continue
+      const framed = new Uint8Array(await entry.async('arraybuffer'))
+      const decompressed = decompressIWAStream(framed)
+      if (patchNativeGeometryRecords(decompressed, slides, path) > 0) {
+        zip.file(path, compressIWAStream(decompressed))
+      }
+    }
     zip.file('Metadata/slate-model.json', slatePayload)
     return await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' })
   }
