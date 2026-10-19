@@ -226,7 +226,11 @@ async function runVerificationSuite() {
 
       const editedTableSlides = structuredClone(tableImport.slides)
       const editedTable = editedTableSlides.flatMap(slide => slide.elements).find(element => element.id === sourceTable.id)!
+      assert.equal(editedTable.type, 'table')
       editedTable.left += 29
+      editedTable.data[0][0].text = 'Item'
+      editedTable.data[1][2].text = '31500'
+      editedTable.data[2][0].text = 'Doohickey'
       const tableExport = await buildKeynoteArchiveBlob(editedTableSlides, tableImport.title, tableImport.rawArchiveBase64)
       const tableZip = await JSZip.loadAsync(await tableExport.arrayBuffer())
       tableZip.remove('Metadata/slate-model.json')
@@ -235,7 +239,10 @@ async function runVerificationSuite() {
       const reimportedTable = tableReimport.slides.flatMap(slide => slide.elements).find(element => element.sourceId === sourceTable.sourceId)
       assert.ok(reimportedTable && reimportedTable.type === 'table', 'Native-only re-import must preserve the table object')
       assert.equal(reimportedTable.left, editedTable.left, 'Edited table geometry must survive through native IWA')
-      console.log('  PASS: Native Keynote table cells import as editable and geometry survives native-only export.')
+      assert.equal(reimportedTable.data[0][0].text, 'Item', 'Edited text cell must survive through native TST tile storage')
+      assert.equal(reimportedTable.data[1][2].text, '31500', 'Edited numeric cell must survive through native TST tile storage')
+      assert.equal(reimportedTable.data[2][0].text, 'Doohickey', 'New table string must survive through the native string table')
+      console.log('  PASS: Native Keynote table cell values and geometry survive native-only export.')
     }
   } else {
     console.log('  INFO: External research-transdeck.key not found in Temp; testing synthesized .key archive...')

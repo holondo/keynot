@@ -9,6 +9,7 @@ Captured on 2026-10-19 from the user-authorized, authenticated Chrome session an
 | `keynote-data-menu-styles.json` | Keynote for iCloud computed DOM styles | Visible toolbar, inspector tabs, inspector panel, and Data select dimensions and CSS values. |
 | `keynote-ui-contract.json` | Normalized from live observations | Machine-readable toolbar, submenu, theme, inspector, table, transition, and design-token contract for implementation. |
 | `current-table-inspector.png` | local KeyNot at `127.0.0.1:5173` | Current table inspector baseline. |
+| `ui-check-lowres.png` | `scripts/capture-ui-lowres.ps1` at 480×270 | Token-efficient final UI evidence generated without interactive Computer Use. |
 
 The JSON contains computed styles only. Apple’s generated class names are evidence selectors and must not be copied into the implementation. Use the semantic tokens in [`KEYNOTE_WEB_PARITY_AND_TRANSPLANT_SPEC.md`](../KEYNOTE_WEB_PARITY_AND_TRANSPLANT_SPEC.md).
 
