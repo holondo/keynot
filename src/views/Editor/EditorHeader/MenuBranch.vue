@@ -7,7 +7,7 @@
         <span v-if="command.shortcut" class="shortcut">{{ command.shortcut }}</span>
         <span v-if="command.children" class="arrow">›</span>
       </button>
-      <div v-if="command.children" class="submenu">
+      <div v-if="command.children && !command.disabled" class="submenu">
         <MenuBranch :commands="command.children" @execute="id => emit('execute', id)" />
       </div>
     </div>

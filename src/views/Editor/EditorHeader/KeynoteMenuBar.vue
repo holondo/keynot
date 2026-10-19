@@ -1,6 +1,6 @@
 <template>
   <nav class="keynote-menu-bar" aria-label="Presentation menus" @keydown.esc="closeMenus">
-    <div v-for="menu in KEYNOTE_MENUS" :key="menu.id" class="menu-root">
+    <div v-for="menu in resolvedMenus" :key="menu.id" class="menu-root">
       <button
         class="menu-trigger"
         :class="{ open: openMenu === menu.id }"
@@ -16,12 +16,33 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { KEYNOTE_MENUS } from '@/commands/keynoteCommands'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { KEYNOTE_MENUS, type KeynoteCommand } from '@/commands/keynoteCommands'
 import MenuBranch from './MenuBranch.vue'
 
+const props = withDefaults(defineProps<{
+  disabledCommandIds?: string[]
+  checkedCommandIds?: string[]
+}>(), {
+  disabledCommandIds: () => [],
+  checkedCommandIds: () => [],
+})
 const emit = defineEmits<{ (event: 'execute', commandId: string): void }>()
 const openMenu = ref('')
+const resolvedMenus = computed(() => {
+  const disabled = new Set(props.disabledCommandIds)
+  const checked = new Set(props.checkedCommandIds)
+  const resolveCommands = (commands: KeynoteCommand[]): KeynoteCommand[] => commands.map(command => {
+    const children = command.children ? resolveCommands(command.children) : undefined
+    return {
+      ...command,
+      children,
+      checked: checked.has(command.id),
+      disabled: command.disabled || disabled.has(command.id) || !!(children?.length && children.every(child => child.disabled)),
+    }
+  })
+  return KEYNOTE_MENUS.map(menu => ({ ...menu, commands: resolveCommands(menu.commands) }))
+})
 const closeMenus = () => { openMenu.value = '' }
 const toggleMenu = (id: string) => { openMenu.value = openMenu.value === id ? '' : id }
 const execute = (id: string) => { emit('execute', id); closeMenus() }

@@ -60,7 +60,11 @@
         </div>
       </Popover>
 
-      <KeynoteMenuBar @execute="executeMenuCommand" />
+      <KeynoteMenuBar
+        :disabled-command-ids="disabledMenuCommandIds"
+        :checked-command-ids="checkedMenuCommandIds"
+        @execute="executeMenuCommand"
+      />
       <input ref="openFileInput" class="native-file-input" type="file" accept=".key,.pptx,.pptist,.keynot,.slate,.json" @change="handleNativeFileOpen" />
     </div>
 
@@ -158,7 +162,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore } from '@/store'
 import useScreening from '@/hooks/useScreening'
@@ -169,6 +173,11 @@ import useCopyAndPasteElement from '@/hooks/useCopyAndPasteElement'
 import useDeleteElement from '@/hooks/useDeleteElement'
 import useSelectElement from '@/hooks/useSelectElement'
 import useCombineElement from '@/hooks/useCombineElement'
+import useAlignActiveElement from '@/hooks/useAlignActiveElement'
+import useOrderElement from '@/hooks/useOrderElement'
+import useLockElement from '@/hooks/useLockElement'
+import { ElementAlignCommands, ElementOrderCommands } from '@/types/edit'
+import { flattenCommands, KEYNOTE_MENUS } from '@/commands/keynoteCommands'
 import type { DialogForExportTypes } from '@/types/export'
 
 import HotkeyDoc from './HotkeyDoc.vue'
@@ -196,6 +205,52 @@ const { copyElement, cutElement, pasteElement, quickCopyElement } = useCopyAndPa
 const { deleteElement } = useDeleteElement()
 const { selectAllElements } = useSelectElement()
 const { combineElements, uncombineElements } = useCombineElement()
+const { alignActiveElement } = useAlignActiveElement()
+const { orderElement } = useOrderElement()
+const { lockElement } = useLockElement()
+
+const supportedMenuCommandIds = new Set([
+  'file.new', 'file.open', 'file.workspace', 'file.theme',
+  'file.export.keynote', 'file.export.powerpoint', 'file.export.pdf', 'file.export.images', 'file.compatibility',
+  'edit.undo', 'edit.redo', 'edit.cut', 'edit.copy', 'edit.paste', 'edit.duplicate', 'edit.delete', 'edit.select-all', 'edit.find',
+  'insert.slide',
+  'slide.add', 'slide.duplicate', 'slide.delete', 'slide.notes',
+  'format.inspector', 'format.animate', 'format.document',
+  'arrange.front', 'arrange.forward', 'arrange.backward', 'arrange.back',
+  'arrange.align.left', 'arrange.align.center', 'arrange.align.right',
+  'arrange.group', 'arrange.ungroup', 'arrange.lock',
+  'view.navigator', 'view.slide-only', 'view.light-table', 'view.rulers', 'view.object-list', 'view.comments', 'view.dark-mode',
+  'play.beginning', 'play.current',
+  'help.shortcuts', 'help.keynote', 'help.about',
+])
+
+const disabledMenuCommandIds = computed(() => {
+  const disabled = flattenCommands(KEYNOTE_MENUS)
+    .filter(command => !command.children && !supportedMenuCommandIds.has(command.id))
+    .map(command => command.id)
+  const selectedCount = mainStore.activeElementIdList.length
+  if (!selectedCount) {
+    disabled.push(
+      'arrange.front', 'arrange.forward', 'arrange.backward', 'arrange.back',
+      'arrange.align.left', 'arrange.align.center', 'arrange.align.right',
+      'arrange.group', 'arrange.ungroup', 'arrange.lock',
+    )
+  }
+  if (selectedCount < 2) disabled.push('arrange.align.left', 'arrange.align.center', 'arrange.align.right', 'arrange.group')
+  if (!mainStore.activeElementList.some(element => element.groupId)) disabled.push('arrange.ungroup')
+  return disabled
+})
+
+const checkedMenuCommandIds = computed(() => [
+  mainStore.editorViewMode === 'navigator' ? 'view.navigator' : '',
+  mainStore.editorViewMode === 'slideOnly' ? 'view.slide-only' : '',
+  mainStore.editorViewMode === 'lightTable' ? 'view.light-table' : '',
+  mainStore.showRuler ? 'view.rulers' : '',
+  mainStore.showSelectPanel ? 'view.object-list' : '',
+  mainStore.showNotesPanel ? 'view.comments' : '',
+  mainStore.colorMode === 'dark' ? 'view.dark-mode' : '',
+  mainStore.showPresenterNotes ? 'slide.notes' : '',
+].filter(Boolean))
 
 const mainMenuVisible = ref(false)
 const hotkeyDrawerVisible = ref(false)
@@ -266,8 +321,16 @@ const executeMenuCommand = (commandId: string) => {
     'format.inspector': () => mainStore.setInspectorMode('format'),
     'format.animate': () => mainStore.setInspectorMode('animate'),
     'format.document': () => mainStore.setInspectorMode('document'),
+    'arrange.front': () => mainStore.handleElement && orderElement(mainStore.handleElement, ElementOrderCommands.TOP),
+    'arrange.forward': () => mainStore.handleElement && orderElement(mainStore.handleElement, ElementOrderCommands.UP),
+    'arrange.backward': () => mainStore.handleElement && orderElement(mainStore.handleElement, ElementOrderCommands.DOWN),
+    'arrange.back': () => mainStore.handleElement && orderElement(mainStore.handleElement, ElementOrderCommands.BOTTOM),
+    'arrange.align.left': () => alignActiveElement(ElementAlignCommands.LEFT),
+    'arrange.align.center': () => alignActiveElement(ElementAlignCommands.HORIZONTAL),
+    'arrange.align.right': () => alignActiveElement(ElementAlignCommands.RIGHT),
     'arrange.group': combineElements,
     'arrange.ungroup': uncombineElements,
+    'arrange.lock': lockElement,
     'view.navigator': () => mainStore.setEditorViewMode('navigator'),
     'view.slide-only': () => mainStore.setEditorViewMode('slideOnly'),
     'view.light-table': () => mainStore.setEditorViewMode('lightTable'),
