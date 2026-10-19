@@ -1,0 +1,812 @@
+[
+  {
+    "classes": "push primary sc-l6dka0-0 dtpMRz icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "500",
+      "gap": "normal",
+      "height": "18px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 18,
+      "width": 86,
+      "x": 6,
+      "y": 2.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "primary push neutral sc-1dd4dci-1 liHkAM icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgba(0, 0, 0, 0.88)",
+      "border-radius": "6px",
+      "box-shadow": "none",
+      "color": "rgba(0, 0, 0, 0.88)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "600",
+      "gap": "normal",
+      "height": "18px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 4px",
+      "position": "relative"
+    },
+    "label": "KeyNot Parity Audit 2026-10-19",
+    "rect": {
+      "height": 18,
+      "width": 201.25,
+      "x": 320.375,
+      "y": 2.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push sc-1mqfwaq-0 sc-1mqfwaq-1 eSvLdl euQEnJ icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "500",
+      "gap": "normal",
+      "height": "18px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "4px",
+      "position": "relative"
+    },
+    "label": "GUILHERME",
+    "rect": {
+      "height": 18,
+      "width": 93.453125,
+      "x": 718.421875,
+      "y": 2.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-1tz0yiq-0 sc-6evwn3-0 gATvWI dHsySz icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "10px",
+      "font-weight": "600",
+      "gap": "normal",
+      "height": "18px",
+      "line-height": "12px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "4px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 18,
+      "width": 22.125,
+      "x": 811.875,
+      "y": 2.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 31.59375,
+      "x": 6,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push sc-d5be6o-0 gKYJgx icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "1px solid rgba(0, 0, 0, 0.08)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "14px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "16.8px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 10px",
+      "position": "relative"
+    },
+    "label": "View Scale %{viewScale}%",
+    "rect": {
+      "height": 28,
+      "width": 68.5,
+      "x": 47.59375,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 28.953125,
+      "x": 126.09375,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "0.3",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 28.953125,
+      "x": 159.046875,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 28,
+      "x": 239.78125,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 31.59375,
+      "x": 319.5625,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 28.953125,
+      "x": 355.15625,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 32.453125,
+      "x": 388.109375,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 31.546875,
+      "x": 424.5625,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 28,
+      "x": 460.109375,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 30.328125,
+      "x": 492.109375,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 30,
+      "x": 611.734375,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 28.953125,
+      "x": 645.734375,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "block primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgb(0, 122, 255)",
+      "border": "0px none rgb(255, 255, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "14px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "16.8px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 10px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 36,
+      "x": 764,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "push primary sc-127jl4v-0 htYdFM icon sharing-button icloud-mouse",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(0, 122, 255)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 122, 255)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "14.4px",
+      "min-height": "auto",
+      "opacity": "1",
+      "padding": "0px 6px",
+      "position": "relative"
+    },
+    "label": "",
+    "rect": {
+      "height": 28,
+      "width": 36,
+      "x": 800,
+      "y": 27.5
+    },
+    "role": "button",
+    "tag": "UI-BUTTON"
+  },
+  {
+    "classes": "atv4 iwork sc-view sc-button-view sc-image-button-view iw-add-button iw-slide-navigator-add-slide-button image-button sc-regular-size",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "",
+      "border-radius": "0px",
+      "box-shadow": "none",
+      "color": "rgba(0, 0, 0, 0.88)",
+      "display": "block",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "13px",
+      "font-weight": "300",
+      "gap": "normal",
+      "height": "35px",
+      "line-height": "15.6px",
+      "min-height": "0px",
+      "opacity": "1",
+      "padding": "0px",
+      "position": "absolute"
+    },
+    "label": "",
+    "rect": {
+      "height": 36,
+      "width": 125,
+      "x": 0,
+      "y": 503
+    },
+    "role": "button",
+    "tag": "DIV"
+  },
+  {
+    "classes": "sc-view iw-inspector-segment-view iw-strong leftmost iw-button-view-base sc-static-layout sc-custom-size",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgba(0, 0, 0, 0)",
+      "border-radius": "0px",
+      "box-shadow": "none",
+      "color": "rgb(121, 121, 121)",
+      "display": "inline-block",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "500",
+      "gap": "normal",
+      "height": "33px",
+      "line-height": "33px",
+      "min-height": "0px",
+      "opacity": "1",
+      "padding": "0px 1px 0px 0px",
+      "position": "relative"
+    },
+    "label": "Table",
+    "rect": {
+      "height": 33,
+      "width": 67,
+      "x": 572,
+      "y": 61
+    },
+    "role": "radio",
+    "tag": "DIV"
+  },
+  {
+    "classes": "sc-view iw-inspector-segment-view iw-strong middle iw-button-view-base sc-static-layout sc-custom-size",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgba(0, 0, 0, 0)",
+      "border-radius": "0px",
+      "box-shadow": "none",
+      "color": "rgb(121, 121, 121)",
+      "display": "inline-block",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "500",
+      "gap": "normal",
+      "height": "33px",
+      "line-height": "33px",
+      "min-height": "0px",
+      "opacity": "1",
+      "padding": "0px 1px 0px 0px",
+      "position": "relative"
+    },
+    "label": "Cell",
+    "rect": {
+      "height": 33,
+      "width": 67,
+      "x": 639,
+      "y": 61
+    },
+    "role": "radio",
+    "tag": "DIV"
+  },
+  {
+    "classes": "sc-view iw-inspector-segment-view iw-strong middle iw-button-view-base sc-static-layout sc-custom-size sel",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgba(0, 0, 0, 0)",
+      "border-radius": "0px",
+      "box-shadow": "none",
+      "color": "rgb(51, 51, 51)",
+      "display": "inline-block",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "500",
+      "gap": "normal",
+      "height": "33px",
+      "line-height": "33px",
+      "min-height": "0px",
+      "opacity": "1",
+      "padding": "0px 1px 0px 0px",
+      "position": "relative"
+    },
+    "label": "Data",
+    "rect": {
+      "height": 33,
+      "width": 67,
+      "x": 706,
+      "y": 61
+    },
+    "role": "radio",
+    "tag": "DIV"
+  },
+  {
+    "classes": "sc-view iw-inspector-segment-view iw-strong rightmost iw-button-view-base sc-static-layout sc-custom-size",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border": "0px solid rgba(0, 0, 0, 0)",
+      "border-radius": "0px",
+      "box-shadow": "none",
+      "color": "rgb(121, 121, 121)",
+      "display": "inline-block",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "500",
+      "gap": "normal",
+      "height": "33px",
+      "line-height": "33px",
+      "min-height": "0px",
+      "opacity": "1",
+      "padding": "0px",
+      "position": "relative"
+    },
+    "label": "Arrange",
+    "rect": {
+      "height": 33,
+      "width": 69,
+      "x": 773,
+      "y": 61
+    },
+    "role": "radio",
+    "tag": "DIV"
+  },
+  {
+    "classes": "atv4 iwork sc-view iw-inspector-panel-view",
+    "css": {
+      "background-color": "rgb(250, 250, 250)",
+      "border": "0px solid rgba(0, 0, 0, 0)",
+      "border-radius": "0px",
+      "box-shadow": "none",
+      "color": "rgb(50, 50, 50)",
+      "display": "block",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "12px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "445px",
+      "line-height": "14.4px",
+      "min-height": "0px",
+      "opacity": "1",
+      "padding": "0px",
+      "position": "absolute"
+    },
+    "label": "Data FormatAutomaticAutomaticNumberCurrencyPercentageFractionScientificTextDate and Time",
+    "rect": {
+      "height": 445,
+      "width": 270,
+      "x": 572,
+      "y": 94
+    },
+    "role": "tabpanel",
+    "tag": "DIV"
+  },
+  {
+    "classes": "icloud-tint sc-14i9fi5-3 gUCMwy standard",
+    "css": {
+      "background-color": "rgba(0, 0, 0, 0.04)",
+      "border": "0px none rgb(0, 0, 0)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "color": "rgb(0, 0, 0)",
+      "display": "flex",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "13px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "28px",
+      "min-height": "28px",
+      "opacity": "1",
+      "padding": "0px",
+      "position": "relative"
+    },
+    "label": "AutomaticAutomaticNumberCurrencyPercentageFractionScientificTextDate and Time",
+    "rect": {
+      "height": 28,
+      "width": 238,
+      "x": 588,
+      "y": 135.59375
+    },
+    "role": "button",
+    "tag": "UI-SELECT-BUTTON"
+  },
+  {
+    "classes": "",
+    "css": {
+      "background-color": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(118, 118, 118)",
+      "border-radius": "0px",
+      "box-shadow": "none",
+      "color": "rgb(0, 0, 0)",
+      "display": "block",
+      "font-family": "SFNSText, \"Helvetica Neue\", sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      "gap": "normal",
+      "height": "28px",
+      "line-height": "normal",
+      "min-height": "0px",
+      "opacity": "0",
+      "padding": "0px",
+      "position": "absolute"
+    },
+    "label": "AutomaticNumberCurrencyPercentageFractionScientificTextDate and Time",
+    "rect": {
+      "height": 28,
+      "width": 238,
+      "x": 588,
+      "y": 135.59375
+    },
+    "role": null,
+    "tag": "SELECT"
+  }
+]

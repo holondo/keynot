@@ -1,0 +1,66 @@
+Keynote for iCloud transition gallery
+Captured: 2026-10-19
+Evidence: authenticated Chrome accessibility tree
+
+The entries below preserve the observed order and enabled state.
+“Group label” entries were visible disabled separators, not selectable effects.
+
+[enabled] None
+[enabled] Magic Move
+
+[disabled group label] Appear & Move
+[enabled] Clothesline
+[enabled] Confetti
+[enabled] Dissolve
+[enabled] Drop
+[enabled] Fade and Move
+[enabled] Fade Through Color
+[enabled] Grid
+[enabled] Iris
+[enabled] Move In
+[enabled] Push
+[enabled] Reveal
+[enabled] Switch
+
+[disabled group label] Flip, Spin & Scale
+[enabled] Blinds
+[enabled] Color Planes
+[enabled] Cube
+[enabled] Doorway
+[enabled] Fall
+[enabled] Flip
+[enabled] Flop
+[enabled] Mosaic
+[enabled] Pivot
+[enabled] Reflection
+[enabled] Revolving Door
+[enabled] Scale
+[enabled] Swap
+[enabled] Swoosh
+[enabled] Twirl
+[enabled] Twist
+
+[disabled group label] Object Effects
+[enabled] Object Cube
+[enabled] Object Flip
+[enabled] Object Pop
+[enabled] Object Push
+[enabled] Object Revolve
+[enabled] Object Zoom
+[enabled] Perspective
+
+[disabled group label] Text Effects
+[enabled] Shimmer
+[enabled] Sparkle
+[enabled] Swing
+
+Magic Move controls observed after selection:
+- Duration
+- Fade Unmatched Objects
+- Match: By Object / By Word / By Character
+- Acceleration: default shown as Ease In & Ease Out
+- Start Transition: default shown as On Click
+
+Initial guidance shown by Keynote:
+- the effect animates objects from the source slide to their positions on the next slide;
+- the slides need at least one object in common with a different appearance or position.
