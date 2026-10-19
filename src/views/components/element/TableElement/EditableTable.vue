@@ -6,6 +6,7 @@
       height: draggingTableHeight === null ? '' : draggingTableHeight + 'px',
     }"
   >
+    <div v-if="title?.visible" class="keynote-table-title">{{ title.text || 'Table 1' }}</div>
     <div class="handler" v-if="editable">
       <div 
         class="drag-line" 
@@ -69,11 +70,12 @@
               @updateValue="value => handleInput(value, rowIndex, colIndex)"
               @insertExcelData="value => insertExcelData(value, rowIndex, colIndex)"
             />
-            <div v-else class="cell-text" :style="getTextStyle(getRowHeight(rowIndex), cell.style)" v-html="formatText(cell.text)" />
+            <div v-else class="cell-text" :style="getTextStyle(getRowHeight(rowIndex), cell.style)" v-html="formatText(cell.displayValue || cell.text)" />
           </td>
         </tr>
       </tbody>
     </table>
+    <div v-if="caption?.visible" class="keynote-table-caption">{{ caption.text || 'Caption' }}</div>
   </div>
 </template>
 
@@ -84,6 +86,7 @@ import { storeToRefs } from 'pinia'
 import { nanoid } from 'nanoid'
 import { useMainStore } from '@/store'
 import type { PPTElementOutline, TableCell, TableTheme } from '@/types/slides'
+import { formatCellValue } from '@/utils/tableDataFormatter'
 import type { ContextmenuItem } from '@/components/Contextmenu/types'
 import { KEYS } from '@/configs/hotkey'
 import emitter, { EmitterEvents, type TableCommand } from '@/utils/emitter'
@@ -103,6 +106,8 @@ const props = withDefaults(defineProps<{
   colWidths: number[]
   outline: PPTElementOutline
   theme?: TableTheme
+  title?: { visible: boolean; text: string }
+  caption?: { visible: boolean; text: string }
   editable?: boolean
 }>(), {
   editable: true,
@@ -701,8 +706,13 @@ onUnmounted(() => {
 })
 
 // 单元格文字输入时更新表格数据
-const handleInput = debounce(function(value, rowIndex, colIndex) {
-  tableCells.value[rowIndex][colIndex].text = value
+const handleInput = debounce(function(value: string, rowIndex: number, colIndex: number) {
+  const cell = tableCells.value[rowIndex][colIndex]
+  cell.text = value
+  cell.rawValue = value
+  if (cell.dataFormat) {
+    cell.displayValue = formatCellValue(cell)
+  }
   emit('change', tableCells.value)
 }, 300, { trailing: true })
 
@@ -982,5 +992,20 @@ table {
   opacity: 0;
   z-index: 2;
   cursor: row-resize;
+}
+
+.keynote-table-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary, #1d1d1f);
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.keynote-table-caption {
+  font-size: 11px;
+  color: var(--text-secondary, #6e6e73);
+  padding: 4px 6px;
+  text-align: left;
 }
 </style>

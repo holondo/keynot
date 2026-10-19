@@ -528,6 +528,18 @@ export interface TableCellStyle {
 }
 
 
+export type CellDataFormatType = 'automatic' | 'number' | 'currency' | 'percentage' | 'fraction' | 'scientific' | 'text' | 'dateTime'
+
+export interface CellDataFormat {
+  kind: CellDataFormatType
+  decimals?: number
+  thousandsSeparator?: boolean
+  currencyCode?: string
+  negativeStyle?: string
+  dateStyle?: string
+  timeStyle?: string
+}
+
 /**
  * 表格单元格
  * 
@@ -546,6 +558,9 @@ export interface TableCell {
   colspan: number
   rowspan: number
   text: string
+  rawValue?: string | number | boolean | null
+  displayValue?: string
+  dataFormat?: CellDataFormat
   style?: TableCellStyle
 }
 
@@ -595,6 +610,11 @@ export interface PPTTableElement extends PPTBaseElement {
   cellMinHeight: number
   rowHeights?: number[]
   data: TableCell[][]
+  title?: { visible: boolean; text: string }
+  caption?: { visible: boolean; text: string }
+  headerRows?: number
+  headerColumns?: number
+  footerRows?: number
 }
 
 
@@ -723,10 +743,15 @@ export type TurningMode = 'no' | 'fade' | 'slideX' | 'slideY' | 'random' | 'slid
 
 export type UnmatchedTransitionBehavior = 'fade' | 'instant'
 export type TextMatchGranularity = 'object' | 'word' | 'character'
+export type TransitionAcceleration = 'easeInOut' | 'easeIn' | 'easeOut' | 'constant'
+export type TransitionStartMode = 'click' | 'auto'
 
 export interface SlideTransitionConfig {
   duration?: number
   easing?: string
+  acceleration?: TransitionAcceleration
+  startMode?: TransitionStartMode
+  startDelayMs?: number
   unmatchedBehavior?: UnmatchedTransitionBehavior
   textMatchMode?: TextMatchGranularity
 }
@@ -776,6 +801,7 @@ export interface Slide {
   transitionConfig?: SlideTransitionConfig
   sectionTag?: SectionTag
   type?: SlideType
+  skipped?: boolean
 }
 
 /**

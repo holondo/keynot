@@ -175,9 +175,19 @@ export const analyzeSlideTransitionMatches = (
   }
 }
 
+export const ACCELERATION_EASINGS: Record<string, string> = {
+  easeInOut: 'cubic-bezier(0.42, 0, 0.58, 1)',
+  easeIn: 'cubic-bezier(0.42, 0, 1, 1)',
+  easeOut: 'cubic-bezier(0, 0, 0.58, 1)',
+  constant: 'linear',
+}
+
 export const DEFAULT_TRANSITION_CONFIG: Required<SlideTransitionConfig> = {
   duration: 900,
   easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+  acceleration: 'easeInOut',
+  startMode: 'click',
+  startDelayMs: 0,
   unmatchedBehavior: 'fade',
   textMatchMode: 'object',
 }
@@ -203,6 +213,11 @@ export const runMagicMoveTransition = (
     ...(toSlide.transitionConfig || {}),
   }
 
+  const effectiveEasing =
+    config.acceleration && ACCELERATION_EASINGS[config.acceleration]
+      ? ACCELERATION_EASINGS[config.acceleration]
+      : config.easing
+
   const analysis = analyzeSlideTransitionMatches(fromSlide, toSlide)
   const activeAnimations: Animation[] = []
 
@@ -221,35 +236,64 @@ export const runMagicMoveTransition = (
     const { dx, dy, scaleX, scaleY, dRotate, fromOpacity, toOpacity } = pair.deltas
     const finalRotate = getElementRotate(pair.toElement)
 
-    const startTransform =
-      mode === 'editor'
-        ? `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY}) rotate(${dRotate}deg)`
-        : `translate(${dx}px, ${dy}px) rotate(${finalRotate + dRotate}deg) scale(${scaleX}, ${scaleY})`
+    const isTextMatch = pair.fromElement.type === 'text' && pair.toElement.type === 'text'
+    const matchGranularity = config.textMatchMode || 'object'
 
-    const endTransform =
-      mode === 'editor'
-        ? 'translate(0px, 0px) scale(1, 1) rotate(0deg)'
-        : `translate(0px, 0px) rotate(${finalRotate}deg) scale(1, 1)`
+    if (isTextMatch && (matchGranularity === 'word' || matchGranularity === 'character')) {
+      // Enhanced text granularity transition: matched text container morphs with smooth scale & drift
+      const anim = targetNode.animate(
+        [
+          {
+            transform: mode === 'editor'
+              ? `translate(${dx * 0.7}px, ${dy * 0.7}px) scale(${scaleX}, ${scaleY})`
+              : `translate(${dx * 0.7}px, ${dy * 0.7}px) scale(${scaleX}, ${scaleY})`,
+            opacity: 0.2,
+            filter: matchGranularity === 'character' ? 'blur(2px)' : 'none',
+          },
+          {
+            transform: 'translate(0px, 0px) scale(1, 1)',
+            opacity: toOpacity,
+            filter: 'none',
+          },
+        ],
+        {
+          duration: config.duration,
+          easing: effectiveEasing,
+          fill: 'none',
+        }
+      )
+      activeAnimations.push(anim)
+    } else {
+      const startTransform =
+        mode === 'editor'
+          ? `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY}) rotate(${dRotate}deg)`
+          : `translate(${dx}px, ${dy}px) rotate(${finalRotate + dRotate}deg) scale(${scaleX}, ${scaleY})`
 
-    targetNode.style.transformOrigin = 'center center'
-    const anim = targetNode.animate(
-      [
+      const endTransform =
+        mode === 'editor'
+          ? 'translate(0px, 0px) scale(1, 1) rotate(0deg)'
+          : `translate(0px, 0px) rotate(${finalRotate}deg) scale(1, 1)`
+
+      targetNode.style.transformOrigin = 'center center'
+      const anim = targetNode.animate(
+        [
+          {
+            transform: startTransform,
+            opacity: fromOpacity,
+          },
+          {
+            transform: endTransform,
+            opacity: toOpacity,
+          },
+        ],
         {
-          transform: startTransform,
-          opacity: fromOpacity,
-        },
-        {
-          transform: endTransform,
-          opacity: toOpacity,
-        },
-      ],
-      {
-        duration: config.duration,
-        easing: config.easing,
-        fill: 'none',
-      }
-    )
-    activeAnimations.push(anim)
+          duration: config.duration,
+          easing: effectiveEasing,
+          fill: 'none',
+        }
+      )
+      activeAnimations.push(anim)
+    }
   }
 
   // 2. Handle unmatched incoming elements according to unmatchedBehavior

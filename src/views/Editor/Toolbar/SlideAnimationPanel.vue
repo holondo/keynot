@@ -92,23 +92,63 @@
           :max="5000"
           :step="100"
           :value="transitionConfig.duration"
-          @update:value="val => updateTransitionConfig({ duration: val })"
+          @update:value="updateDuration"
           style="width: 60%;"
         />
       </div>
 
       <div class="config-row">
-        <div class="config-label">Timing Curve:</div>
+        <div class="config-label">Match:</div>
+        <RadioGroup
+          class="radio-cluster"
+          button-style="solid"
+          :value="transitionConfig.textMatchMode || 'object'"
+          @update:value="updateTextMatchMode"
+          style="width: 60%;"
+        >
+          <RadioButton value="object" style="flex: 1;">By Object</RadioButton>
+          <RadioButton value="word" style="flex: 1;">By Word</RadioButton>
+          <RadioButton value="character" style="flex: 1;">By Character</RadioButton>
+        </RadioGroup>
+      </div>
+
+      <div class="config-row">
+        <div class="config-label">Acceleration:</div>
         <Select
-          :value="transitionConfig.easing"
-          @update:value="val => updateTransitionConfig({ easing: val as string })"
+          :value="transitionConfig.acceleration || 'easeInOut'"
+          @update:value="updateAcceleration"
           style="width: 60%;"
           :options="[
-            { label: 'Spring Out (Keynote Default)', value: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-            { label: 'Smooth Ease In-Out', value: 'cubic-bezier(0.4, 0, 0.2, 1)' },
-            { label: 'Dramatic Overshoot', value: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
-            { label: 'Linear', value: 'linear' },
+            { label: 'Ease In & Ease Out', value: 'easeInOut' },
+            { label: 'Ease In', value: 'easeIn' },
+            { label: 'Ease Out', value: 'easeOut' },
+            { label: 'Constant', value: 'constant' },
           ]"
+        />
+      </div>
+
+      <div class="config-row">
+        <div class="config-label">Start Transition:</div>
+        <Select
+          :value="transitionConfig.startMode || 'click'"
+          @update:value="updateStartMode"
+          style="width: 60%;"
+          :options="[
+            { label: 'On Click', value: 'click' },
+            { label: 'Automatically', value: 'auto' },
+          ]"
+        />
+      </div>
+
+      <div class="config-row" v-if="transitionConfig.startMode === 'auto'">
+        <div class="config-label">Delay (ms):</div>
+        <NumberInput
+          :min="0"
+          :max="10000"
+          :step="100"
+          :value="transitionConfig.startDelayMs || 500"
+          @update:value="updateStartDelayMs"
+          style="width: 60%;"
         />
       </div>
 
@@ -116,7 +156,7 @@
         <div class="config-label">Unmatched Objects:</div>
         <Select
           :value="transitionConfig.unmatchedBehavior"
-          @update:value="val => updateTransitionConfig({ unmatchedBehavior: val as UnmatchedTransitionBehavior })"
+          @update:value="updateUnmatchedBehavior"
           style="width: 60%;"
           :options="[
             { label: 'Dissolve In / Out', value: 'fade' },
@@ -199,7 +239,14 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { nanoid } from 'nanoid'
 import { useSlidesStore } from '@/store'
-import type { SlideTransitionConfig, TurningMode, UnmatchedTransitionBehavior } from '@/types/slides'
+import type {
+  SlideTransitionConfig,
+  TurningMode,
+  UnmatchedTransitionBehavior,
+  TextMatchGranularity,
+  TransitionAcceleration,
+  TransitionStartMode,
+} from '@/types/slides'
 import { SLIDE_ANIMATIONS } from '@/configs/animation'
 import {
   analyzeSlideTransitionMatches,
@@ -214,6 +261,8 @@ import Button from '@/components/Button.vue'
 import Divider from '@/components/Divider.vue'
 import NumberInput from '@/components/NumberInput.vue'
 import Select from '@/components/Select.vue'
+import RadioGroup from '@/components/RadioGroup.vue'
+import RadioButton from '@/components/RadioButton.vue'
 
 const slidesStore = useSlidesStore()
 const { slides, currentSlide, slideIndex } = storeToRefs(slidesStore)
@@ -266,6 +315,30 @@ const updateTransitionConfig = (patch: Partial<SlideTransitionConfig>) => {
     },
   })
   addHistorySnapshot()
+}
+
+const updateTextMatchMode = (val: string | number) => {
+  updateTransitionConfig({ textMatchMode: val as TextMatchGranularity })
+}
+
+const updateAcceleration = (val: string | number) => {
+  updateTransitionConfig({ acceleration: val as TransitionAcceleration })
+}
+
+const updateStartMode = (val: string | number) => {
+  updateTransitionConfig({ startMode: val as TransitionStartMode })
+}
+
+const updateUnmatchedBehavior = (val: string | number) => {
+  updateTransitionConfig({ unmatchedBehavior: val as UnmatchedTransitionBehavior })
+}
+
+const updateDuration = (val: number) => {
+  updateTransitionConfig({ duration: val })
+}
+
+const updateStartDelayMs = (val: number) => {
+  updateTransitionConfig({ startDelayMs: val })
 }
 
 const applyAllSlide = () => {

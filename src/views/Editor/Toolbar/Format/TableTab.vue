@@ -42,6 +42,12 @@
       <Checkbox :value="showTitle" @update:value="v => toggleTableTitle(v)">Title</Checkbox>
       <Checkbox :value="showCaption" @update:value="v => toggleTableCaption(v)">Caption</Checkbox>
     </div>
+    <div class="control-row" v-if="showTitle" style="margin-top: 6px;">
+      <Input :value="tableTitleText" @update:value="val => setTableTitleText(val)" placeholder="Table Title" />
+    </div>
+    <div class="control-row" v-if="showCaption" style="margin-top: 6px;">
+      <Input :value="tableCaptionText" @update:value="val => setTableCaptionText(val)" placeholder="Table Caption" />
+    </div>
 
     <!-- Headers & Footer Steppers (Screenshot 4) -->
     <div class="control-row label-value-row">
@@ -213,11 +219,7 @@
 import { computed, type Ref, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore } from '@/store'
-import type { PPTTableElement, TableTheme } from '@/types/slides'
-import useHistorySnapshot from '@/hooks/useHistorySnapshot'
-import emitter, { EmitterEvents } from '@/utils/emitter'
-import message from '@/utils/message'
-
+import Input from '@/components/Input.vue'
 import Button from '@/components/Button.vue'
 import NumberInput from '@/components/NumberInput.vue'
 import Checkbox from '@/components/Checkbox.vue'
@@ -226,6 +228,10 @@ import Divider from '@/components/Divider.vue'
 import Popover from '@/components/Popover.vue'
 import ColorButton from '@/components/ColorButton.vue'
 import ColorPicker from '@/components/ColorPicker/index.vue'
+import useHistorySnapshot from '@/hooks/useHistorySnapshot'
+import emitter, { EmitterEvents } from '@/utils/emitter'
+import message from '@/utils/message'
+import type { PPTTableElement, TableCell, TableTheme } from '@/types/slides'
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
@@ -233,8 +239,10 @@ const { handleElement, handleElementId } = storeToRefs(mainStore)
 
 const handleTableElement = handleElement as Ref<PPTTableElement>
 
-const showTitle = ref(false)
-const showCaption = ref(false)
+const showTitle = computed(() => !!handleTableElement.value?.title?.visible)
+const tableTitleText = computed(() => handleTableElement.value?.title?.text ?? 'Table 1')
+const showCaption = computed(() => !!handleTableElement.value?.caption?.visible)
+const tableCaptionText = computed(() => handleTableElement.value?.caption?.text ?? 'Caption')
 const gridlinesType = ref('all')
 
 const { addHistorySnapshot } = useHistorySnapshot()
@@ -255,9 +263,9 @@ const currentThemeColor = computed(() => handleTableElement.value?.theme?.color 
 const rowCount = computed(() => handleTableElement.value?.data.length || 5)
 const colCount = computed(() => handleTableElement.value?.data[0]?.length || 4)
 
-const headerRowsCount = computed(() => handleTableElement.value?.theme?.rowHeader ? 1 : 0)
-const headerColsCount = computed(() => handleTableElement.value?.theme?.colHeader ? 1 : 0)
-const footerRowsCount = computed(() => handleTableElement.value?.theme?.rowFooter ? 1 : 0)
+const headerRowsCount = computed(() => handleTableElement.value?.headerRows ?? (handleTableElement.value?.theme?.rowHeader ? 1 : 0))
+const headerColsCount = computed(() => handleTableElement.value?.headerColumns ?? (handleTableElement.value?.theme?.colHeader ? 1 : 0))
+const footerRowsCount = computed(() => handleTableElement.value?.footerRows ?? (handleTableElement.value?.theme?.rowFooter ? 1 : 0))
 const alternatingRowColor = computed(() => !!handleTableElement.value?.theme)
 
 const outlineWidth = computed(() => handleTableElement.value?.outline?.width || 1)
@@ -302,6 +310,7 @@ const defaultTheme: TableTheme = {
 const setHeaderRows = (val: number) => {
   const currentTheme = handleTableElement.value.theme || defaultTheme
   updateTable({
+    headerRows: val,
     theme: {
       ...defaultTheme,
       ...currentTheme,
@@ -313,6 +322,7 @@ const setHeaderRows = (val: number) => {
 const setHeaderCols = (val: number) => {
   const currentTheme = handleTableElement.value.theme || defaultTheme
   updateTable({
+    headerColumns: val,
     theme: {
       ...defaultTheme,
       ...currentTheme,
@@ -324,6 +334,7 @@ const setHeaderCols = (val: number) => {
 const setFooterRows = (val: number) => {
   const currentTheme = handleTableElement.value.theme || defaultTheme
   updateTable({
+    footerRows: val,
     theme: {
       ...defaultTheme,
       ...currentTheme,
@@ -351,9 +362,21 @@ const setColCount = (newCols: number) => {
 }
 
 const adjustTableFontSize = (delta: number) => {
-  const currentFontSize = 14
-  const newSize = Math.max(9, Math.min(48, currentFontSize + delta))
-  message.success(`Set table font size to ${newSize}pt`)
+  if (!handleTableElement.value?.data) return
+  const data: TableCell[][] = JSON.parse(JSON.stringify(handleTableElement.value.data))
+  let changed = false
+  for (const row of data) {
+    for (const cell of row) {
+      const current = parseInt(cell.style?.fontsize || '14', 10) || 14
+      const next = Math.max(9, Math.min(72, current + delta))
+      if (!cell.style) cell.style = {}
+      cell.style.fontsize = `${next}px`
+      changed = true
+    }
+  }
+  if (changed) {
+    updateTable({ data })
+  }
 }
 
 const updateOutlineColor = (color: string) => {
@@ -393,21 +416,39 @@ const updateTableWidth = (width: number) => {
 }
 
 const fitRowHeight = () => {
-  updateTable({ height: rowCount.value * 32 })
-  message.success('Fit row heights to table content')
+  const standardHeight = 36
+  const rowHeights = new Array(rowCount.value).fill(standardHeight)
+  updateTable({ rowHeights, cellMinHeight: 32 })
 }
 
 const fitTableWidth = () => {
-  updateTable({ width: colCount.value * 120 })
-  message.success('Fit column widths to slide stage')
+  const count = colCount.value
+  const colWidths = new Array(count).fill(1 / count)
+  updateTable({ colWidths })
 }
 
 const toggleTableTitle = (v: boolean) => {
-  showTitle.value = v
+  updateTable({
+    title: { visible: v, text: handleTableElement.value.title?.text || 'Table 1' },
+  })
+}
+
+const setTableTitleText = (text: string) => {
+  updateTable({
+    title: { visible: true, text },
+  })
 }
 
 const toggleTableCaption = (v: boolean) => {
-  showCaption.value = v
+  updateTable({
+    caption: { visible: v, text: handleTableElement.value.caption?.text || 'Caption' },
+  })
+}
+
+const setTableCaptionText = (text: string) => {
+  updateTable({
+    caption: { visible: true, text },
+  })
 }
 </script>
 

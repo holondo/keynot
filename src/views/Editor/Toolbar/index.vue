@@ -41,6 +41,7 @@
           <ImageTab v-else-if="formatSubTab === 'image'" />
           <TableTab v-else-if="formatSubTab === 'table'" />
           <CellTab v-else-if="formatSubTab === 'cell'" />
+          <DataTab v-else-if="formatSubTab === 'data'" />
           <ChartStylePanel v-else-if="formatSubTab === 'chart'" />
           <StyleTab v-else />
         </template>
@@ -61,6 +62,7 @@ import TextTab from './Format/TextTab.vue'
 import ImageTab from './Format/ImageTab.vue'
 import TableTab from './Format/TableTab.vue'
 import CellTab from './Format/CellTab.vue'
+import DataTab from './Format/DataTab.vue'
 import ArrangeTab from './Format/ArrangeTab.vue'
 import SlideLayoutTab from './Format/SlideLayoutTab.vue'
 import ChartStylePanel from './ElementStylePanel/ChartStylePanel/index.vue'
@@ -72,7 +74,7 @@ import ElementAnimationPanel from './ElementAnimationPanel.vue'
 import DocumentPanel from './DocumentPanel.vue'
 
 const mainStore = useMainStore()
-const { activeElementIdList, handleElement, inspectorMode } = storeToRefs(mainStore)
+const { activeElementIdList, handleElement, inspectorMode, selectedTableCells } = storeToRefs(mainStore)
 
 const formatSubTab = ref('style')
 const animateSubTab = ref('transition')
@@ -132,10 +134,16 @@ const currentTabs = computed(() => {
         { label: 'Arrange', key: 'arrange' },
       ]
     case 'table':
+      if (selectedTableCells.value.length > 0) {
+        return [
+          { label: 'Table', key: 'table' },
+          { label: 'Cell', key: 'cell' },
+          { label: 'Data', key: 'data' },
+          { label: 'Arrange', key: 'arrange' },
+        ]
+      }
       return [
         { label: 'Table', key: 'table' },
-        { label: 'Cell', key: 'cell' },
-        { label: 'Text', key: 'text' },
         { label: 'Arrange', key: 'arrange' },
       ]
     case 'chart':
@@ -156,7 +164,7 @@ const currentTabs = computed(() => {
 })
 
 // Auto-select the most relevant default tab when selection changes
-watch([handleElement, activeElementIdList, inspectorMode], () => {
+watch([handleElement, activeElementIdList, inspectorMode, selectedTableCells], () => {
   panelError.value = null
 
   if (inspectorMode.value === 'animate') {
@@ -177,7 +185,7 @@ watch([handleElement, activeElementIdList, inspectorMode], () => {
     } else if (handleElement.value?.type === 'image') {
       formatSubTab.value = 'image'
     } else if (handleElement.value?.type === 'table') {
-      formatSubTab.value = 'table'
+      formatSubTab.value = selectedTableCells.value.length > 0 ? 'cell' : 'table'
     } else if (handleElement.value?.type === 'chart') {
       formatSubTab.value = 'chart'
     } else {
@@ -228,6 +236,8 @@ const activeComponent = computed(() => {
       return TableTab
     case 'cell':
       return CellTab
+    case 'data':
+      return DataTab
     case 'chart':
       return ChartStylePanel
     case 'style':

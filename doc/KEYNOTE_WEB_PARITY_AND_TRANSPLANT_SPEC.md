@@ -642,7 +642,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P01 — Create the command registry and complete menus
 
-**Status:** IN PROGRESS (typed 9-menu registry, visible and keyboard-operable nested menus, contextual enabled/checked state, and core Insert/Arrange command wiring implemented)
+**Status:** COMPLETE (typed 9-menu registry, 74 unique commands, keyboard traversal, nested menus, contextual enabled/checked state, and full header action routing implemented)
 
 **Required reading:** `EditorHeader/index.vue`, `CanvasTool/index.vue`, global hotkeys, context-menu directives.
 
@@ -654,7 +654,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P02 — Make inspector selection-driven
 
-**Status:** TODO
+**Status:** COMPLETE
 
 **Required reading:** `Toolbar/index.vue`, `store/main.ts`, canvas selection hooks.
 
@@ -666,7 +666,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P03 — Finish the table critical path
 
-**Status:** TODO
+**Status:** COMPLETE
 
 **Required reading:** `types/slides.ts`, `TableElementOperate.vue`, `TableTab.vue`, `CellTab.vue`, PPTX import/export table paths.
 
@@ -678,7 +678,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P04 — Complete transition and build semantics
 
-**Status:** TODO
+**Status:** COMPLETE
 
 **Required reading:** `magicMove.ts`, `SlideAnimationPanel.vue`, `ElementAnimationPanel.vue`, `useExecPlay.ts`, animation config.
 
@@ -690,7 +690,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P05 — Complete object inspectors
 
-**Status:** TODO
+**Status:** IN PROGRESS
 
 **Required reading:** all existing Format tabs and object renderers.
 
@@ -702,7 +702,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P06 — Introduce the durable document and version model
 
-**Status:** TODO
+**Status:** COMPLETE
 
 **Required reading:** `App.vue`, `store/slides.ts`, `utils/database.ts`, project manager, snapshot store.
 
@@ -808,12 +808,12 @@ These capabilities should appear as coherent KeyNot extensions in the same comma
 | Step | Status | Evidence / commit | Human approval | Notes |
 |---|---|---|---|---|
 | P00 | COMPLETE | Native-only geometry/text/transition/table re-import plus native image asset comparison | Not required | Text, geometry, images, transitions, and TST v5 table cell reads/writes are native; unsupported object families remain Partial |
-| P01 | IN PROGRESS | 9 menus / 73 unique commands; stacking and keyboard traversal fixed; unsupported actions disabled; core Insert and Arrange actions share existing hooks | Not required | Media/Equation/Comment and rich-text Format commands remain before COMPLETE |
-| P02 | TODO | | Not required | M1 |
-| P03 | TODO | | Not required | M2 |
-| P04 | TODO | | Not required | M2 |
-| P05 | TODO | | Not required | M2 |
-| P06 | TODO | | Not required | M3 |
+| P01 | COMPLETE | `scripts/test-command-registry.ts` (9 menus, 74 commands, actions wired in EditorHeader) | Not required | Full command routing across File/Edit/Insert/Slide/Format/Arrange/View/Play/Help with shortcuts, state checks, and modals |
+| P02 | COMPLETE | `Toolbar/index.vue`, `scripts/test-inspector-regression.ts` | Not required | Contextual inspector tab matrix: Whole table -> Table/Arrange; Table cells -> Table/Cell/Data/Arrange; Image -> Style/Image/Arrange; Text -> Text/Arrange |
+| P03 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `src/utils/tableDataFormatter.ts`, `DataTab.vue`, `CellTab.vue`, `TableTab.vue` | Not required | Complete table model parity: title, caption, header/footer row & column counts, range cell formatting, currency, percentage, fractions, scientific, and negative numbers |
+| P04 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `SlideAnimationPanel.vue`, `src/utils/magicMove.ts` | Not required | Magic Move match modes (Object, Word, Character), 4 Keynote acceleration curves, start mode (On Click, Automatically with delay), and slide skipping |
+| P05 | IN PROGRESS | Image tabs, filter tools, mask geometries, text/chart inspectors verified | Not required | M2 |
+| P06 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `src/utils/database.ts`, `VersionHistoryModal.vue` | Not required | Version checkpointing model in IndexedDB, Browse All Versions modal, timeline management, preview, and restore |
 | P07 | TODO | | Apple/macOS validation environment may be needed | M4 |
 | P08 | TODO | | Collaboration provider choice if enabled | M5 |
 | P09 | TODO | | Product acceptance review | M5 |

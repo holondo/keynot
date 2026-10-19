@@ -20,6 +20,8 @@
           :colWidths="elementInfo.colWidths"
           :outline="elementInfo.outline"
           :theme="elementInfo.theme"
+          :title="elementInfo.title"
+          :caption="elementInfo.caption"
         />
       </div>
     </div>

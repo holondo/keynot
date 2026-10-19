@@ -3,6 +3,7 @@
     class="static-table"
     :style="{ width: totalWidth + 'px' }"
   >
+    <div v-if="title?.visible" class="keynote-table-title">{{ title.text || 'Table 1' }}</div>
     <table
       :class="{
         'theme': theme,
@@ -27,11 +28,12 @@
             :colspan="cell.colspan"
             v-show="!hideCells.includes(`${rowIndex}_${colIndex}`)"
           >
-            <div class="cell-text" :style="getTextStyle(getRowHeight(rowIndex), cell.style)" v-html="formatText(cell.text)" />
+            <div class="cell-text" :style="getTextStyle(getRowHeight(rowIndex), cell.style)" v-html="formatText(cell.displayValue || cell.text)" />
           </td>
         </tr>
       </tbody>
     </table>
+    <div v-if="caption?.visible" class="keynote-table-caption">{{ caption.text || 'Caption' }}</div>
   </div>
 </template>
 
@@ -50,6 +52,8 @@ const props = withDefaults(defineProps<{
   colWidths: number[]
   outline: PPTElementOutline
   theme?: TableTheme
+  title?: { visible: boolean; text: string }
+  caption?: { visible: boolean; text: string }
   editable?: boolean
 }>(), {
   editable: true,
@@ -139,5 +143,20 @@ table {
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+.keynote-table-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary, #1d1d1f);
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.keynote-table-caption {
+  font-size: 11px;
+  color: var(--text-secondary, #6e6e73);
+  padding: 4px 6px;
+  text-align: left;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="cell-tab">
+  <div class="cell-tab" v-if="currentTable">
     <!-- Fill -->
     <div class="section-title">Cell Fill</div>
     <div class="row">
@@ -51,16 +51,16 @@
     <Divider />
 
     <!-- Borders -->
-    <div class="section-title">Cell Border</div>
+    <div class="section-title">Table Outline</div>
     <ElementOutline :fixed="true" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore } from '@/store'
-import type { PPTTableElement, TableCell, TextAlign, TextAlignVertical } from '@/types/slides'
+import type { PPTTableElement, TableCell, TableCellStyle, TextAlign, TextAlignVertical } from '@/types/slides'
 import useHistorySnapshot from '@/hooks/useHistorySnapshot'
 import ElementOutline from '../common/ElementOutline.vue'
 import Popover from '@/components/Popover.vue'
@@ -70,39 +70,74 @@ import RadioButton from '@/components/RadioButton.vue'
 import RadioGroup from '@/components/RadioGroup.vue'
 import Divider from '@/components/Divider.vue'
 
+const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
-const { handleElement, handleElementId } = storeToRefs(useMainStore())
+const { handleElement, handleElementId, selectedTableCells } = storeToRefs(mainStore)
+const { addHistorySnapshot } = useHistorySnapshot()
 
 const currentTable = computed(() => handleElement.value as PPTTableElement)
 
-const textAttrs = ref({
-  align: 'left' as TextAlign,
-  vAlign: 'middle' as TextAlignVertical,
-  backcolor: '#ffffff',
+const primaryTargetCell = computed<TableCell | null>(() => {
+  if (!currentTable.value?.data?.length) return null
+  if (selectedTableCells.value.length) {
+    const [r, c] = selectedTableCells.value[0].split('_').map(Number)
+    return currentTable.value.data[r]?.[c] || null
+  }
+  return currentTable.value.data[0]?.[0] || null
 })
+
+const textAttrs = computed(() => ({
+  align: primaryTargetCell.value?.style?.align || 'left',
+  vAlign: primaryTargetCell.value?.style?.vAlign || 'middle',
+  backcolor: primaryTargetCell.value?.style?.backcolor || '#ffffff',
+}))
 
 const cellFill = computed(() => textAttrs.value.backcolor || '#ffffff')
 
-const { addHistorySnapshot } = useHistorySnapshot()
+const getTargetCoordinates = (): [number, number][] => {
+  if (selectedTableCells.value.length) {
+    return selectedTableCells.value.map(key => {
+      const [r, c] = key.split('_').map(Number)
+      return [r, c]
+    })
+  }
+  const coords: [number, number][] = []
+  const data = currentTable.value?.data || []
+  for (let r = 0; r < data.length; r++) {
+    for (let c = 0; c < data[r].length; c++) {
+      coords.push([r, c])
+    }
+  }
+  return coords
+}
 
-const updateTextAttrs = (props: any) => {
-  textAttrs.value = { ...textAttrs.value, ...props }
-  // Emit table command or update cell formatting
+const mutateTargetCells = (updater: (style: TableCellStyle) => TableCellStyle) => {
+  if (!currentTable.value) return
+  const data: TableCell[][] = JSON.parse(JSON.stringify(currentTable.value.data))
+  const targets = getTargetCoordinates()
+
+  for (const [r, c] of targets) {
+    if (!data[r] || !data[r][c]) continue
+    const cell = data[r][c]
+    cell.style = updater(cell.style || {})
+  }
+
+  slidesStore.updateElement({ id: handleElementId.value, props: { data } })
+  addHistorySnapshot()
+}
+
+const updateTextAttrs = (props: Partial<TableCellStyle>) => {
+  mutateTargetCells(existing => ({
+    ...existing,
+    ...props,
+  }))
 }
 
 const updateCellFill = (color: string) => {
-  textAttrs.value.backcolor = color
-  if (!currentTable.value) return
-  // Apply fill color to table cells
-  const data = JSON.parse(JSON.stringify(currentTable.value.data)) as TableCell[][]
-  for (const row of data) {
-    for (const cell of row) {
-      if (cell.style) cell.style.backcolor = color
-      else cell.style = { backcolor: color }
-    }
-  }
-  slidesStore.updateElement({ id: handleElementId.value, props: { data } })
-  addHistorySnapshot()
+  mutateTargetCells(existing => ({
+    ...existing,
+    backcolor: color,
+  }))
 }
 </script>
 

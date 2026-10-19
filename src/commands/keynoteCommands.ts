@@ -19,6 +19,7 @@ export const KEYNOTE_MENUS: KeynoteMenu[] = [
     { id: 'file.open', label: 'Open…', shortcut: 'Ctrl+O' },
     { id: 'file.workspace', label: 'All Presentations…' },
     { id: 'file.theme', label: 'Choose Theme…' },
+    { id: 'file.versions', label: 'Browse All Versions…' },
     { id: 'file.export', label: 'Export To', children: [
       { id: 'file.export.keynote', label: 'Keynote…' },
       { id: 'file.export.powerpoint', label: 'PowerPoint…' },

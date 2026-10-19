@@ -66,6 +66,7 @@
         @execute="executeMenuCommand"
       />
       <input ref="openFileInput" class="native-file-input" type="file" accept=".key,.pptx,.pptist,.keynot,.slate,.json" @change="handleNativeFileOpen" />
+      <input ref="imageFileInput" class="native-file-input" type="file" accept="image/*" @change="handleNativeImageOpen" />
     </div>
 
     <div class="center-title">
@@ -157,6 +158,25 @@
       <ProjectManagerModal @close="projectManagerVisible = false" />
     </Modal>
 
+    <Modal v-model:visible="versionHistoryVisible" :width="620">
+      <VersionHistoryModal @close="versionHistoryVisible = false" />
+    </Modal>
+
+    <Modal v-model:visible="mediaInputVisible" :width="520">
+      <MediaInput
+        @close="mediaInputVisible = false"
+        @insertVideo="({ src, ext }) => { createVideoElement(src, ext); mediaInputVisible = false }"
+        @insertAudio="({ src, ext }) => { createAudioElement(src, ext); mediaInputVisible = false }"
+      />
+    </Modal>
+
+    <Modal v-model:visible="latexEditorVisible" :width="880">
+      <LaTeXEditor
+        @close="latexEditorVisible = false"
+        @update="data => { createLatexElement(data); latexEditorVisible = false }"
+      />
+    </Modal>
+
     <FullscreenSpin :loading="exporting" tip="Importing presentation..." />
   </div>
 </template>
@@ -180,10 +200,15 @@ import useCreateElement from '@/hooks/useCreateElement'
 import { ElementAlignCommands, ElementOrderCommands } from '@/types/edit'
 import { flattenCommands, KEYNOTE_MENUS } from '@/commands/keynoteCommands'
 import type { DialogForExportTypes } from '@/types/export'
+import { getImageDataURL } from '@/utils/image'
+import emitter, { EmitterEvents } from '@/utils/emitter'
 
 import HotkeyDoc from './HotkeyDoc.vue'
 import CompatibilityReportModal from './CompatibilityReportModal.vue'
 import ProjectManagerModal from './ProjectManagerModal.vue'
+import VersionHistoryModal from './VersionHistoryModal.vue'
+import MediaInput from '@/views/Editor/CanvasTool/MediaInput.vue'
+import LaTeXEditor from '@/components/LaTeXEditor/index.vue'
 import FileInput from '@/components/FileInput.vue'
 import FullscreenSpin from '@/components/FullscreenSpin.vue'
 import Drawer from '@/components/Drawer.vue'
@@ -196,12 +221,12 @@ import KeynoteMenuBar from './KeynoteMenuBar.vue'
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
-const { title, saveStatus, compatibilityReport } = storeToRefs(slidesStore)
+const { title, saveStatus, compatibilityReport, currentSlide } = storeToRefs(slidesStore)
 
 const { enterScreening, enterScreeningFromStart } = useScreening()
 const { importSpecificFile, importPPTXFile, importKeynoteFile, exporting } = useImport()
 const { resetSlides, createSlide, copyAndPasteSlide, deleteSlide, copySlide, cutSlide, pasteSlide, selectAllSlide } = useSlideHandler()
-const { undo, redo } = useHistorySnapshot()
+const { undo, redo, addHistorySnapshot } = useHistorySnapshot()
 const { copyElement, cutElement, pasteElement, quickCopyElement } = useCopyAndPasteElement()
 const { deleteElement } = useDeleteElement()
 const { selectAllElements } = useSelectElement()
@@ -209,20 +234,29 @@ const { combineElements, uncombineElements } = useCombineElement()
 const { alignActiveElement } = useAlignActiveElement()
 const { orderElement } = useOrderElement()
 const { lockElement } = useLockElement()
-const { createTableElement, createChartElement } = useCreateElement()
+const {
+  createTableElement,
+  createChartElement,
+  createImageElement,
+  createVideoElement,
+  createAudioElement,
+  createLatexElement,
+} = useCreateElement()
 
 const supportedMenuCommandIds = new Set([
-  'file.new', 'file.open', 'file.workspace', 'file.theme',
+  'file.new', 'file.open', 'file.workspace', 'file.theme', 'file.versions',
   'file.export.keynote', 'file.export.powerpoint', 'file.export.pdf', 'file.export.images', 'file.compatibility',
   'edit.undo', 'edit.redo', 'edit.cut', 'edit.copy', 'edit.paste', 'edit.duplicate', 'edit.delete', 'edit.select-all', 'edit.find',
   'insert.slide', 'insert.text', 'insert.shape.rectangle', 'insert.shape.circle', 'insert.shape.line', 'insert.table', 'insert.chart',
-  'slide.add', 'slide.duplicate', 'slide.delete', 'slide.notes',
+  'insert.media.image', 'insert.media.video', 'insert.media.audio', 'insert.latex', 'insert.comment',
+  'slide.add', 'slide.duplicate', 'slide.delete', 'slide.skip', 'slide.layout', 'slide.background', 'slide.notes',
   'format.inspector', 'format.animate', 'format.document',
+  'format.font.bold', 'format.font.italic', 'format.font.underline',
   'arrange.front', 'arrange.forward', 'arrange.backward', 'arrange.back',
   'arrange.align.left', 'arrange.align.center', 'arrange.align.right',
   'arrange.group', 'arrange.ungroup', 'arrange.lock',
   'view.navigator', 'view.slide-only', 'view.light-table', 'view.rulers', 'view.object-list', 'view.comments', 'view.dark-mode',
-  'play.beginning', 'play.current',
+  'play.beginning', 'play.current', 'play.rehearse',
   'help.shortcuts', 'help.keynote', 'help.about',
 ])
 
@@ -252,16 +286,28 @@ const checkedMenuCommandIds = computed(() => [
   mainStore.showNotesPanel ? 'view.comments' : '',
   mainStore.colorMode === 'dark' ? 'view.dark-mode' : '',
   mainStore.showPresenterNotes ? 'slide.notes' : '',
+  currentSlide.value?.skipped ? 'slide.skip' : '',
 ].filter(Boolean))
 
 const mainMenuVisible = ref(false)
 const hotkeyDrawerVisible = ref(false)
 const compatibilityModalVisible = ref(false)
 const projectManagerVisible = ref(false)
+const versionHistoryVisible = ref(false)
+const mediaInputVisible = ref(false)
+const latexEditorVisible = ref(false)
 const editingTitle = ref(false)
 const titleValue = ref('')
 const titleInputRef = useTemplateRef<InstanceType<typeof Input>>('titleInputRef')
 const openFileInput = useTemplateRef<HTMLInputElement>('openFileInput')
+const imageFileInput = useTemplateRef<HTMLInputElement>('imageFileInput')
+
+const handleNativeImageOpen = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (!input.files?.length) return
+  getImageDataURL(input.files[0]).then(dataURL => createImageElement(dataURL))
+  input.value = ''
+}
 
 const isOffline = ref(!navigator.onLine)
 const deferredInstallPrompt = ref<any>(null)
@@ -301,6 +347,7 @@ const executeMenuCommand = (commandId: string) => {
     'file.open': () => openFileInput.value?.click(),
     'file.workspace': () => { projectManagerVisible.value = true },
     'file.theme': openThemeChooser,
+    'file.versions': () => { versionHistoryVisible.value = true },
     'file.export.keynote': () => setDialogForExport('keynote'),
     'file.export.powerpoint': () => setDialogForExport('pptx'),
     'file.export.pdf': () => setDialogForExport('pdf'),
@@ -331,13 +378,31 @@ const executeMenuCommand = (commandId: string) => {
     }),
     'insert.table': () => createTableElement(5, 4),
     'insert.chart': () => createChartElement('bar'),
+    'insert.media.image': () => imageFileInput.value?.click(),
+    'insert.media.video': () => { mediaInputVisible.value = true },
+    'insert.media.audio': () => { mediaInputVisible.value = true },
+    'insert.latex': () => { latexEditorVisible.value = true },
+    'insert.comment': () => mainStore.setNotesPanelState(!mainStore.showNotesPanel),
     'slide.add': createSlide,
     'slide.duplicate': copyAndPasteSlide,
     'slide.delete': () => deleteSlide(),
+    'slide.skip': () => {
+      if (!currentSlide.value) return
+      slidesStore.updateSlide({ skipped: !currentSlide.value.skipped })
+      addHistorySnapshot()
+    },
+    'slide.layout': openThemeChooser,
+    'slide.background': () => {
+      mainStore.setActiveElementIdList([])
+      mainStore.setInspectorMode('format')
+    },
     'slide.notes': () => mainStore.togglePresenterNotes(),
     'format.inspector': () => mainStore.setInspectorMode('format'),
     'format.animate': () => mainStore.setInspectorMode('animate'),
     'format.document': () => mainStore.setInspectorMode('document'),
+    'format.font.bold': () => emitter.emit(EmitterEvents.RICH_TEXT_COMMAND, { action: { command: 'strong' } }),
+    'format.font.italic': () => emitter.emit(EmitterEvents.RICH_TEXT_COMMAND, { action: { command: 'em' } }),
+    'format.font.underline': () => emitter.emit(EmitterEvents.RICH_TEXT_COMMAND, { action: { command: 'underline' } }),
     'arrange.front': () => mainStore.handleElement && orderElement(mainStore.handleElement, ElementOrderCommands.TOP),
     'arrange.forward': () => mainStore.handleElement && orderElement(mainStore.handleElement, ElementOrderCommands.UP),
     'arrange.backward': () => mainStore.handleElement && orderElement(mainStore.handleElement, ElementOrderCommands.DOWN),
@@ -357,6 +422,7 @@ const executeMenuCommand = (commandId: string) => {
     'view.dark-mode': () => mainStore.setColorMode(mainStore.colorMode === 'dark' ? 'light' : 'dark'),
     'play.beginning': enterScreeningFromStart,
     'play.current': enterScreening,
+    'play.rehearse': enterScreening,
     'help.shortcuts': () => { hotkeyDrawerVisible.value = true },
     'help.keynote': () => { compatibilityModalVisible.value = true },
     'help.about': () => { projectManagerVisible.value = true },

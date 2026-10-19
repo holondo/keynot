@@ -27,6 +27,8 @@
           :colWidths="elementInfo.colWidths"
           :outline="elementInfo.outline"
           :theme="elementInfo.theme"
+          :title="elementInfo.title"
+          :caption="elementInfo.caption"
           :editable="editable"
           @change="data => updateTableCells(data)"
           @changeRowHeights="heights => updateRowHeights(heights)"
