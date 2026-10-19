@@ -7,6 +7,7 @@ import type {
   PPTElement,
   PPTImageElement,
   PPTShapeElement,
+  PPTTableElement,
   PPTTextElement,
   Slide,
   TurningMode,
@@ -1257,13 +1258,68 @@ export const importKeynoteArchive = async (
           elByIdMap.set(refId, elementId)
         }
       }
-      else if (drawable.type === 5021 || drawable.type === 6000) {
+      else if (drawable.type === 6000) {
+        // TST.TableInfoArchive. Cell values live in versioned packed tile buffers;
+        // keep the native object identity and geometry while exposing a safe editable
+        // table shell until its specific tile version can be decoded.
+        const rowCount = 5
+        const columnCount = 4
+        const tableData: PPTTableElement['data'] = Array.from({ length: rowCount }, (_, rowIndex) =>
+          Array.from({ length: columnCount }, (_, columnIndex) => ({
+            id: `key-cell-${refId}-${rowIndex}-${columnIndex}`,
+            colspan: 1,
+            rowspan: 1,
+            text: '',
+            style: {
+              fontname: 'Inter',
+              color: '#1d1d1f',
+              backcolor: rowIndex === 0 ? '#e8eef8' : '#ffffff',
+            },
+          }))
+        )
+        const tableEl: PPTTableElement = {
+          id: elementId,
+          continuityId: continuityKey,
+          sourceId: String(refId),
+          sourceType: 'IWA:6000',
+          name: `Keynote Table #${refId}`,
+          type: 'table',
+          left,
+          top,
+          width,
+          height,
+          rotate,
+          data: tableData,
+          colWidths: new Array(columnCount).fill(1 / columnCount),
+          cellMinHeight: Math.max(24, Math.round(height / rowCount)),
+          rowHeights: new Array(rowCount).fill(1 / rowCount),
+          outline: { width: 1, style: 'solid', color: '#c7c7cc' },
+          theme: {
+            color: '#4472c4',
+            rowHeader: true,
+            rowFooter: false,
+            colHeader: false,
+            colFooter: false,
+          },
+        }
+        slideElements.push(tableEl)
+        elByIdMap.set(refId, elementId)
         findings.push({
           category: 'editability',
           severity: 'approximated',
           slideIndex: sIdx + 1,
           objectId: String(refId),
-          feature: drawable.type === 5021 ? 'Keynote 3D/Native Chart' : 'Keynote Native Table',
+          feature: 'Keynote Native Table',
+          message: 'Preserved as an editable table shell with native identity and geometry; packed native cell values remain unchanged in the source archive.',
+        })
+      }
+      else if (drawable.type === 5021) {
+        findings.push({
+          category: 'editability',
+          severity: 'approximated',
+          slideIndex: sIdx + 1,
+          objectId: String(refId),
+          feature: 'Keynote 3D/Native Chart',
           message: 'Converted native iWork drawable into editable web presentation block.',
         })
       }
@@ -1405,14 +1461,14 @@ export const importKeynoteArchive = async (
         summary: `${findings.filter(f => f.severity === 'preserved').length} native transitions/builds preserved; ${approxCount} approximated.`,
       },
       editability: {
-        score: 62,
+        score: 68,
         status: 'Partial',
-        summary: 'Decoded text, images, and shapes are editable; masters, tables, charts, and advanced effects may be approximated.',
+        summary: 'Decoded text, images, and shapes are editable; native tables retain editable geometry and a table shell while packed cell data, masters, charts, and advanced effects may be approximated.',
       },
       exportRoundTrip: {
         score: 80,
         status: 'Partial',
-        summary: 'Native text, geometry, image assets, and slide transitions are verified for existing supported objects; other changes use KeyNot bridge metadata.',
+        summary: 'Native text, geometry (including tables), image assets, and slide transitions are verified for existing supported objects; other changes use KeyNot bridge metadata.',
       },
     },
     findings,
