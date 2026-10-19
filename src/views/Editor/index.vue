@@ -142,12 +142,12 @@ usePasteEvent()
   flex-shrink: 0;
 }
 .layout-content-center {
-  width: calc(100% - 176px - 290px);
+  width: calc(100% - 176px - var(--inspector-width, 270px));
   height: 100%;
   transition: width 0.18s ease;
 
   &.full-canvas {
-    width: calc(100% - 290px);
+    width: calc(100% - var(--inspector-width, 270px));
   }
 }
 .layout-light-table {
@@ -155,7 +155,7 @@ usePasteEvent()
   height: 100%;
 }
 .layout-content-right {
-  width: 290px;
+  width: var(--inspector-width, 270px);
   height: 100%;
   flex-shrink: 0;
 }

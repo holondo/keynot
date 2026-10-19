@@ -82,26 +82,27 @@ defineExpose({
 <style lang="scss" scoped>
 .input {
   background-color: var(--bg-card, var(--bg-control, #ffffff));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   padding: 0 5px;
-  border-radius: 6px;
+  border-radius: var(--inspector-control-radius, 8px);
   transition: border-color .2s;
-  font-size: 13px;
+  font-size: var(--inspector-control-font-size, 13px);
+  font-family: var(--font-ui);
   display: flex;
 
   input {
     min-width: 0;
-    height: 30px;
+    height: var(--inspector-control-height, 28px);
     outline: 0;
     border: 0;
-    line-height: 30px;
+    line-height: var(--inspector-control-height, 28px);
     vertical-align: top;
     background: transparent;
-    color: var(--text-primary, #1d1d1f);
+    color: var(--text-inspector, rgb(50, 50, 50));
     padding: 0 5px;
     flex: 1;
-    font-size: 13px;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    font-size: var(--inspector-control-font-size, 13px);
+    font-family: var(--font-ui);
 
     &::placeholder {
       color: var(--text-tertiary, #86868b);
@@ -109,13 +110,14 @@ defineExpose({
   }
 
   &:not(.disabled):hover, &.focused {
-    border-color: var(--accent-color, #007aff);
+    border-color: var(--accent-color, rgb(0, 122, 255));
   }
 
   &.disabled {
     background-color: var(--bg-control, rgba(128, 128, 128, 0.1));
     border-color: var(--border-color, rgba(0, 0, 0, 0.06));
     color: var(--text-tertiary, #b7b7b7);
+    opacity: var(--disabled-opacity, 0.3);
 
     input {
       color: var(--text-tertiary, #b7b7b7);
@@ -130,7 +132,7 @@ defineExpose({
     display: flex;
     justify-content: center;
     align-items: center;
-    line-height: 30px;
+    line-height: var(--inspector-control-height, 28px);
     user-select: none;
     color: var(--text-tertiary, #86868b);
   }

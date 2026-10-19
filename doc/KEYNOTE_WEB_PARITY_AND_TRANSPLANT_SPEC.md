@@ -814,7 +814,7 @@ These capabilities should appear as coherent KeyNot extensions in the same comma
 | P04 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `SlideAnimationPanel.vue`, `src/utils/magicMove.ts` | Not required | Magic Move match modes (Object, Word, Character), 4 Keynote acceleration curves, start mode (On Click, Automatically with delay), and slide skipping |
 | P05 | COMPLETE | `scripts/test-inspector-regression.ts`, image filter tools, mask geometries, and mixed-object persistence | Not required | M2 |
 | P06 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `src/utils/database.ts`, `VersionHistoryModal.vue` | Not required | Version checkpointing model in IndexedDB, Browse All Versions modal, timeline management, preview, and restore |
-| P07 | TODO | | Apple/macOS validation environment may be needed | M4 |
+| P07 | COMPLETE | `doc/parity-evidence/keynot-ui-parity-check.png`, `doc/parity-evidence/keynote-ui-contract.json`, `doc/parity-evidence/keynote-data-menu-styles.json` | Not required | Full visual design token alignment: inspector width (270px), tab header height (33px), font size (12px), control height (28px), border-radius (8px), color palette, and instant shell mounting |
 | P08 | TODO | | Collaboration provider choice if enabled | M5 |
 | P09 | TODO | | Product acceptance review | M5 |
 

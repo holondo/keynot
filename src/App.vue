@@ -17,6 +17,7 @@ import { applyColorMode } from '@/store/main'
 import { LOCALSTORAGE_KEY_DISCARDED_DB, LOCALSTORAGE_KEY_ACTIVE_PROJECT } from '@/configs/storage'
 import { deleteDiscardedDB, getLocalProject, listLocalProjects, saveLocalProject } from '@/utils/database'
 import { isPC } from '@/utils/common'
+import { STARTER_SLIDES } from '@/configs/starterSlides'
 import api from '@/services'
 
 import Editor from './views/Editor/index.vue'
@@ -110,8 +111,9 @@ onMounted(async () => {
     }
 
     if (!restored) {
-      const starterSlides = await api.getMockData('slides')
-      slidesStore.setSlides(starterSlides)
+      if (!slidesStore.slides.length) {
+        slidesStore.setSlides([...STARTER_SLIDES])
+      }
       await persistCurrentProject()
     }
 

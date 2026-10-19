@@ -49,22 +49,35 @@ section {
   --text-pill-active: #ffffff;
   --border-pill: rgba(0, 0, 0, 0.08);
   --shadow-pill: 0 1px 3px rgba(0, 0, 0, 0.05), 0 3px 8px rgba(0, 0, 0, 0.03);
-  --bg-inspector: rgba(245, 245, 247, 0.94);
+  --bg-inspector: rgb(250, 250, 250);
   --bg-inspector-header: rgba(255, 255, 255, 0.5);
   --bg-inspector-card: rgba(255, 255, 255, 0.75);
-  --bg-control: #e9e9eb;
+  --bg-control: rgba(0, 0, 0, 0.04);
   --bg-control-active: #ffffff;
   --bg-input: #ffffff;
   --bg-card: #ffffff;
   --bg-hover: rgba(0, 0, 0, 0.06);
-  --text-primary: #1d1d1f;
-  --text-secondary: #515154;
+  --text-primary: rgba(0, 0, 0, 0.88);
+  --text-secondary: rgb(121, 121, 121);
   --text-tertiary: #86868b;
+  --text-inspector: rgb(50, 50, 50);
   --border-color: rgba(0, 0, 0, 0.08);
   --border-divider: rgba(0, 0, 0, 0.07);
   --popover-bg: rgba(255, 255, 255, 0.95);
-  --accent-color: #007aff;
+  --accent-color: rgb(0, 122, 255);
   --accent-green: #34c759;
+
+  /* Keynote for iCloud Design Tokens Contract */
+  --font-ui: SFNSText, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif;
+  --toolbar-control-height: 28px;
+  --toolbar-radius: 8px;
+  --inspector-width: 270px;
+  --inspector-tab-height: 33px;
+  --inspector-control-height: 28px;
+  --inspector-control-radius: 8px;
+  --inspector-tab-font-size: 12px;
+  --inspector-control-font-size: 13px;
+  --disabled-opacity: 0.3;
 }
 
 [data-theme="dark"] {
@@ -78,10 +91,10 @@ section {
   --text-pill-active: #ffffff;
   --border-pill: rgba(255, 255, 255, 0.12);
   --shadow-pill: 0 2px 8px rgba(0, 0, 0, 0.35);
-  --bg-inspector: rgba(34, 34, 38, 0.94);
+  --bg-inspector: rgb(34, 34, 38);
   --bg-inspector-header: rgba(25, 25, 28, 0.5);
   --bg-inspector-card: rgba(45, 45, 52, 0.75);
-  --bg-control: #38383e;
+  --bg-control: rgba(255, 255, 255, 0.08);
   --bg-control-active: #4e4e56;
   --bg-input: #2a2a2e;
   --bg-card: #2c2c30;
@@ -89,11 +102,23 @@ section {
   --text-primary: #f5f5f7;
   --text-secondary: #d1d1d6;
   --text-tertiary: #8e8e93;
+  --text-inspector: #e5e5ea;
   --border-color: rgba(255, 255, 255, 0.1);
   --border-divider: rgba(255, 255, 255, 0.08);
   --popover-bg: rgba(38, 38, 44, 0.95);
   --accent-color: #0a84ff;
   --accent-green: #30d158;
+
+  --font-ui: SFNSText, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif;
+  --toolbar-control-height: 28px;
+  --toolbar-radius: 8px;
+  --inspector-width: 270px;
+  --inspector-tab-height: 33px;
+  --inspector-control-height: 28px;
+  --inspector-control-radius: 8px;
+  --inspector-tab-font-size: 12px;
+  --inspector-control-font-size: 13px;
+  --disabled-opacity: 0.3;
 }
 
 html,
@@ -106,7 +131,7 @@ body {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  font-family: var(--font-ui, SFNSText, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Inter, Arial, sans-serif);
 }
 
 ol,

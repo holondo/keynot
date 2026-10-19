@@ -113,20 +113,21 @@ const handleFocus = (e: Event) => {
 <style lang="scss" scoped>
 .number-input {
   background-color: var(--bg-card, var(--bg-control, #ffffff));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   padding: 0 0 0 6px;
-  border-radius: 6px;
+  border-radius: var(--inspector-control-radius, 8px);
   transition: all .15s ease;
-  font-size: 12.5px;
+  font-size: var(--inspector-control-font-size, 13px);
+  font-family: var(--font-ui);
   display: inline-flex;
   align-items: center;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  height: 28px;
+  height: var(--inspector-control-height, 28px);
   overflow: hidden;
 
   .input-wrap {
     flex: 1;
-    color: var(--text-primary, #1d1d1f);
+    color: var(--text-inspector, rgb(50, 50, 50));
     padding: 0;
     position: relative;
     display: flex;
@@ -166,14 +167,14 @@ const handleFocus = (e: Event) => {
     width: 100%;
     min-width: 0;
     padding: 0;
-    height: 26px;
-    line-height: 26px;
+    height: calc(var(--inspector-control-height, 28px) - 2px);
+    line-height: calc(var(--inspector-control-height, 28px) - 2px);
     outline: 0;
     border: 0;
     background: transparent;
-    font-size: 12.5px;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    color: var(--text-primary, #1d1d1f);
+    font-size: var(--inspector-control-font-size, 13px);
+    font-family: var(--font-ui);
+    color: var(--text-inspector, rgb(50, 50, 50));
 
     &::placeholder {
       color: var(--text-tertiary, #a1a1aa);
@@ -181,13 +182,14 @@ const handleFocus = (e: Event) => {
   }
 
   &:not(.disabled):hover, &.focused {
-    border-color: var(--accent-color, rgba(0, 0, 0, 0.22));
+    border-color: var(--accent-color, rgba(0, 122, 255, 0.4));
   }
 
   &.disabled {
     background-color: var(--bg-control, rgba(128, 128, 128, 0.1));
     border-color: var(--border-color, rgba(0, 0, 0, 0.06));
     color: var(--text-tertiary, #a1a1aa);
+    opacity: var(--disabled-opacity, 0.3);
 
     input {
       color: var(--text-tertiary, #a1a1aa);
@@ -198,7 +200,7 @@ const handleFocus = (e: Event) => {
     display: flex;
     justify-content: center;
     align-items: center;
-    line-height: 26px;
+    line-height: calc(var(--inspector-control-height, 28px) - 2px);
     user-select: none;
     font-size: 12px;
     color: var(--text-tertiary, #86868b);

@@ -193,38 +193,41 @@ const handleSelect = (option: SelectOption) => {
 <style lang="scss" scoped>
 .select {
   width: 100%;
-  height: 28px;
+  height: var(--inspector-control-height, 28px);
   padding-right: 26px;
-  border-radius: 6px;
+  border-radius: var(--inspector-control-radius, 8px);
   transition: all .15s ease;
-  font-size: 12.5px;
+  font-size: var(--inspector-control-font-size, 13px);
+  font-family: var(--font-ui);
   user-select: none;
   background-color: var(--bg-card, var(--bg-control, #ffffff));
-  color: var(--text-primary, #1d1d1f);
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  color: var(--text-inspector, rgb(50, 50, 50));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   position: relative;
   cursor: pointer;
 
   &:not(.disabled):hover {
-    border-color: var(--accent-color, rgba(0, 0, 0, 0.22));
+    border-color: var(--accent-color, rgba(0, 122, 255, 0.4));
   }
 
   &.disabled {
     background-color: var(--bg-control, rgba(128, 128, 128, 0.1));
     border-color: var(--border-color, rgba(0, 0, 0, 0.06));
     color: var(--text-tertiary, #a1a1aa);
+    opacity: var(--disabled-opacity, 0.3);
     cursor: default;
     box-shadow: none;
   }
 
   .selector {
     min-width: 40px;
-    height: 26px;
-    line-height: 26px;
+    height: calc(var(--inspector-control-height, 28px) - 2px);
+    line-height: calc(var(--inspector-control-height, 28px) - 2px);
     padding-left: 8px;
+    font-size: var(--inspector-control-font-size, 13px);
     font-weight: 450;
-    color: var(--text-primary, #1d1d1f);
+    color: var(--text-inspector, rgb(50, 50, 50));
     @include ellipsis-oneline();
   }
 }

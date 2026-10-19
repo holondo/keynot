@@ -253,63 +253,64 @@ const activeComponent = computed(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-inspector, rgba(245, 245, 247, 0.95));
+  background: var(--bg-inspector, rgb(250, 250, 250));
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  color: var(--text-primary, #1d1d1f);
+  color: var(--text-inspector, rgb(50, 50, 50));
+  font-family: var(--font-ui);
   box-sizing: border-box;
 }
 
 .inspector-tabs-header {
   flex-shrink: 0;
   padding: 8px 10px;
-  background: var(--bg-inspector-header, rgba(255, 255, 255, 0.4));
-  border-bottom: 1px solid var(--border-divider, rgba(0, 0, 0, 0.06));
+  background: var(--bg-inspector, rgb(250, 250, 250));
+  border-bottom: 1px solid var(--border-divider, rgba(0, 0, 0, 0.08));
 
   ::v-deep(.tabs.card) {
-    height: 30px;
+    height: var(--inspector-tab-height, 33px);
     padding: 2px;
-    background: var(--bg-control, #e3e3e8);
-    border-radius: 8px;
+    background: var(--bg-control, rgba(0, 0, 0, 0.04));
+    border-radius: var(--inspector-control-radius, 8px);
     border: none;
     gap: 2px;
 
     .tab {
-      height: 26px;
-      line-height: 26px;
-      font-size: 11.5px;
+      height: calc(var(--inspector-tab-height, 33px) - 4px);
+      line-height: calc(var(--inspector-tab-height, 33px) - 4px);
+      font-size: var(--inspector-tab-font-size, 12px);
       font-weight: 500;
-      color: var(--text-secondary, #3a3a3c);
+      color: var(--text-secondary, rgb(121, 121, 121));
       border-radius: 6px;
       transition: all 0.15s ease;
 
       &.active {
         background: var(--bg-control-active, #ffffff);
-        color: var(--accent-color, #007aff);
+        color: var(--accent-color, rgb(0, 122, 255));
         font-weight: 600;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
       }
 
       &:hover:not(.active) {
-        color: var(--text-primary, #000000);
+        color: var(--text-primary, rgba(0, 0, 0, 0.88));
       }
     }
   }
 
   .single-tab-header {
-    height: 30px;
+    height: var(--inspector-tab-height, 33px);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-control, #e3e3e8);
-    border-radius: 8px;
+    background: var(--bg-control, rgba(0, 0, 0, 0.04));
+    border-radius: var(--inspector-control-radius, 8px);
     padding: 0 12px;
 
     .single-tab-title {
-      font-size: 11.5px;
+      font-size: var(--inspector-tab-font-size, 12px);
       font-weight: 600;
-      color: var(--text-primary, #1d1d1f);
+      color: var(--text-primary, rgba(0, 0, 0, 0.88));
       letter-spacing: -0.1px;
     }
   }

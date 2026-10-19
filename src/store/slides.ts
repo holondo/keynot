@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { omit } from 'lodash'
 import { nanoid } from 'nanoid'
 import type { Slide, SlideTheme, PPTElement, PPTAnimation, SlideTemplate, CompatibilityReport, SaveStatus, PresentationSoundtrack } from '@/types/slides'
+import { STARTER_SLIDES } from '@/configs/starterSlides'
 
 interface RemovePropData {
   id: string
@@ -62,7 +63,7 @@ export const useSlidesStore = defineStore('slides', {
         style: 'solid',
       },
     },
-    slides: [],
+    slides: [...STARTER_SLIDES],
     slideIndex: 0,
     viewportSize: 1000,
     viewportRatio: 0.5625,
