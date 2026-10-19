@@ -337,6 +337,13 @@ export const readFloat32LE = (fixed32: number): number => {
   return view.getFloat32(0, true)
 }
 
+const readFloat64LE = (fixed64: bigint): number => {
+  const buffer = new ArrayBuffer(8)
+  const view = new DataView(buffer)
+  view.setBigUint64(0, fixed64, true)
+  return view.getFloat64(0, true)
+}
+
 const encodeVarint = (value: number): Uint8Array => {
   const bytes: number[] = []
   let remaining = value >>> 0
@@ -362,6 +369,13 @@ const replaceProtoField = (message: Uint8Array, field: ProtoField, value: number
   const encoded = typeof value === 'number'
     ? concatBytes([encodeVarint((field.fieldNumber << 3) | 0), encodeVarint(value)])
     : concatBytes([encodeVarint((field.fieldNumber << 3) | 2), encodeVarint(value.length), value])
+  return concatBytes([message.subarray(0, field.fieldStart), encoded, message.subarray(field.fieldEnd)])
+}
+
+const replaceFixed64Field = (message: Uint8Array, field: ProtoField, value: number): Uint8Array => {
+  const encoded = new Uint8Array(1 + 8)
+  encoded.set(encodeVarint((field.fieldNumber << 3) | 1), 0)
+  new DataView(encoded.buffer).setFloat64(1, value, true)
   return concatBytes([message.subarray(0, field.fieldStart), encoded, message.subarray(field.fieldEnd)])
 }
 
@@ -698,7 +712,9 @@ const htmlToPlainText = (html: string): string => html
 const patchNativeRecords = (decompressed: Uint8Array, slides: Slide[]): { bytes: Uint8Array; changed: number } => {
   const editableBySourceId = new Map<number, NativeGeometryElement>()
   const textByStorageId = new Map<number, string>()
+  const slidesBySourceId = new Map<number, Slide>()
   for (const slide of slides) {
+    if (slide.sourceId) slidesBySourceId.set(Number(slide.sourceId), slide)
     for (const element of slide.elements) {
       if (element.type === 'text' && element.sourceTextStorageId) {
         textByStorageId.set(Number(element.sourceTextStorageId), htmlToPlainText(element.content))
@@ -710,6 +726,34 @@ const patchNativeRecords = (decompressed: Uint8Array, slides: Slide[]): { bytes:
   }
 
   return rewriteIWAObjects(decompressed, (id, type, payload) => {
+    const sourceSlide = slidesBySourceId.get(id)
+    if (sourceSlide && [2, 5, 6].includes(type)) {
+      const transitionField = scanProtoFields(payload).find(field => field.fieldNumber === 4 && field.bytes)
+      if (transitionField?.bytes) {
+        let transition = transitionField.bytes.slice()
+        const attributesField = scanProtoFields(transition).find(field => field.fieldNumber === 2 && field.bytes)
+        if (attributesField?.bytes) {
+          let attributes = attributesField.bytes.slice()
+          const animationField = scanProtoFields(attributes).find(field => field.fieldNumber === 8 && field.bytes)
+          if (animationField?.bytes) {
+            let animation = animationField.bytes.slice()
+            const animationFields = scanProtoFields(animation)
+            const effectField = animationFields.find(field => field.fieldNumber === 2 && field.bytes)
+            const durationField = animationFields.find(field => field.fieldNumber === 3 && field.fixed64 !== undefined)
+            const effects: Partial<Record<TurningMode, string>> = {
+              no: 'none', fade: 'apple:dissolve', slideX: 'apple:push', slideY: 'apple:push',
+              slideX3D: 'apple:3D-cube', slideY3D: 'apple:3D-cube', scale: 'apple:scale', rotate: 'apple:revolve',
+              magicMove: 'apple:magic-move',
+            }
+            if (effectField) animation = replaceProtoField(animation, effectField, new TextEncoder().encode(effects[sourceSlide.turningMode ?? 'no'] ?? 'none'))
+            if (durationField) animation = replaceFixed64Field(animation, scanProtoFields(animation).find(field => field.fieldNumber === 3)!, (sourceSlide.transitionConfig?.duration ?? 900) / 1000)
+            attributes = replaceProtoField(attributes, animationField, animation)
+            transition = replaceProtoField(transition, attributesField, attributes)
+            return replaceProtoField(payload, transitionField, transition)
+          }
+        }
+      }
+    }
     const text = textByStorageId.get(id)
     if ((type === 2001 || type === 2005) && text !== undefined) {
       const textField = scanProtoFields(payload).find(field => field.fieldNumber === 3 && field.bytes)
@@ -1052,11 +1096,20 @@ export const importKeynoteArchive = async (
             let effectName = ''
             for (const af of attrFields) {
               if (af.fieldNumber === 8 && af.bytes) {
-                effectName = tryDecodeUtf8String(af.bytes) || ''
+                const animationFields = scanProtoFields(af.bytes)
+                effectName = tryDecodeUtf8String(animationFields.find(field => field.fieldNumber === 2)?.bytes) || ''
+                const duration = animationFields.find(field => field.fieldNumber === 3)?.fixed64
+                if (duration !== undefined) {
+                  const seconds = readFloat64LE(duration)
+                  if (seconds > 0 && seconds < 20) transitionDuration = Math.round(seconds * 1000)
+                }
               }
-              if (af.fieldNumber === 6 && af.fixed32 !== undefined) {
-                const d = readFloat32LE(af.fixed32)
-                if (d > 0 && d < 20) transitionDuration = Math.round(d * 1000)
+              else if (af.fieldNumber === 2 && af.bytes) {
+                effectName = tryDecodeUtf8String(af.bytes) || effectName
+              }
+              else if (af.fieldNumber === 3 && af.fixed64 !== undefined) {
+                const seconds = readFloat64LE(af.fixed64)
+                if (seconds > 0 && seconds < 20) transitionDuration = Math.round(seconds * 1000)
               }
             }
             if (effectName && effectName !== 'none') {
@@ -1357,9 +1410,9 @@ export const importKeynoteArchive = async (
         summary: 'Decoded text, images, and shapes are editable; masters, tables, charts, and advanced effects may be approximated.',
       },
       exportRoundTrip: {
-        score: 74,
+        score: 80,
         status: 'Partial',
-        summary: 'Native text, geometry, and image asset updates are verified for existing supported objects; other changes use KeyNot bridge metadata.',
+        summary: 'Native text, geometry, image assets, and slide transitions are verified for existing supported objects; other changes use KeyNot bridge metadata.',
       },
     },
     findings,

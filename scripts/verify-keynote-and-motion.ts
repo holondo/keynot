@@ -167,6 +167,21 @@ async function runVerificationSuite() {
     )
     console.log('  PASS: Native Keynote image asset replacement verified.')
 
+    const transitionSlides = structuredClone(result.slides)
+    const transitionSource = transitionSlides.find(slide => slide.sourceId)
+    assert.ok(transitionSource, 'Imported slide must retain native slide provenance')
+    transitionSource.turningMode = 'scale'
+    transitionSource.transitionConfig = { duration: 1350 }
+    const transitionExport = await buildKeynoteArchiveBlob(transitionSlides, result.title, result.rawArchiveBase64)
+    const transitionZip = await JSZip.loadAsync(await transitionExport.arrayBuffer())
+    transitionZip.remove('Metadata/slate-model.json')
+    const transitionNativeOnly = await transitionZip.generateAsync({ type: 'arraybuffer', compression: 'DEFLATE' })
+    const transitionReimport = await importKeynoteArchive(transitionNativeOnly, 'native-transition-roundtrip.key')
+    const transitionedSlide = transitionReimport.slides.find(slide => slide.sourceId === transitionSource.sourceId)
+    assert.equal(transitionedSlide?.turningMode, 'scale', 'Transition effect must be written into native slide IWA')
+    assert.equal(transitionedSlide?.transitionConfig?.duration, 1350, 'Transition duration must be written into native slide IWA')
+    console.log('  PASS: Native Keynote transition effect and duration verified.')
+
     const textFixture = 'C:\\Users\\holondo\\AppData\\Local\\Temp\\keynot-research-2300824faf7846f7a166993e824abbeb\\keynote-parser\\tests\\data\\simple-oneslide.key'
     if (fs.existsSync(textFixture)) {
       const textBytes = fs.readFileSync(textFixture)
