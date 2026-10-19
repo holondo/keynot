@@ -123,9 +123,14 @@ usePasteEvent()
 }
 .layout-header {
   height: 38px;
+  position: relative;
+  z-index: 1000;
+  overflow: visible;
 }
 .layout-toolbar {
   height: 46px;
+  position: relative;
+  z-index: 20;
 }
 .layout-content {
   height: calc(100% - 84px);

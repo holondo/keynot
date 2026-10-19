@@ -354,6 +354,9 @@ const openThemeChooser = () => {
   align-items: center;
   padding: 0 12px;
   font-size: 12px;
+  position: relative;
+  z-index: 1000;
+  overflow: visible;
 }
 .left, .right, .center-title {
   display: flex;

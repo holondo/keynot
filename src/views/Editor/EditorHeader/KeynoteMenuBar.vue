@@ -31,9 +31,9 @@ onBeforeUnmount(() => document.removeEventListener('click', closeMenus))
 </script>
 
 <style scoped lang="scss">
-.keynote-menu-bar { display: flex; align-items: center; height: 100%; gap: 1px; }
-.menu-root { position: relative; }
+.keynote-menu-bar { position: relative; z-index: 1001; display: flex; align-items: center; height: 100%; gap: 1px; overflow: visible; }
+.menu-root { position: relative; overflow: visible; }
 .menu-trigger { border: 0; background: transparent; color: var(--text-primary, #1d1d1f); padding: 4px 7px; border-radius: 5px; font: inherit; cursor: default; }
 .menu-trigger:hover, .menu-trigger.open { background: var(--accent-color, #007aff); color: #fff; }
-.menu-panel { position: absolute; z-index: 1000; top: calc(100% + 5px); left: 0; min-width: 238px; padding: 5px; border: 1px solid var(--border-color, rgba(0,0,0,.12)); border-radius: 9px; background: var(--bg-panel, rgba(255,255,255,.98)); box-shadow: 0 12px 36px rgba(0,0,0,.22); backdrop-filter: blur(24px); }
+.menu-panel { position: absolute; z-index: 1002; top: calc(100% + 5px); left: 0; min-width: 238px; padding: 5px; overflow: visible; border: 1px solid var(--border-color, rgba(0,0,0,.12)); border-radius: 9px; background: var(--bg-panel, rgba(255,255,255,.98)); box-shadow: 0 12px 36px rgba(0,0,0,.22); backdrop-filter: blur(24px); }
 </style>
