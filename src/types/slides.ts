@@ -136,6 +136,7 @@ export interface PPTBaseElement {
   continuityId?: string
   sourceId?: string
   sourceType?: string
+  sourceTextStorageId?: string
   left: number
   top: number
   lock?: boolean

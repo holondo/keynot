@@ -148,6 +148,30 @@ async function runVerificationSuite() {
       'Edited geometry must survive through native IWA data without Metadata/slate-model.json'
     )
     console.log('  PASS: Native IWA geometry edit survives after removing the private Slate sidecar.')
+
+    const textFixture = 'C:\\Users\\holondo\\AppData\\Local\\Temp\\keynot-research-2300824faf7846f7a166993e824abbeb\\keynote-parser\\tests\\data\\simple-oneslide.key'
+    if (fs.existsSync(textFixture)) {
+      const textBytes = fs.readFileSync(textFixture)
+      const textBuffer = textBytes.buffer.slice(textBytes.byteOffset, textBytes.byteOffset + textBytes.byteLength)
+      const textImport = await importKeynoteArchive(textBuffer, 'simple-oneslide.key')
+      const sourceText = textImport.slides[0].elements.find(element => element.type === 'text' && element.content.includes('Example Presentation'))
+      assert.ok(sourceText, 'Native Keynote title text must import as an editable text element')
+      assert.ok(sourceText.sourceTextStorageId, 'Imported text must retain its native text storage provenance')
+
+      const editedTextSlides = structuredClone(textImport.slides)
+      const editedText = editedTextSlides[0].elements.find(element => element.id === sourceText.id)!
+      assert.equal(editedText.type, 'text')
+      editedText.content = '<p><span>Native IWA text edited by KeyNot</span></p>'
+      const textExport = await buildKeynoteArchiveBlob(editedTextSlides, textImport.title, textImport.rawArchiveBase64)
+      const textZip = await JSZip.loadAsync(await textExport.arrayBuffer())
+      textZip.remove('Metadata/slate-model.json')
+      const nativeTextOnly = await textZip.generateAsync({ type: 'arraybuffer', compression: 'DEFLATE' })
+      const textReimport = await importKeynoteArchive(nativeTextOnly, 'native-text-roundtrip.key')
+      assert.ok(
+        textReimport.slides[0].elements.some(element => element.type === 'text' && element.content.includes('Native IWA text edited by KeyNot')),
+        'Variable-length text edits must survive through native IWA without bridge metadata'
+      )
+    }
   } else {
     console.log('  INFO: External research-transdeck.key not found in Temp; testing synthesized .key archive...')
   }

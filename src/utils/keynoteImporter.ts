@@ -243,6 +243,8 @@ export interface ProtoField {
   fieldNumber: number
   wireType: number
   valueOffset: number
+  fieldStart: number
+  fieldEnd: number
   varint?: number
   fixed32?: number
   fixed64?: bigint
@@ -270,6 +272,7 @@ export const scanProtoFields = (buf: Uint8Array): ProtoField[] => {
   }
 
   while (pos < buf.length) {
+    const fieldStart = pos
     let tag: number
     try {
       tag = Number(readVarintBig())
@@ -287,7 +290,7 @@ export const scanProtoFields = (buf: Uint8Array): ProtoField[] => {
       try {
         const valueOffset = pos
         const v = Number(readVarintBig())
-        fields.push({ fieldNumber, wireType, valueOffset, varint: v })
+        fields.push({ fieldNumber, wireType, valueOffset, fieldStart, fieldEnd: pos, varint: v })
       }
       catch {
         break
@@ -297,8 +300,8 @@ export const scanProtoFields = (buf: Uint8Array): ProtoField[] => {
       if (pos + 8 > buf.length) break
       const valueOffset = pos
       const view = new DataView(buf.buffer, buf.byteOffset + pos, 8)
-      fields.push({ fieldNumber, wireType, valueOffset, fixed64: view.getBigUint64(0, true) })
       pos += 8
+      fields.push({ fieldNumber, wireType, valueOffset, fieldStart, fieldEnd: pos, fixed64: view.getBigUint64(0, true) })
     }
     else if (wireType === 2) {
       let len: number
@@ -309,15 +312,15 @@ export const scanProtoFields = (buf: Uint8Array): ProtoField[] => {
         break
       }
       if (len < 0 || pos + len > buf.length) break
-      fields.push({ fieldNumber, wireType, valueOffset: pos, bytes: buf.subarray(pos, pos + len) })
       pos += len
+      fields.push({ fieldNumber, wireType, valueOffset: pos - len, fieldStart, fieldEnd: pos, bytes: buf.subarray(pos - len, pos) })
     }
     else if (wireType === 5) {
       if (pos + 4 > buf.length) break
       const valueOffset = pos
       const view = new DataView(buf.buffer, buf.byteOffset + pos, 4)
-      fields.push({ fieldNumber, wireType, valueOffset, fixed32: view.getUint32(0, true) })
       pos += 4
+      fields.push({ fieldNumber, wireType, valueOffset, fieldStart, fieldEnd: pos, fixed32: view.getUint32(0, true) })
     }
     else {
       break
@@ -332,6 +335,93 @@ export const readFloat32LE = (fixed32: number): number => {
   const view = new DataView(buf)
   view.setUint32(0, fixed32, true)
   return view.getFloat32(0, true)
+}
+
+const encodeVarint = (value: number): Uint8Array => {
+  const bytes: number[] = []
+  let remaining = value >>> 0
+  while (remaining >= 0x80) {
+    bytes.push((remaining & 0x7f) | 0x80)
+    remaining >>>= 7
+  }
+  bytes.push(remaining)
+  return Uint8Array.from(bytes)
+}
+
+const concatBytes = (parts: Uint8Array[]): Uint8Array => {
+  const result = new Uint8Array(parts.reduce((total, part) => total + part.length, 0))
+  let offset = 0
+  for (const part of parts) {
+    result.set(part, offset)
+    offset += part.length
+  }
+  return result
+}
+
+const replaceProtoField = (message: Uint8Array, field: ProtoField, value: number | Uint8Array): Uint8Array => {
+  const encoded = typeof value === 'number'
+    ? concatBytes([encodeVarint((field.fieldNumber << 3) | 0), encodeVarint(value)])
+    : concatBytes([encodeVarint((field.fieldNumber << 3) | 2), encodeVarint(value.length), value])
+  return concatBytes([message.subarray(0, field.fieldStart), encoded, message.subarray(field.fieldEnd)])
+}
+
+const rewriteIWAObjects = (
+  decompressed: Uint8Array,
+  rewrite: (id: number, type: number, payload: Uint8Array) => Uint8Array | null
+): { bytes: Uint8Array; changed: number } => {
+  const output: Uint8Array[] = []
+  let pos = 0
+  let changed = 0
+  const readVarintAt = (): number | null => {
+    let value = 0
+    let shift = 0
+    while (pos < decompressed.length && shift < 35) {
+      const byte = decompressed[pos++]
+      value |= (byte & 0x7f) << shift
+      if ((byte & 0x80) === 0) return value >>> 0
+      shift += 7
+    }
+    return null
+  }
+
+  while (pos < decompressed.length) {
+    const archiveLength = readVarintAt()
+    if (!archiveLength || pos + archiveLength > decompressed.length) break
+    let archiveInfo = decompressed.slice(pos, pos + archiveLength)
+    pos += archiveLength
+    const archiveFields = scanProtoFields(archiveInfo)
+    const id = archiveFields.find(field => field.fieldNumber === 1)?.varint ?? 0
+    const infoFields = archiveFields.filter(field => field.fieldNumber === 2 && field.bytes)
+    const payloads: Uint8Array[] = []
+    const rewrittenInfos: Uint8Array[] = []
+
+    for (const infoField of infoFields) {
+      let info = infoField.bytes!.slice()
+      const fields = scanProtoFields(info)
+      const type = fields.find(field => field.fieldNumber === 1)?.varint ?? 0
+      const lengthField = fields.find(field => field.fieldNumber === 3 && field.varint !== undefined)
+      const length = lengthField?.varint ?? 0
+      if (pos + length > decompressed.length) return { bytes: decompressed, changed: 0 }
+      const payload = decompressed.slice(pos, pos + length)
+      pos += length
+      const replacement = rewrite(id, type, payload)
+      const nextPayload = replacement ?? payload
+      if (replacement && !lengthField) return { bytes: decompressed, changed: 0 }
+      if (replacement && lengthField) {
+        info = replaceProtoField(info, lengthField, nextPayload.length)
+        changed++
+      }
+      payloads.push(nextPayload)
+      rewrittenInfos.push(info)
+    }
+
+    for (let index = infoFields.length - 1; index >= 0; index--) {
+      archiveInfo = replaceProtoField(archiveInfo, scanProtoFields(archiveInfo).filter(field => field.fieldNumber === 2)[index], rewrittenInfos[index])
+    }
+    output.push(encodeVarint(archiveInfo.length), archiveInfo, ...payloads)
+  }
+  if (pos < decompressed.length) output.push(decompressed.subarray(pos))
+  return { bytes: concatBytes(output), changed }
 }
 
 export interface IWAObjectRecord {
@@ -434,6 +524,22 @@ const extractReferenceId = (bytes: Uint8Array | undefined): number | null => {
   const fields = scanProtoFields(bytes)
   const f1 = fields.find(f => f.fieldNumber === 1 && f.varint !== undefined)
   return f1?.varint ?? null
+}
+
+const findReferencedObjectId = (
+  bytes: Uint8Array,
+  candidateIds: ReadonlySet<number>,
+  depth = 0
+): number | null => {
+  if (depth > 5) return null
+  for (const field of scanProtoFields(bytes)) {
+    if (field.varint !== undefined && candidateIds.has(field.varint)) return field.varint
+    if (field.bytes) {
+      const nested = findReferencedObjectId(field.bytes, candidateIds, depth + 1)
+      if (nested !== null) return nested
+    }
+  }
+  return null
 }
 
 interface ParsedGeometry {
@@ -578,27 +684,46 @@ const patchGeometryArchive = (
   return updated.every(Boolean)
 }
 
-const patchNativeGeometryRecords = (decompressed: Uint8Array, slides: Slide[], iwaPath: string): number => {
+const htmlToPlainText = (html: string): string => html
+  .replace(/<br\s*\/?>/gi, '\n')
+  .replace(/<\/p>/gi, '\n')
+  .replace(/<[^>]+>/g, '')
+  .replace(/&nbsp;/g, ' ')
+  .replace(/&amp;/g, '&')
+  .replace(/&lt;/g, '<')
+  .replace(/&gt;/g, '>')
+  .replace(/&quot;/g, '"')
+  .trim()
+
+const patchNativeRecords = (decompressed: Uint8Array, slides: Slide[]): { bytes: Uint8Array; changed: number } => {
   const editableBySourceId = new Map<number, NativeGeometryElement>()
+  const textByStorageId = new Map<number, string>()
   for (const slide of slides) {
     for (const element of slide.elements) {
+      if (element.type === 'text' && element.sourceTextStorageId) {
+        textByStorageId.set(Number(element.sourceTextStorageId), htmlToPlainText(element.content))
+      }
       if (!element.sourceId || !element.sourceType?.startsWith('IWA:') || !('height' in element) || !('rotate' in element)) continue
       const sourceId = Number(element.sourceId)
       if (Number.isSafeInteger(sourceId)) editableBySourceId.set(sourceId, element)
     }
   }
 
-  let patched = 0
-  for (const record of parseIWAObjects(decompressed, iwaPath)) {
-    const element = editableBySourceId.get(record.id)
-    if (!element) continue
-    const geometryBytes = findGeometryBytesInObject(record.data)
+  return rewriteIWAObjects(decompressed, (id, type, payload) => {
+    const text = textByStorageId.get(id)
+    if ((type === 2001 || type === 2005) && text !== undefined) {
+      const textField = scanProtoFields(payload).find(field => field.fieldNumber === 3 && field.bytes)
+      if (textField) return replaceProtoField(payload, textField, new TextEncoder().encode(text))
+    }
+    const element = editableBySourceId.get(id)
+    if (!element) return null
+    const mutablePayload = payload.slice()
+    const geometryBytes = findGeometryBytesInObject(mutablePayload)
     const original = parseGeometryArchive(geometryBytes ?? undefined)
-    if (!geometryBytes || !original) continue
+    if (!geometryBytes || !original) return null
     const scaleFactor = original.x > 1050 || original.width > 1050 ? 1000 / 1920 : 1
-    if (patchGeometryArchive(geometryBytes, element, scaleFactor)) patched++
-  }
-  return patched
+    return patchGeometryArchive(geometryBytes, element, scaleFactor) ? mutablePayload : null
+  })
 }
 
 const mapKeynoteTransitionEffect = (
@@ -897,6 +1022,7 @@ export const importKeynoteArchive = async (
       }
     }
   }
+  const textStorageIds = new Set(textStorageMap.keys())
 
   const findings: CompatibilityFinding[] = []
   const slides: Slide[] = []
@@ -946,11 +1072,11 @@ export const importKeynoteArchive = async (
       }
     }
 
-    // Collect referenced drawable IDs on this slide (field 7 = drawables, field 5/10/11 = placeholders)
+    // Collect every slide-owned drawable and placeholder reference from current Keynote schemas.
     const drawableRefs: number[] = []
     const buildRefs: number[] = []
     for (const f of slideFields) {
-      if ((f.fieldNumber === 7 || f.fieldNumber === 5 || f.fieldNumber === 10 || f.fieldNumber === 11) && f.bytes) {
+      if ([5, 6, 7, 20, 30, 42].includes(f.fieldNumber) && f.bytes) {
         const refId = extractReferenceId(f.bytes)
         if (refId && !drawableRefs.includes(refId)) drawableRefs.push(refId)
       }
@@ -977,17 +1103,9 @@ export const importKeynoteArchive = async (
       const rotate = geom ? Math.round(geom.angle) : 0
 
       // Find nested text storage reference inside shape/placeholder
-      const dFields = scanProtoFields(drawable.data)
       let foundText: string | null = null
-      for (const df of dFields) {
-        if (df.bytes) {
-          const subRef = extractReferenceId(df.bytes)
-          if (subRef && textStorageMap.has(subRef)) {
-            foundText = textStorageMap.get(subRef)!
-            break
-          }
-        }
-      }
+      const textStorageId = findReferencedObjectId(drawable.data, textStorageIds)
+      if (textStorageId !== null) foundText = textStorageMap.get(textStorageId) ?? null
 
       const elementId = `key-el-${slideRec.id}-${refId}`
       const continuityKey = foundText
@@ -1010,6 +1128,7 @@ export const importKeynoteArchive = async (
             continuityId: continuityKey,
             sourceId: String(refId),
             sourceType: `IWA:${drawable.type}`,
+            sourceTextStorageId: textStorageId !== null ? String(textStorageId) : undefined,
             name: foundText.slice(0, 28),
             type: 'text',
             left,
@@ -1221,14 +1340,14 @@ export const importKeynoteArchive = async (
         summary: `${findings.filter(f => f.severity === 'preserved').length} native transitions/builds preserved; ${approxCount} approximated.`,
       },
       editability: {
-        score: 55,
+        score: 62,
         status: 'Partial',
-        summary: 'Supported images and decoded shapes are editable; masters, complex text, tables, charts, and effects may be approximated.',
+        summary: 'Decoded text, images, and shapes are editable; masters, tables, charts, and advanced effects may be approximated.',
       },
       exportRoundTrip: {
-        score: 58,
+        score: 68,
         status: 'Partial',
-        summary: 'Native geometry patching is verified for existing supported IWA objects; other changes use KeyNot bridge metadata.',
+        summary: 'Native variable-length text and geometry patching are verified for existing supported IWA objects; other changes use KeyNot bridge metadata.',
       },
     },
     findings,
@@ -1258,7 +1377,7 @@ const base64ToUint8 = (base64: string): Uint8Array => {
 /**
  * Export a `.key` archive.
  * If the presentation originated from an imported `.key` file (`rawArchiveBase64`), performs
- * source-preserving archive patching and embeds the updated Slate model in `Metadata/slate-model.json`.
+ * source-preserving native IWA text/geometry patching and embeds the updated Slate model in `Metadata/slate-model.json`.
  * Otherwise, synthesizes a valid `.key` ZIP package with Snappy-compressed `Index/Document.iwa`,
  * `Index/Slide.iwa`, `Metadata/Properties.plist`, and `Metadata/slate-model.json`.
  */
@@ -1286,8 +1405,9 @@ export const buildKeynoteArchiveBlob = async (
       if (entry.dir || !path.toLowerCase().endsWith('.iwa')) continue
       const framed = new Uint8Array(await entry.async('arraybuffer'))
       const decompressed = decompressIWAStream(framed)
-      if (patchNativeGeometryRecords(decompressed, slides, path) > 0) {
-        zip.file(path, compressIWAStream(decompressed))
+      const patched = patchNativeRecords(decompressed, slides)
+      if (patched.changed > 0) {
+        zip.file(path, compressIWAStream(patched.bytes))
       }
     }
     zip.file('Metadata/slate-model.json', slatePayload)
