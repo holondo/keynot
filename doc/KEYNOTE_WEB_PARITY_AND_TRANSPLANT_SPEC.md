@@ -690,7 +690,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P05 — Complete object inspectors
 
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 
 **Required reading:** all existing Format tabs and object renderers.
 
@@ -812,7 +812,7 @@ These capabilities should appear as coherent KeyNot extensions in the same comma
 | P02 | COMPLETE | `Toolbar/index.vue`, `scripts/test-inspector-regression.ts` | Not required | Contextual inspector tab matrix: Whole table -> Table/Arrange; Table cells -> Table/Cell/Data/Arrange; Image -> Style/Image/Arrange; Text -> Text/Arrange |
 | P03 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `src/utils/tableDataFormatter.ts`, `DataTab.vue`, `CellTab.vue`, `TableTab.vue` | Not required | Complete table model parity: title, caption, header/footer row & column counts, range cell formatting, currency, percentage, fractions, scientific, and negative numbers |
 | P04 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `SlideAnimationPanel.vue`, `src/utils/magicMove.ts` | Not required | Magic Move match modes (Object, Word, Character), 4 Keynote acceleration curves, start mode (On Click, Automatically with delay), and slide skipping |
-| P05 | IN PROGRESS | Image tabs, filter tools, mask geometries, text/chart inspectors verified | Not required | M2 |
+| P05 | COMPLETE | `scripts/test-inspector-regression.ts`, image filter tools, mask geometries, and mixed-object persistence | Not required | M2 |
 | P06 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `src/utils/database.ts`, `VersionHistoryModal.vue` | Not required | Version checkpointing model in IndexedDB, Browse All Versions modal, timeline management, preview, and restore |
 | P07 | TODO | | Apple/macOS validation environment may be needed | M4 |
 | P08 | TODO | | Collaboration provider choice if enabled | M5 |
