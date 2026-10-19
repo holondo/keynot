@@ -630,7 +630,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P00 — Correct claims and establish measurable baselines
 
-**Status:** TODO
+**Status:** COMPLETE (native geometry slice; unsupported fields reported honestly)
 
 **Required reading:** `src/utils/keynoteImporter.ts`, `scripts/verify-keynote-and-motion.ts`, `src/views/Editor/EditorHeader/CompatibilityReportModal.vue`, this audit.
 
@@ -642,7 +642,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P01 — Create the command registry and complete menus
 
-**Status:** TODO
+**Status:** IN PROGRESS (typed 9-menu registry, nested menu UI, and core command wiring implemented)
 
 **Required reading:** `EditorHeader/index.vue`, `CanvasTool/index.vue`, global hotkeys, context-menu directives.
 
@@ -807,8 +807,8 @@ These capabilities should appear as coherent KeyNot extensions in the same comma
 
 | Step | Status | Evidence / commit | Human approval | Notes |
 |---|---|---|---|---|
-| P00 | TODO | Real IWA comparison documented | Not required | First executable step |
-| P01 | TODO | | Not required | M1 |
+| P00 | COMPLETE | `3b77037`; native-only fixture re-import and unchanged-IWA assertions | Not required | Geometry edits patch protobuf values; unsupported fields remain Partial |
+| P01 | IN PROGRESS | 9 menus / 73 unique commands; core actions share existing hooks | Not required | Remaining contextual Insert/Format/Arrange commands must be wired before COMPLETE |
 | P02 | TODO | | Not required | M1 |
 | P03 | TODO | | Not required | M2 |
 | P04 | TODO | | Not required | M2 |

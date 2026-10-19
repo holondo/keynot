@@ -60,12 +60,8 @@
         </div>
       </Popover>
 
-      <div class="top-quick-links">
-        <span class="quick-link" @click="projectManagerVisible = true">File</span>
-        <span class="quick-link" @click="openThemeChooser()">Themes</span>
-        <span class="quick-link" @click="openAIPPTDialog()">AI Studio</span>
-        <span class="quick-link" @click="hotkeyDrawerVisible = true">Shortcuts</span>
-      </div>
+      <KeynoteMenuBar @execute="executeMenuCommand" />
+      <input ref="openFileInput" class="native-file-input" type="file" accept=".key,.pptx,.pptist,.keynot,.slate,.json" @change="handleNativeFileOpen" />
     </div>
 
     <div class="center-title">
@@ -168,6 +164,11 @@ import { useMainStore, useSlidesStore } from '@/store'
 import useScreening from '@/hooks/useScreening'
 import useImport from '@/hooks/useImport'
 import useSlideHandler from '@/hooks/useSlideHandler'
+import useHistorySnapshot from '@/hooks/useHistorySnapshot'
+import useCopyAndPasteElement from '@/hooks/useCopyAndPasteElement'
+import useDeleteElement from '@/hooks/useDeleteElement'
+import useSelectElement from '@/hooks/useSelectElement'
+import useCombineElement from '@/hooks/useCombineElement'
 import type { DialogForExportTypes } from '@/types/export'
 
 import HotkeyDoc from './HotkeyDoc.vue'
@@ -181,14 +182,20 @@ import Input from '@/components/Input.vue'
 import Popover from '@/components/Popover.vue'
 import PopoverMenuItem from '@/components/PopoverMenuItem.vue'
 import Divider from '@/components/Divider.vue'
+import KeynoteMenuBar from './KeynoteMenuBar.vue'
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
 const { title, saveStatus, compatibilityReport } = storeToRefs(slidesStore)
 
-const { enterScreening } = useScreening()
+const { enterScreening, enterScreeningFromStart } = useScreening()
 const { importSpecificFile, importPPTXFile, importKeynoteFile, exporting } = useImport()
-const { resetSlides } = useSlideHandler()
+const { resetSlides, createSlide, copyAndPasteSlide, deleteSlide, copySlide, cutSlide, pasteSlide, selectAllSlide } = useSlideHandler()
+const { undo, redo } = useHistorySnapshot()
+const { copyElement, cutElement, pasteElement, quickCopyElement } = useCopyAndPasteElement()
+const { deleteElement } = useDeleteElement()
+const { selectAllElements } = useSelectElement()
+const { combineElements, uncombineElements } = useCombineElement()
 
 const mainMenuVisible = ref(false)
 const hotkeyDrawerVisible = ref(false)
@@ -197,6 +204,7 @@ const projectManagerVisible = ref(false)
 const editingTitle = ref(false)
 const titleValue = ref('')
 const titleInputRef = useTemplateRef<InstanceType<typeof Input>>('titleInputRef')
+const openFileInput = useTemplateRef<HTMLInputElement>('openFileInput')
 
 const isOffline = ref(!navigator.onLine)
 const deferredInstallPrompt = ref<any>(null)
@@ -218,6 +226,62 @@ const handleQuickFileOpen = (files: FileList) => {
   else {
     handleKeynoteImport(files)
   }
+}
+
+const handleNativeFileOpen = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (!input.files?.length) return
+  const name = input.files[0].name.toLowerCase()
+  if (name.endsWith('.key') || name.endsWith('.pptx')) handleQuickFileOpen(input.files)
+  else importSpecificFile(input.files)
+  input.value = ''
+}
+
+const executeMenuCommand = (commandId: string) => {
+  const elementSelected = mainStore.activeElementIdList.length > 0
+  const actions: Record<string, () => void> = {
+    'file.new': resetSlides,
+    'file.open': () => openFileInput.value?.click(),
+    'file.workspace': () => { projectManagerVisible.value = true },
+    'file.theme': openThemeChooser,
+    'file.export.keynote': () => setDialogForExport('keynote'),
+    'file.export.powerpoint': () => setDialogForExport('pptx'),
+    'file.export.pdf': () => setDialogForExport('pdf'),
+    'file.export.images': () => setDialogForExport('image'),
+    'file.compatibility': () => { compatibilityModalVisible.value = true },
+    'edit.undo': undo,
+    'edit.redo': redo,
+    'edit.cut': () => elementSelected ? cutElement() : cutSlide(),
+    'edit.copy': () => elementSelected ? copyElement() : copySlide(),
+    'edit.paste': () => mainStore.thumbnailsFocus ? pasteSlide() : pasteElement(),
+    'edit.duplicate': () => elementSelected ? quickCopyElement() : copyAndPasteSlide(),
+    'edit.delete': () => elementSelected ? deleteElement() : deleteSlide(),
+    'edit.select-all': () => mainStore.editorAreaFocus ? selectAllElements() : selectAllSlide(),
+    'edit.find': () => mainStore.setSearchPanelState(true),
+    'insert.slide': createSlide,
+    'slide.add': createSlide,
+    'slide.duplicate': copyAndPasteSlide,
+    'slide.delete': () => deleteSlide(),
+    'slide.notes': () => mainStore.togglePresenterNotes(),
+    'format.inspector': () => mainStore.setInspectorMode('format'),
+    'format.animate': () => mainStore.setInspectorMode('animate'),
+    'format.document': () => mainStore.setInspectorMode('document'),
+    'arrange.group': combineElements,
+    'arrange.ungroup': uncombineElements,
+    'view.navigator': () => mainStore.setEditorViewMode('navigator'),
+    'view.slide-only': () => mainStore.setEditorViewMode('slideOnly'),
+    'view.light-table': () => mainStore.setEditorViewMode('lightTable'),
+    'view.rulers': () => mainStore.setRulerState(!mainStore.showRuler),
+    'view.object-list': () => mainStore.setSelectPanelState(!mainStore.showSelectPanel),
+    'view.comments': () => mainStore.setNotesPanelState(!mainStore.showNotesPanel),
+    'view.dark-mode': () => mainStore.setColorMode(mainStore.colorMode === 'dark' ? 'light' : 'dark'),
+    'play.beginning': enterScreeningFromStart,
+    'play.current': enterScreening,
+    'help.shortcuts': () => { hotkeyDrawerVisible.value = true },
+    'help.keynote': () => { compatibilityModalVisible.value = true },
+    'help.about': () => { projectManagerVisible.value = true },
+  }
+  actions[commandId]?.()
 }
 
 const handleOnlineStatus = () => {
@@ -295,6 +359,7 @@ const openThemeChooser = () => {
   display: flex;
   align-items: center;
 }
+.native-file-input { display: none; }
 .app-menu-btn {
   display: inline-flex;
   align-items: center;
