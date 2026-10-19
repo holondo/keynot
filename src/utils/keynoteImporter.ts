@@ -974,6 +974,7 @@ export const importKeynoteArchive = async (
 
   // 2. Load embedded Data/* images as data URLs
   const dataImageMap = new Map<string, string>()
+  const dataImagePathById = new Map<number, string>()
   let mediaAssetCount = 0
   for (const [path, fileObj] of normalizedMap.entries()) {
     if (!path.startsWith('Data/')) continue
@@ -992,6 +993,8 @@ export const importKeynoteArchive = async (
         const dataUrl = `data:${mime};base64,${uint8ToBase64(bytes)}`
         const baseName = path.split('/').pop() || path
         dataImageMap.set(baseName, dataUrl)
+        const assetId = Number(baseName.match(/-(\d+)\.[^.]+$/)?.[1])
+        if (Number.isSafeInteger(assetId)) dataImagePathById.set(assetId, path)
         mediaAssetCount++
       }
     }
@@ -1170,7 +1173,15 @@ export const importKeynoteArchive = async (
       }
       else if (drawable.type === 3005) {
         // TSD.ImageArchive
-        const imgSrc = dataImageValues[imageCursor % Math.max(dataImageValues.length, 1)] || deckPreviewDataUrl || ''
+        const imageDataReference = scanProtoFields(drawable.data).find(field => field.fieldNumber === 11 && field.bytes)?.bytes
+        const imageDataId = extractReferenceId(imageDataReference)
+        const sourceAssetPath = imageDataId !== null
+          ? dataImagePathById.get(imageDataId) ?? dataImagePathById.get(imageDataId + 1)
+          : undefined
+        const imgSrc = (sourceAssetPath ? dataImageMap.get(sourceAssetPath.split('/').pop() || '') : undefined)
+          || dataImageValues[imageCursor % Math.max(dataImageValues.length, 1)]
+          || deckPreviewDataUrl
+          || ''
         imageCursor++
         if (imgSrc) {
           const imgEl: PPTImageElement = {
@@ -1178,6 +1189,7 @@ export const importKeynoteArchive = async (
             continuityId: `key-img-${imageCursor}`,
             sourceId: String(refId),
             sourceType: 'IWA:3005',
+            sourceAssetPath,
             name: `Keynote Image #${refId}`,
             type: 'image',
             left,
@@ -1345,9 +1357,9 @@ export const importKeynoteArchive = async (
         summary: 'Decoded text, images, and shapes are editable; masters, tables, charts, and advanced effects may be approximated.',
       },
       exportRoundTrip: {
-        score: 68,
+        score: 74,
         status: 'Partial',
-        summary: 'Native variable-length text and geometry patching are verified for existing supported IWA objects; other changes use KeyNot bridge metadata.',
+        summary: 'Native text, geometry, and image asset updates are verified for existing supported objects; other changes use KeyNot bridge metadata.',
       },
     },
     findings,
@@ -1372,6 +1384,11 @@ const base64ToUint8 = (base64: string): Uint8Array => {
     out[i] = bin.charCodeAt(i)
   }
   return out
+}
+
+const dataUrlToBytes = (value: string): Uint8Array | null => {
+  const match = value.match(/^data:[^;,]+;base64,(.+)$/)
+  return match ? base64ToUint8(match[1]) : null
 }
 
 /**
@@ -1408,6 +1425,15 @@ export const buildKeynoteArchiveBlob = async (
       const patched = patchNativeRecords(decompressed, slides)
       if (patched.changed > 0) {
         zip.file(path, compressIWAStream(patched.bytes))
+      }
+    }
+    for (const slide of slides) {
+      for (const element of slide.elements) {
+        if (element.type !== 'image' || !element.sourceAssetPath) continue
+        const replacement = dataUrlToBytes(element.src)
+        if (!replacement) continue
+        const archivePath = Object.keys(zip.files).find(path => path === element.sourceAssetPath || path.endsWith(`/${element.sourceAssetPath}`))
+        if (archivePath) zip.file(archivePath, replacement)
       }
     }
     zip.file('Metadata/slate-model.json', slatePayload)

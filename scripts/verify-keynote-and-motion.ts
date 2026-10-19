@@ -149,6 +149,24 @@ async function runVerificationSuite() {
     )
     console.log('  PASS: Native IWA geometry edit survives after removing the private Slate sidecar.')
 
+    const sourcedImage = result.slides.flatMap(slide => slide.elements).find(element => element.type === 'image' && element.sourceAssetPath)
+    assert.ok(sourcedImage && sourcedImage.type === 'image', 'Imported image must retain its native Data asset path')
+    const imageEditedSlides = structuredClone(result.slides)
+    const imageEdited = imageEditedSlides.flatMap(slide => slide.elements).find(element => element.id === sourcedImage.id)!
+    assert.equal(imageEdited.type, 'image')
+    const replacementImageBytes = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 75, 101, 121, 78, 111, 116])
+    imageEdited.src = `data:image/png;base64,${Buffer.from(replacementImageBytes).toString('base64')}`
+    const imageExport = await buildKeynoteArchiveBlob(imageEditedSlides, result.title, result.rawArchiveBase64)
+    const imageZip = await JSZip.loadAsync(await imageExport.arrayBuffer())
+    const imageArchivePath = Object.keys(imageZip.files).find(name => name === sourcedImage.sourceAssetPath || name.endsWith(`/${sourcedImage.sourceAssetPath}`))
+    assert.ok(imageArchivePath, 'Native image asset path must still exist after export')
+    assert.deepEqual(
+      await imageZip.file(imageArchivePath)!.async('uint8array'),
+      replacementImageBytes,
+      'Image replacement must be written into the native Keynote Data asset'
+    )
+    console.log('  PASS: Native Keynote image asset replacement verified.')
+
     const textFixture = 'C:\\Users\\holondo\\AppData\\Local\\Temp\\keynot-research-2300824faf7846f7a166993e824abbeb\\keynote-parser\\tests\\data\\simple-oneslide.key'
     if (fs.existsSync(textFixture)) {
       const textBytes = fs.readFileSync(textFixture)
