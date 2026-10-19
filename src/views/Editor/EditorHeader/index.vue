@@ -176,6 +176,7 @@ import useCombineElement from '@/hooks/useCombineElement'
 import useAlignActiveElement from '@/hooks/useAlignActiveElement'
 import useOrderElement from '@/hooks/useOrderElement'
 import useLockElement from '@/hooks/useLockElement'
+import useCreateElement from '@/hooks/useCreateElement'
 import { ElementAlignCommands, ElementOrderCommands } from '@/types/edit'
 import { flattenCommands, KEYNOTE_MENUS } from '@/commands/keynoteCommands'
 import type { DialogForExportTypes } from '@/types/export'
@@ -208,12 +209,13 @@ const { combineElements, uncombineElements } = useCombineElement()
 const { alignActiveElement } = useAlignActiveElement()
 const { orderElement } = useOrderElement()
 const { lockElement } = useLockElement()
+const { createTableElement, createChartElement } = useCreateElement()
 
 const supportedMenuCommandIds = new Set([
   'file.new', 'file.open', 'file.workspace', 'file.theme',
   'file.export.keynote', 'file.export.powerpoint', 'file.export.pdf', 'file.export.images', 'file.compatibility',
   'edit.undo', 'edit.redo', 'edit.cut', 'edit.copy', 'edit.paste', 'edit.duplicate', 'edit.delete', 'edit.select-all', 'edit.find',
-  'insert.slide',
+  'insert.slide', 'insert.text', 'insert.shape.rectangle', 'insert.shape.circle', 'insert.shape.line', 'insert.table', 'insert.chart',
   'slide.add', 'slide.duplicate', 'slide.delete', 'slide.notes',
   'format.inspector', 'format.animate', 'format.document',
   'arrange.front', 'arrange.forward', 'arrange.backward', 'arrange.back',
@@ -314,6 +316,21 @@ const executeMenuCommand = (commandId: string) => {
     'edit.select-all': () => mainStore.editorAreaFocus ? selectAllElements() : selectAllSlide(),
     'edit.find': () => mainStore.setSearchPanelState(true),
     'insert.slide': createSlide,
+    'insert.text': () => mainStore.setCreatingElement({ type: 'text' }),
+    'insert.shape.rectangle': () => mainStore.setCreatingElement({
+      type: 'shape',
+      data: { viewBox: [200, 200], path: 'M 0 0 L 200 0 L 200 200 L 0 200 Z' },
+    }),
+    'insert.shape.circle': () => mainStore.setCreatingElement({
+      type: 'shape',
+      data: { viewBox: [200, 200], path: 'M 100 0 A 50 50 0 1 1 100 200 A 50 50 0 1 1 100 0 Z' },
+    }),
+    'insert.shape.line': () => mainStore.setCreatingElement({
+      type: 'line',
+      data: { path: 'M 0 0 L 20 20', style: 'solid', points: ['', ''] },
+    }),
+    'insert.table': () => createTableElement(5, 4),
+    'insert.chart': () => createChartElement('bar'),
     'slide.add': createSlide,
     'slide.duplicate': copyAndPasteSlide,
     'slide.delete': () => deleteSlide(),

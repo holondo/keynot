@@ -642,7 +642,7 @@ Build a sanitized corpus with one deck per feature family and several mixed real
 
 ### P01 — Create the command registry and complete menus
 
-**Status:** IN PROGRESS (typed 9-menu registry, visible nested menu UI, contextual enabled/checked state, and core/Arrange command wiring implemented)
+**Status:** IN PROGRESS (typed 9-menu registry, visible and keyboard-operable nested menus, contextual enabled/checked state, and core Insert/Arrange command wiring implemented)
 
 **Required reading:** `EditorHeader/index.vue`, `CanvasTool/index.vue`, global hotkeys, context-menu directives.
 
@@ -808,7 +808,7 @@ These capabilities should appear as coherent KeyNot extensions in the same comma
 | Step | Status | Evidence / commit | Human approval | Notes |
 |---|---|---|---|---|
 | P00 | COMPLETE | Native-only geometry/text/transition/table re-import plus native image asset comparison | Not required | Text, general geometry, table geometry, images, and transitions are patched natively; packed table cell data remains Partial |
-| P01 | IN PROGRESS | 9 menus / 73 unique commands; top-level stacking fixed; unsupported actions disabled; core and Arrange actions share existing hooks | Not required | Remaining contextual Insert and Format commands must be wired before COMPLETE |
+| P01 | IN PROGRESS | 9 menus / 73 unique commands; stacking and keyboard traversal fixed; unsupported actions disabled; core Insert and Arrange actions share existing hooks | Not required | Media/Equation/Comment and rich-text Format commands remain before COMPLETE |
 | P02 | TODO | | Not required | M1 |
 | P03 | TODO | | Not required | M2 |
 | P04 | TODO | | Not required | M2 |

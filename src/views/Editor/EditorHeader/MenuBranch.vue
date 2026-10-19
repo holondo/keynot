@@ -1,7 +1,13 @@
 <template>
   <div class="menu-branch">
     <div v-for="command in commands" :key="command.id" class="command-wrap">
-      <button class="command" role="menuitem" :disabled="command.disabled" @click.stop="!command.children && emit('execute', command.id)">
+      <button
+        class="command"
+        role="menuitem"
+        :disabled="command.disabled"
+        :aria-haspopup="command.children ? 'menu' : undefined"
+        @click.stop="!command.children && emit('execute', command.id)"
+      >
         <span class="check">{{ command.checked ? '✓' : '' }}</span>
         <span class="label">{{ command.label }}</span>
         <span v-if="command.shortcut" class="shortcut">{{ command.shortcut }}</span>
@@ -28,5 +34,5 @@ const emit = defineEmits<{ (event: 'execute', commandId: string): void }>()
 .command:disabled { opacity: .42; }
 .check { text-align: center; }.shortcut { color: var(--text-secondary, #777); margin-left: 18px; }.command:hover .shortcut { color: inherit; }.arrow { font-size: 18px; }
 .submenu { display: none; position: absolute; z-index: 1003; left: calc(100% - 2px); top: -5px; min-width: 210px; padding: 5px; overflow: visible; border: 1px solid var(--border-color, rgba(0,0,0,.12)); border-radius: 9px; background: var(--bg-panel, rgba(255,255,255,.98)); box-shadow: 0 12px 36px rgba(0,0,0,.22); }
-.command-wrap:hover > .submenu { display: block; }
+.command-wrap:hover > .submenu, .command-wrap:focus-within > .submenu { display: block; }
 </style>
