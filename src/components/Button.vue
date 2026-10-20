@@ -9,9 +9,13 @@
       'checkbox': !disabled && type === 'checkbox',
       'radio': !disabled && type === 'radio',
       'small': size === 'small',
+      'large': size === 'large',
+      'block': block,
+      'nowrap': nowrap,
       'first': first,
       'last': last,
     }"
+    :title="title || undefined"
     @click="handleClick()"
   >
     <slot></slot>
@@ -23,9 +27,12 @@ const props = withDefaults(defineProps<{
   checked?: boolean
   disabled?: boolean
   type?: 'default' | 'primary' | 'checkbox' | 'radio'
-  size?: 'small' | 'normal'
+  size?: 'small' | 'normal' | 'large'
   first?: boolean
   last?: boolean
+  block?: boolean
+  nowrap?: boolean
+  title?: string
 }>(), {
   checked: false,
   disabled: false,
@@ -33,6 +40,8 @@ const props = withDefaults(defineProps<{
   size: 'normal',
   first: false,
   last: false,
+  block: false,
+  nowrap: false,
 })
 
 const emit = defineEmits<{
@@ -47,14 +56,18 @@ const handleClick = () => {
 
 <style lang="scss" scoped>
 .button {
-  height: 28px;
-  line-height: 28px;
+  min-height: 28px;
+  height: auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   outline: 0;
-  font-size: 12.5px;
-  padding: 0 14px;
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 4px 10px;
   text-align: center;
   color: var(--text-primary, #1d1d1f);
-  border-radius: 6px;
+  border-radius: var(--radius-sm, 6px);
   user-select: none;
   cursor: pointer;
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
@@ -65,15 +78,43 @@ const handleClick = () => {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  flex-shrink: 0;
+  gap: 5px;
+  flex-shrink: 1;
+  word-break: break-word;
+
+  &.nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 28px;
+    padding: 0 8px;
+  }
+
+  &.block {
+    width: 100%;
+    display: flex;
+  }
 
   &.small {
-    height: 24px;
-    line-height: 24px;
-    padding: 0 10px;
+    min-height: 24px;
     font-size: 11.5px;
+    padding: 2px 8px;
+
+    &.nowrap {
+      height: 24px;
+      line-height: 22px;
+    }
+  }
+
+  &.large {
+    min-height: 32px;
+    font-size: 13px;
+    padding: 6px 14px;
+
+    &.nowrap {
+      height: 32px;
+      line-height: 30px;
+    }
   }
 
   &.default {
@@ -81,10 +122,10 @@ const handleClick = () => {
     border-color: var(--border-color, rgba(0, 0, 0, 0.12));
     color: var(--text-primary, #1d1d1f);
 
-    &:hover {
+    &:hover:not(.disabled) {
       background-color: var(--bg-control-active, #ebebee);
       color: var(--text-primary, #1d1d1f);
-      border-color: var(--border-color, rgba(0, 0, 0, 0.18));
+      border-color: var(--border-color, rgba(0, 0, 0, 0.2));
     }
   }
 
@@ -94,9 +135,9 @@ const handleClick = () => {
     color: #fff;
     box-shadow: 0 1px 3px rgba(0, 122, 255, 0.3);
 
-    &:hover {
-      background-color: #0062cc;
-      border-color: #0062cc;
+    &:hover:not(.disabled) {
+      background-color: var(--accent-hover, #0062cc);
+      border-color: var(--accent-hover, #0062cc);
     }
   }
 
@@ -105,7 +146,7 @@ const handleClick = () => {
     border-color: var(--border-color, rgba(0, 0, 0, 0.12));
     color: var(--text-primary, #1d1d1f);
 
-    &:not(.checked):hover {
+    &:not(.checked):hover:not(.disabled) {
       background-color: var(--bg-control-active, #ebebee);
       color: var(--accent-color, #007aff);
     }
@@ -116,9 +157,9 @@ const handleClick = () => {
     background-color: var(--accent-color, #007aff);
     border-color: var(--accent-color, #007aff);
 
-    &:hover {
-      background-color: #0062cc;
-      border-color: #0062cc;
+    &:hover:not(.disabled) {
+      background-color: var(--accent-hover, #0062cc);
+      border-color: var(--accent-hover, #0062cc);
     }
   }
 
@@ -128,6 +169,7 @@ const handleClick = () => {
     color: var(--text-tertiary, #a1a1aa);
     cursor: default;
     box-shadow: none;
+    opacity: 0.55;
   }
 }
 

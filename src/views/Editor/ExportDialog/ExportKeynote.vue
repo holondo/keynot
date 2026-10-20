@@ -141,7 +141,8 @@ const selectedSlides = computed(() => {
   }
 }
 .btns {
-  width: 320px;
+  width: 100%;
+  max-width: 320px;
   height: 80px;
   display: flex;
   justify-content: center;
@@ -151,7 +152,7 @@ const selectedSlides = computed(() => {
     flex: 1;
   }
   .close {
-    width: 100px;
+    min-width: 90px;
     margin-left: 10px;
   }
 }

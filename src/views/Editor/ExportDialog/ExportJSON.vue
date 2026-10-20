@@ -61,7 +61,8 @@ pre {
   font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 }
 .btns {
-  width: 300px;
+  width: 100%;
+  max-width: 320px;
   height: 80px;
   display: flex;
   justify-content: center;
@@ -71,7 +72,7 @@ pre {
     flex: 1;
   }
   .close {
-    width: 100px;
+    min-width: 90px;
     margin-left: 10px;
   }
 }

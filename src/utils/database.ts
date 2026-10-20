@@ -116,15 +116,10 @@ export const createProjectCheckpoint = async (
   currentData?: { slides: Slide[]; theme: SlideTheme }
 ): Promise<ProjectVersionCheckpoint | null> => {
   const project = await projectsDb.projects.get(projectId)
-  if (!project && !currentData) return null
+  if (!project) return null
 
-  const slides = currentData?.slides || project?.slides || []
-  const theme = currentData?.theme || project?.theme || {
-    backgroundColor: '#ffffff',
-    themeColors: ['#007aff'],
-    fontColor: '#000000',
-    fontName: 'Helvetica Neue',
-  }
+  const slides = currentData?.slides || project.slides
+  const theme = currentData?.theme || project.theme
 
   const dateStr = new Date().toLocaleString()
   const checkpoint: ProjectVersionCheckpoint = {
@@ -136,13 +131,11 @@ export const createProjectCheckpoint = async (
     theme: JSON.parse(JSON.stringify(theme)),
   }
 
-  if (project) {
-    const versions = project.versions ? [...project.versions] : []
-    versions.unshift(checkpoint)
-    if (versions.length > 30) versions.pop()
-    project.versions = versions
-    await projectsDb.projects.put(project)
-  }
+  const versions = project.versions ? [...project.versions] : []
+  versions.unshift(checkpoint)
+  if (versions.length > 30) versions.pop()
+  project.versions = versions
+  await projectsDb.projects.put(project)
   return checkpoint
 }
 

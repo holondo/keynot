@@ -7,9 +7,9 @@ defineProps<{ scrollable?: boolean }>()
 </script>
 
 <style scoped lang="scss">
-@use '@/assets/styles/glass-system.scss' as glass;
+@import '@/assets/styles/glass-system.scss';
 .floating-rail {
-  @include glass.glass-surface(regular);
+  @include glass-surface(regular);
   display: flex;
   align-items: center;
   gap: 6px;

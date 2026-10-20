@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { nanoid } from 'nanoid'
 import { debounce } from 'lodash'
@@ -17,6 +17,7 @@ import { applyColorMode } from '@/store/main'
 import { LOCALSTORAGE_KEY_DISCARDED_DB, LOCALSTORAGE_KEY_ACTIVE_PROJECT } from '@/configs/storage'
 import { deleteDiscardedDB, getLocalProject, listLocalProjects, saveLocalProject } from '@/utils/database'
 import { isPC } from '@/utils/common'
+import useBreakpoint, { getTier, BREAKPOINTS } from '@/hooks/useBreakpoint'
 import { STARTER_SLIDES } from '@/configs/starterSlides'
 import api from '@/services'
 
@@ -25,7 +26,16 @@ import Screen from './views/Screen/index.vue'
 import Mobile from './views/Mobile/index.vue'
 import FullscreenSpin from '@/components/FullscreenSpin.vue'
 
-const _isPC = isPC()
+// UI selection: ?ui=desktop|mobile override; otherwise the mobile UI is used only on
+// small touch screens. Desktop windows of any width get the responsive Editor.
+const uiOverride = new URLSearchParams(window.location.search).get('ui')
+const { width, height, isTouch } = useBreakpoint()
+const _isPC = computed(() => {
+  if (uiOverride === 'desktop') return true
+  if (uiOverride === 'mobile') return false
+  const isSmallTouch = isTouch.value && getTier(Math.min(width.value, height.value)) === 'mobile'
+  return !isSmallTouch && (isPC() || width.value >= BREAKPOINTS.tablet)
+})
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
@@ -47,7 +57,7 @@ const { screening } = storeToRefs(screenStore)
 
 const isAudienceMode = new URLSearchParams(window.location.search).get('mode') === 'audience'
 
-const persistCurrentProject = debounce(async () => {
+const saveCurrentProject = async () => {
   if (isAudienceMode || !slides.value.length) return
   try {
     await saveLocalProject({
@@ -70,7 +80,9 @@ const persistCurrentProject = debounce(async () => {
   catch {
     slidesStore.setSaveStatus('unsaved')
   }
-}, 400)
+}
+
+const persistCurrentProject = debounce(saveCurrentProject, 400)
 
 onMounted(async () => {
   applyColorMode(mainStore.colorMode)
@@ -114,7 +126,7 @@ onMounted(async () => {
       if (!slidesStore.slides.length) {
         slidesStore.setSlides([...STARTER_SLIDES])
       }
-      await persistCurrentProject()
+      await saveCurrentProject()
     }
 
     snapshotStore.initSnapshotDatabase()

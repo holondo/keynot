@@ -1,5 +1,5 @@
 <template>
-  <Button class="color-btn">
+  <Button class="color-btn" :nowrap="true">
     <div class="blocks">
       <div class="color-block" v-for="(color, index) in colors" :key="index">
         <div class="content" :style="{ backgroundColor: color }"></div>
@@ -26,24 +26,32 @@ const colors = computed(() => {
 <style lang="scss" scoped>
 .color-btn {
   width: 100%;
+  height: 28px !important;
+  min-height: 28px !important;
   display: flex !important;
   align-items: center;
-  justify-content: center;
-  padding: 0 !important;
+  justify-content: space-between !important;
+  padding: 0 4px 0 0 !important;
+  box-sizing: border-box;
 }
 .blocks {
   display: flex;
   flex: 1;
-  margin-left: 8px;
-  outline: 1px dashed rgba($color: #666, $alpha: .12);
+  min-width: 0;
+  height: 20px;
+  margin-left: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
 }
 .color-block {
   height: 20px;
   flex: 1;
+  min-width: 0;
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAEBJREFUOE9jfPbs2X8GIoCkpCQRqhgYGEcNxBlOo2GIM2iGQLL5//8/UTnl+fPnxOWUUQNxhtNoGOLOKYM+2QAAh2Nq10DwkukAAAAASUVORK5CYII=);
 
   & + & {
-    margin-left: 2px;
+    margin-left: 1px;
   }
 }
 .content {
@@ -51,8 +59,12 @@ const colors = computed(() => {
   height: 100%;
 }
 .color-btn-icon {
-  width: 32px;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 13px;
-  color: #bfbfbf;
+  color: var(--text-tertiary, #86868b);
+  flex-shrink: 0;
 }
 </style>

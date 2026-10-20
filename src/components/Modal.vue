@@ -46,7 +46,9 @@ const contentVisible = ref(false)
 
 const contentStyle = computed(() => {
   return {
-    width: props.width + 'px',
+    maxWidth: 'calc(100vw - 32px)',
+    maxHeight: 'calc(100vh - 32px)',
+    width: typeof props.width === 'number' ? ('min(' + props.width + 'px, calc(100vw - 32px))') : props.width,
     ...(props.contentStyle || {})
   }
 })
@@ -101,7 +103,10 @@ const onClickMask = () => {
   color: var(--text-primary, #1d1d1f);
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   border-radius: 14px;
-  overflow: hidden;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 2px 10px rgba(0, 0, 0, 0.1);
   position: relative;
 }

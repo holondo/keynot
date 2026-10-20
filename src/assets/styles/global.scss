@@ -66,13 +66,28 @@ section {
   --border-divider: rgba(0, 0, 0, 0.07);
   --popover-bg: rgba(255, 255, 255, 0.95);
   --accent-color: rgb(0, 122, 255);
+  --accent-hover: #0062cc;
   --accent-green: #34c759;
+  --bg-elevated: rgba(255, 255, 255, 0.96);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.16);
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
+  --text-color: var(--text-primary);
+  --text-color-sub: var(--text-secondary);
+  --fill-color: var(--bg-control);
+  --surface-card: var(--bg-card);
+  --surface-card-hover: var(--bg-hover);
 
   /* Keynote for iCloud Design Tokens Contract */
   --font-ui: SFNSText, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif;
   --toolbar-control-height: 28px;
   --toolbar-radius: 8px;
-  --inspector-width: 270px;
+  --inspector-width: 280px;
   --inspector-tab-height: 33px;
   --inspector-control-height: 28px;
   --inspector-control-radius: 8px;
@@ -109,12 +124,27 @@ section {
   --border-divider: rgba(255, 255, 255, 0.08);
   --popover-bg: rgba(38, 38, 44, 0.96);
   --accent-color: #0a84ff;
+  --accent-hover: #0071e3;
   --accent-green: #30d158;
+  --bg-elevated: rgba(38, 38, 44, 0.98);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
+  --text-color: var(--text-primary);
+  --text-color-sub: var(--text-secondary);
+  --fill-color: var(--bg-control);
+  --surface-card: var(--bg-card);
+  --surface-card-hover: var(--bg-hover);
 
   --font-ui: SFNSText, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif;
   --toolbar-control-height: 28px;
   --toolbar-radius: 8px;
-  --inspector-width: 270px;
+  --inspector-width: 280px;
   --inspector-tab-height: 33px;
   --inspector-control-height: 28px;
   --inspector-control-radius: 8px;
@@ -234,4 +264,37 @@ textarea {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+/* Universal DRY Button & Form Element Layout Contract */
+button,
+.button,
+.btn,
+.footer-btn,
+.header-pill,
+.keynote-pill-btn,
+.seg-item,
+.arrange-action-btn,
+.adj-action-btn,
+.ratio-pill,
+.fit-btn {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.button,
+.btn,
+.footer-btn {
+  vertical-align: middle;
+}
+
+/* Universal Row & Inspector Flex Containment */
+.row {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  > * {
+    min-width: 0;
+  }
 }

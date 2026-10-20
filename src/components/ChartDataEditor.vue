@@ -456,7 +456,7 @@ table {
     color: var(--text-primary, #1d1d1f);
 
     &.head {
-      background-color: rgba($color: $themeColor, $alpha: .08);
+      background-color: var(--bg-control, rgba(0, 122, 255, 0.08));
     }
   }
   .item {

@@ -88,6 +88,11 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.popover {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 .popover.center {
   display: flex;
   justify-content: center;

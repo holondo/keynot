@@ -14,14 +14,17 @@ withDefaults(defineProps<{
 
 <style lang="scss" scoped>
 .button-group {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  max-width: 100%;
 
   ::v-deep(button.button) {
     border-radius: 0;
     border-left-width: 1px;
     border-right-width: 0;
-    display: inline-block;
+    display: inline-flex;
+    flex: 1;
+    min-width: 0;
   }
 
   &:not(.passive) {
@@ -33,7 +36,7 @@ withDefaults(defineProps<{
           content: '';
           width: 1px;
           height: calc(100% + 2px);
-          background-color: $themeColor;
+          background-color: var(--accent-color, #007aff);
           position: absolute;
           top: -1px;
           right: -1px;
@@ -41,14 +44,14 @@ withDefaults(defineProps<{
       }
 
       &:first-child {
-        border-top-left-radius: $borderRadius;
-        border-bottom-left-radius: $borderRadius;
+        border-top-left-radius: var(--radius-sm, 6px);
+        border-bottom-left-radius: var(--radius-sm, 6px);
         border-left-width: 1px;
       }
 
       &:last-child {
-        border-top-right-radius: $borderRadius;
-        border-bottom-right-radius: $borderRadius;
+        border-top-right-radius: var(--radius-sm, 6px);
+        border-bottom-right-radius: var(--radius-sm, 6px);
         border-right-width: 1px;
       }
     }
@@ -62,7 +65,7 @@ withDefaults(defineProps<{
           content: '';
           width: 1px;
           height: calc(100% + 2px);
-          background-color: $themeColor;
+          background-color: var(--accent-color, #007aff);
           position: absolute;
           top: -1px;
           right: -1px;
@@ -70,14 +73,14 @@ withDefaults(defineProps<{
       }
 
       &.first {
-        border-top-left-radius: $borderRadius;
-        border-bottom-left-radius: $borderRadius;
+        border-top-left-radius: var(--radius-sm, 6px);
+        border-bottom-left-radius: var(--radius-sm, 6px);
         border-left-width: 1px;
       }
 
       &.last {
-        border-top-right-radius: $borderRadius;
-        border-bottom-right-radius: $borderRadius;
+        border-top-right-radius: var(--radius-sm, 6px);
+        border-bottom-right-radius: var(--radius-sm, 6px);
         border-right-width: 1px;
       }
     }

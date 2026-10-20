@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict'
+import fs from 'node:fs'
+import path from 'node:path'
 import { enUS } from '../src/i18n/locales/en-US.ts'
 import { ptBR } from '../src/i18n/locales/pt-BR.ts'
 import {
@@ -269,6 +271,29 @@ console.log('[5/5] Testing available locales definition...')
   assert.equal(AVAILABLE_LOCALES.length, 2)
   assert.equal(AVAILABLE_LOCALES[0].code, 'en-US')
   assert.equal(AVAILABLE_LOCALES[1].code, 'pt-BR')
+
+  const preferencesSource = fs.readFileSync(path.resolve('src/views/Editor/EditorHeader/PreferencesModal.vue'), 'utf-8')
+  const versionsSource = fs.readFileSync(path.resolve('src/views/Editor/EditorHeader/VersionHistoryModal.vue'), 'utf-8')
+  const databaseSource = fs.readFileSync(path.resolve('src/utils/database.ts'), 'utf-8')
+  for (const literal of [
+    'English first (default), or switch to Portuguese',
+    'Light, Dark, or System Match',
+    'Storage &amp; Durability',
+    'All slides &amp; versions persist offline in local IndexedDB',
+    'Active (IndexedDB)',
+  ]) {
+    assert.ok(!preferencesSource.includes(literal), `PreferencesModal must translate UI literal: ${literal}`)
+  }
+  for (const literal of [
+    'Enter checkpoint name...',
+    ' checkpoint(s)',
+    'Checkpoint saved successfully',
+    'Checkpoint deleted',
+    'Unknown',
+  ]) {
+    assert.ok(!versionsSource.includes(literal), `VersionHistoryModal must translate UI literal: ${literal}`)
+  }
+  assert.ok(databaseSource.includes('if (!project) return null'), 'Checkpoint creation must not report success when no project record can be updated')
   console.log('  PASS: Supported locales available for UI pickers.')
 }
 

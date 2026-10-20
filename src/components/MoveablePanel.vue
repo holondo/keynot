@@ -129,14 +129,15 @@ const onPanelClose = () => {
 }
 
 onMounted(() => {
-  if (props.left >= 0) x.value = props.left
-  else x.value = document.body.clientWidth + props.left - props.width
-
-  if (props.top >= 0) y.value = props.top
-  else y.value = document.body.clientHeight + props.top - (props.height || realHeight.value)
-
-  w.value = props.width
+  const maxW = Math.max(160, (document.body.clientWidth || 800) - 20)
+  w.value = Math.min(props.width, maxW)
   h.value = props.height
+
+  if (props.left >= 0) x.value = Math.min(props.left, Math.max(0, (document.body.clientWidth || 800) - w.value - 10))
+  else x.value = Math.max(10, (document.body.clientWidth || 800) + props.left - w.value)
+
+  if (props.top >= 0) y.value = Math.min(props.top, Math.max(0, (document.body.clientHeight || 600) - (props.height || realHeight.value) - 10))
+  else y.value = Math.max(10, (document.body.clientHeight || 600) + props.top - (props.height || realHeight.value))
 
   zIndex.value = initGlobalZIndex()
 })
@@ -233,12 +234,15 @@ const startResize = (e: MouseEvent) => {
 <style lang="scss" scoped>
 .moveable-panel {
   position: fixed;
-  background-color: #fff;
-  box-shadow: $boxShadow;
-  border: 1px solid $borderColor;
-  border-radius: $borderRadius;
+  background-color: var(--bg-panel, #ffffff);
+  color: var(--text-primary, #1d1d1f);
+  box-shadow: var(--shadow-lg, $boxShadow);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  border-radius: var(--radius-md, 10px);
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 .resizer {
   width: 10px;
@@ -258,14 +262,16 @@ const startResize = (e: MouseEvent) => {
     width: 0;
     height: 0;
     border: 6px solid transparent;
-    border-left-color: #e1e1e1;
+    border-left-color: var(--border-color, #e1e1e1);
   }
 }
 .header {
   height: 40px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-divider, rgba(0, 0, 0, 0.08));
+  color: var(--text-primary, #1d1d1f);
+  font-weight: 600;
   user-select: none;
   cursor: move;
 }
@@ -280,7 +286,7 @@ const startResize = (e: MouseEvent) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #666;
+  color: var(--text-tertiary, #86868b);
   font-size: 13px;
   cursor: pointer;
 

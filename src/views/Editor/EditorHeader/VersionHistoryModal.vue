@@ -13,7 +13,7 @@
     <div class="checkpoint-creator-bar" v-if="showCustomNameInput">
       <Input
         v-model:value="newVersionLabel"
-        placeholder="Enter checkpoint name..."
+        :placeholder="t('versions.namePlaceholder')"
         style="flex: 1;"
         @enter="submitNewCheckpoint"
       />
@@ -36,7 +36,7 @@
             <span class="active-badge" v-if="selectedVersionId === item.id">{{ t('versions.preview') }}</span>
           </div>
           <div class="version-meta">
-            <span>{{ item.slideCount }} slides</span>
+            <span>{{ t('versions.slideCount', undefined, { count: item.slideCount }) }}</span>
             <span>•</span>
             <span>{{ formatTime(item.timestamp) }}</span>
           </div>
@@ -61,7 +61,7 @@
     </div>
 
     <div class="footer-row">
-      <span class="checkpoint-count" v-if="checkpoints.length">{{ checkpoints.length }} checkpoint(s)</span>
+      <span class="checkpoint-count" v-if="checkpoints.length">{{ t('versions.checkpointCount', undefined, { count: checkpoints.length }) }}</span>
       <Button type="primary" @click="emit('close')">{{ t('versions.close') }}</Button>
     </div>
   </div>
@@ -108,26 +108,27 @@ const refreshList = async () => {
 onMounted(refreshList)
 
 const formatTime = (ts: number) => {
-  if (!ts) return 'Unknown'
+  if (!ts) return t('versions.unknownTime')
   return new Date(ts).toLocaleString()
 }
 
 const handleCreateCheckpoint = () => {
   showCustomNameInput.value = true
-  newVersionLabel.value = `Checkpoint (${new Date().toLocaleTimeString()})`
+  newVersionLabel.value = t('versions.defaultCheckpointLabel', undefined, { time: new Date().toLocaleTimeString() })
 }
 
 const submitNewCheckpoint = async () => {
   if (!projectId.value) return
   const label = newVersionLabel.value.trim() || undefined
-  await createProjectCheckpoint(projectId.value, label, {
+  const created = await createProjectCheckpoint(projectId.value, label, {
     slides: slides.value,
     theme: theme.value,
   })
+  if (!created) return
   showCustomNameInput.value = false
   newVersionLabel.value = ''
   await refreshList()
-  message.success('Checkpoint saved successfully')
+  message.success(t('versions.checkpointCreated'))
 }
 
 const handleRestore = async (checkpoint: ProjectVersionCheckpoint) => {
@@ -136,7 +137,9 @@ const handleRestore = async (checkpoint: ProjectVersionCheckpoint) => {
   if (restored) {
     slidesStore.setSlides(restored.slides, restored.theme)
     addHistorySnapshot()
-    message.success(`Restored to version: ${restored.label || 'Checkpoint'}`)
+    message.success(t('versions.restoredSuccess', undefined, {
+      label: restored.label || t('versions.fallbackCheckpointLabel'),
+    }))
     emit('close')
   }
 }
@@ -148,7 +151,7 @@ const handleDelete = async (versionId: string) => {
     selectedVersionId.value = ''
   }
   await refreshList()
-  message.success('Checkpoint deleted')
+  message.success(t('versions.deletedSuccess'))
 }
 </script>
 
@@ -174,12 +177,12 @@ const handleDelete = async (versionId: string) => {
 .modal-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-color, #1d1d1f);
+  color: var(--text-primary, #1d1d1f);
 }
 
 .modal-subtitle {
   font-size: 12px;
-  color: var(--text-color-sub, #86868b);
+  color: var(--text-secondary, #86868b);
   line-height: 1.4;
 }
 
@@ -188,7 +191,7 @@ const handleDelete = async (versionId: string) => {
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  background: var(--fill-color, rgba(0, 0, 0, 0.03));
+  background: var(--bg-control, rgba(0, 0, 0, 0.03));
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   border-radius: 8px;
   margin-bottom: 14px;
@@ -208,7 +211,7 @@ const handleDelete = async (versionId: string) => {
   justify-content: space-between;
   align-items: center;
   padding: 12px 14px;
-  background: var(--surface-card, #ffffff);
+  background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   border-radius: 8px;
   cursor: pointer;
@@ -216,7 +219,7 @@ const handleDelete = async (versionId: string) => {
 
   &:hover {
     border-color: #007aff;
-    background: var(--surface-card-hover, rgba(0, 122, 255, 0.02));
+    background: var(--bg-hover, rgba(0, 122, 255, 0.02));
   }
 
   &.active {
@@ -237,7 +240,7 @@ const handleDelete = async (versionId: string) => {
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-color, #1d1d1f);
+  color: var(--text-primary, #1d1d1f);
 
   .time-icon {
     font-size: 14px;
@@ -256,7 +259,7 @@ const handleDelete = async (versionId: string) => {
 
 .version-meta {
   font-size: 11px;
-  color: var(--text-color-sub, #86868b);
+  color: var(--text-secondary, #86868b);
   display: flex;
   gap: 6px;
 }
@@ -277,20 +280,20 @@ const handleDelete = async (versionId: string) => {
 
   .empty-icon {
     font-size: 36px;
-    color: var(--text-color-sub, #86868b);
+    color: var(--text-secondary, #86868b);
     margin-bottom: 8px;
   }
 
   .empty-title {
     font-size: 14px;
     font-weight: 600;
-    color: var(--text-color, #1d1d1f);
+    color: var(--text-primary, #1d1d1f);
     margin-bottom: 4px;
   }
 
   .empty-desc {
     font-size: 12px;
-    color: var(--text-color-sub, #86868b);
+    color: var(--text-secondary, #86868b);
     max-width: 320px;
   }
 }
@@ -304,7 +307,7 @@ const handleDelete = async (versionId: string) => {
 
   .checkpoint-count {
     font-size: 12px;
-    color: var(--text-color-sub, #86868b);
+    color: var(--text-secondary, #86868b);
   }
 }
 </style>

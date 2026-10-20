@@ -191,8 +191,19 @@ const handleSelect = (option: SelectOption) => {
 </script>
 
 <style lang="scss" scoped>
+.select-wrap {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: block;
+}
+
 .select {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   height: var(--inspector-control-height, 28px);
   padding-right: 26px;
   border-radius: var(--inspector-control-radius, 8px);
@@ -206,6 +217,8 @@ const handleSelect = (option: SelectOption) => {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   position: relative;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 
   &:not(.disabled):hover {
     border-color: var(--accent-color, rgba(0, 122, 255, 0.4));
@@ -221,14 +234,18 @@ const handleSelect = (option: SelectOption) => {
   }
 
   .selector {
-    min-width: 40px;
+    flex: 1;
+    min-width: 0;
+    width: 0;
     height: calc(var(--inspector-control-height, 28px) - 2px);
     line-height: calc(var(--inspector-control-height, 28px) - 2px);
     padding-left: 8px;
     font-size: var(--inspector-control-font-size, 13px);
     font-weight: 450;
     color: var(--text-inspector, rgb(50, 50, 50));
-    @include ellipsis-oneline();
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 .options {

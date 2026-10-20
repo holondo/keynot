@@ -90,7 +90,7 @@
           :step="15"
           :value="background.gradient.rotate || 0"
           @update:value="v => updateGradientBackground({ rotate: v as number })"
-          style="flex: 1; margin-left: 10px;"
+          style="flex: 1; margin-left: 10px; min-width: 0;"
         />
       </div>
     </div>
@@ -127,7 +127,7 @@
     <div class="row">
       <span class="sublabel">{{ t('inspector.slideLayout.font') }}</span>
       <Select
-        style="flex: 1; margin-left: 10px;"
+        style="flex: 1; margin-left: 10px; min-width: 0;"
         :value="theme.fontName"
         search
         searchLabel="Search font"
@@ -137,7 +137,7 @@
     </div>
     <div class="row">
       <span class="sublabel">{{ t('inspector.slideLayout.textColor') }}</span>
-      <Popover trigger="click" style="flex: 1; margin-left: 10px;">
+      <Popover trigger="click" style="flex: 1; margin-left: 10px; min-width: 0;">
         <template #content>
           <ColorPicker
             :modelValue="theme.fontColor"
@@ -149,7 +149,7 @@
     </div>
     <div class="row">
       <span class="sublabel">{{ t('inspector.slideLayout.palette') }}</span>
-      <div style="flex: 1; margin-left: 10px;" @click="themeColorsSettingVisible = true">
+      <div style="flex: 1; margin-left: 10px; min-width: 0;" @click="themeColorsSettingVisible = true">
         <ColorListButton :colors="theme.themeColors" />
       </div>
     </div>
@@ -316,6 +316,9 @@ const updateViewportRatio = (ratio: number) => {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .sublabel {

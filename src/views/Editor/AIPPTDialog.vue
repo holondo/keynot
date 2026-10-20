@@ -431,7 +431,8 @@ const uploadLocalTemplate = () => {
     align-items: center;
 
     .btn {
-      width: 120px;
+      min-width: 110px;
+      max-width: 100%;
       margin: 0 5px;
     }
   }
@@ -467,7 +468,8 @@ const uploadLocalTemplate = () => {
     align-items: center;
 
     .btn {
-      width: 120px;
+      min-width: 110px;
+      max-width: 100%;
       margin: 0 5px;
     }
   }

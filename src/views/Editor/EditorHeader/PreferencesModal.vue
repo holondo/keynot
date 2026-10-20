@@ -17,7 +17,7 @@
         <div class="pref-row">
           <div class="pref-label">
             <span class="label-main">{{ t('preferences.language') }}</span>
-            <span class="label-sub">English first (default), or switch to Portuguese</span>
+            <span class="label-sub">{{ t('preferences.languageDescription') }}</span>
           </div>
           <div class="pref-control">
             <div class="segmented-control">
@@ -48,7 +48,7 @@
         <div class="pref-row">
           <div class="pref-label">
             <span class="label-main">{{ t('preferences.appearance') }}</span>
-            <span class="label-sub">Light, Dark, or System Match</span>
+            <span class="label-sub">{{ t('preferences.appearanceDescription') }}</span>
           </div>
           <div class="pref-control">
             <div class="segmented-control theme-seg">
@@ -83,14 +83,14 @@
 
       <!-- Section: Storage & Durability -->
       <div class="pref-section">
-        <div class="section-title">Storage &amp; Durability</div>
+        <div class="section-title">{{ t('preferences.storageTitle') }}</div>
         <div class="pref-row">
           <div class="pref-label">
             <span class="label-main">{{ t('preferences.autoSave') }}</span>
-            <span class="label-sub">All slides &amp; versions persist offline in local IndexedDB</span>
+            <span class="label-sub">{{ t('preferences.storageDescription') }}</span>
           </div>
           <div class="pref-status">
-            <span class="status-badge active">Active (IndexedDB)</span>
+            <span class="status-badge active">{{ t('preferences.storageActive') }}</span>
           </div>
         </div>
       </div>
@@ -280,6 +280,22 @@ const { currentLocale, setLocale, t } = useI18n()
 
     &:hover {
       background: #0066d6;
+    }
+  }
+}
+@media (max-width: 600px) {
+  .pref-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .segmented-control {
+    width: 100%;
+    .seg-item {
+      flex: 1;
+      justify-content: center;
+      padding: 0 6px;
+      font-size: 11.5px;
     }
   }
 }

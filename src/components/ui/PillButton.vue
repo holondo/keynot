@@ -18,9 +18,9 @@ withDefaults(defineProps<{
 </script>
 
 <style scoped lang="scss">
-@use '@/assets/styles/glass-system.scss' as glass;
+@import '@/assets/styles/glass-system.scss';
 .pill-button {
-  @include glass.glass-surface(regular);
+  @include glass-surface(regular);
   min-width: var(--control-regular);
   height: var(--control-regular);
   padding: 0 13px;

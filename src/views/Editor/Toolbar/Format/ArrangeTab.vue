@@ -138,11 +138,11 @@
         </div>
 
         <div class="grid-2" style="margin-top: 8px;" v-if="['image', 'shape'].includes(handleElement.type)">
-          <Button class="arrange-action-btn" :class="{ active: flipH }" @click="toggleFlip('h')">
-            <i-icon-park-outline:flip-horizontally class="btn-icon" /> Flip Horizontal
+          <Button class="arrange-action-btn" :class="{ active: flipH }" @click="toggleFlip('h')" v-tooltip="'Flip Horizontal'">
+            <i-icon-park-outline:flip-horizontally class="btn-icon" /> Flip H
           </Button>
-          <Button class="arrange-action-btn" :class="{ active: flipV }" @click="toggleFlip('v')">
-            <i-icon-park-outline:flip-vertically class="btn-icon" /> Flip Vertical
+          <Button class="arrange-action-btn" :class="{ active: flipV }" @click="toggleFlip('v')" v-tooltip="'Flip Vertical'">
+            <i-icon-park-outline:flip-vertically class="btn-icon" /> Flip V
           </Button>
         </div>
       </template>
@@ -367,7 +367,7 @@ const toggleFlip = (type: 'h' | 'v') => {
 
 .grid-2 {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   width: 100%;
 }

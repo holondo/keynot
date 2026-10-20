@@ -1,0 +1,19 @@
+// Keep in sync with src/hooks/useBreakpoint.ts
+$bp-tablet: 768px;
+$bp-desktop: 1200px;
+
+@mixin bp($tier) {
+  @if $tier == mobile {
+    @media (max-width: #{$bp-tablet - 1px}) { @content; }
+  }
+  @else if $tier == tablet {
+    @media (max-width: #{$bp-desktop - 1px}) { @content; }
+  }
+  @else if $tier == desktop {
+    @media (min-width: $bp-desktop) { @content; }
+  }
+}
+
+@mixin touch {
+  @media (pointer: coarse) { @content; }
+}
