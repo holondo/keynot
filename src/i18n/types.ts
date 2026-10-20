@@ -110,6 +110,7 @@ export interface I18nTranslations {
     export: string
     language: string
     preferences: string
+    menu: string
     presentationTitlePlaceholder: string
   }
   toolbar: {
@@ -339,6 +340,11 @@ export interface I18nTranslations {
     dark: string
     auto: string
     autoSave: string
+    languageDescription: string
+    appearanceDescription: string
+    storageTitle: string
+    storageDescription: string
+    storageActive: string
     close: string
   }
   versions: {
@@ -352,6 +358,13 @@ export interface I18nTranslations {
     close: string
     checkpointCreated: string
     restoredSuccess: string
+    deletedSuccess: string
+    namePlaceholder: string
+    defaultCheckpointLabel: string
+    fallbackCheckpointLabel: string
+    slideCount: string
+    checkpointCount: string
+    unknownTime: string
   }
   common: {
     cancel: string

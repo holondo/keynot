@@ -1,6 +1,6 @@
 <template>
   <div class="menu-branch">
-    <div v-for="command in commands" :key="command.id" class="command-wrap">
+    <div v-for="command in commands" :key="command.id" class="command-wrap" @mouseenter="placeSubmenu(command.id, $event)">
       <button
         class="command"
         role="menuitem"
@@ -13,7 +13,7 @@
         <span v-if="command.shortcut" class="shortcut">{{ command.shortcut }}</span>
         <span v-if="command.children" class="arrow">›</span>
       </button>
-      <div v-if="command.children && !command.disabled" class="submenu">
+      <div v-if="command.children && !command.disabled" class="submenu" :class="{ 'opens-left': opensLeft[command.id] }">
         <MenuBranch :commands="command.children" @execute="id => emit('execute', id)" />
       </div>
     </div>
@@ -21,9 +21,15 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import type { KeynoteCommand } from '@/commands/keynoteCommands'
 defineProps<{ commands: KeynoteCommand[] }>()
 const emit = defineEmits<{ (event: 'execute', commandId: string): void }>()
+const opensLeft = reactive<Record<string, boolean>>({})
+const placeSubmenu = (id: string, event: MouseEvent) => {
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  opensLeft[id] = rect.right + 220 > window.innerWidth
+}
 </script>
 
 <style scoped lang="scss">
@@ -75,6 +81,7 @@ const emit = defineEmits<{ (event: 'execute', commandId: string): void }>()
   -webkit-backdrop-filter: blur(24px);
 }
 .command-wrap:hover > .submenu, .command-wrap:focus-within > .submenu { display: block; }
+.submenu.opens-left { left: auto; right: calc(100% - 2px); }
 
 :global([data-theme="dark"]) .submenu,
 :global(.dark) .submenu {

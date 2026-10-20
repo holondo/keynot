@@ -1,5 +1,6 @@
 <template>
   <nav ref="menuBar" class="keynote-menu-bar" aria-label="Presentation menus" @keydown="handleKeydown">
+    <template v-if="tier !== 'mobile'">
     <div v-for="menu in resolvedMenus" :key="menu.id" class="menu-root">
       <button
         class="menu-trigger"
@@ -13,6 +14,9 @@
         <MenuBranch :commands="menu.commands" @execute="execute" />
       </div>
     </div>
+    </template>
+    <PillButton v-else ref="mobileTrigger" class="mobile-menu-trigger" size="touch" @click.stop="mobileMenuOpen = true">☰ <span>{{ t('header.menu') }}</span></PillButton>
+    <MobileCommandMenu :visible="mobileMenuOpen" :disabled-command-ids="disabledCommandIds" :checked-command-ids="checkedCommandIds" :return-focus="mobileTrigger?.$el" @execute="execute" @close="mobileMenuOpen = false" />
   </nav>
 </template>
 
@@ -21,6 +25,9 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef } f
 import { KEYNOTE_MENUS, type KeynoteCommand } from '@/commands/keynoteCommands'
 import { t } from '@/i18n'
 import MenuBranch from './MenuBranch.vue'
+import MobileCommandMenu from './MobileCommandMenu.vue'
+import PillButton from '@/components/ui/PillButton.vue'
+import useBreakpoint from '@/hooks/useBreakpoint'
 
 const props = withDefaults(defineProps<{
   disabledCommandIds?: string[]
@@ -32,6 +39,9 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ (event: 'execute', commandId: string): void }>()
 const menuBar = useTemplateRef<HTMLElement>('menuBar')
 const openMenu = ref('')
+const mobileMenuOpen = ref(false)
+const mobileTrigger = ref<any>(null)
+const { tier } = useBreakpoint()
 const resolvedMenus = computed(() => {
   const disabled = new Set(props.disabledCommandIds)
   const checked = new Set(props.checkedCommandIds)
@@ -130,6 +140,7 @@ onBeforeUnmount(() => document.removeEventListener('click', closeMenus))
 
 <style scoped lang="scss">
 .keynote-menu-bar { position: relative; z-index: 1001; display: flex; align-items: center; height: 100%; gap: 1px; overflow: visible; }
+.mobile-menu-trigger { box-shadow: none; }
 .menu-root { position: relative; overflow: visible; }
 .menu-trigger { border: 0; background: transparent; color: var(--text-primary, #1d1d1f); padding: 4px 7px; border-radius: 5px; font: inherit; cursor: default; }
 .menu-trigger:hover, .menu-trigger.open { background: var(--accent-color, #007aff); color: #fff; }
