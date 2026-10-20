@@ -1,6 +1,6 @@
 <template>
   <div class="editor-header">
-    <div class="left">
+    <FloatingRail class="left">
       <Popover trigger="click" placement="bottom-start" v-model:value="mainMenuVisible">
         <template #content>
           <div class="main-menu">
@@ -68,9 +68,9 @@
       />
       <input ref="openFileInput" class="native-file-input" type="file" accept=".key,.pptx,.pptist,.keynot,.slate,.json" @change="handleNativeFileOpen" />
       <input ref="imageFileInput" class="native-file-input" type="file" accept="image/*" @change="handleNativeImageOpen" />
-    </div>
+    </FloatingRail>
 
-    <div class="center-title">
+    <FloatingRail class="center-title">
       <i-icon-park-outline:ppt class="doc-icon" />
       <Input 
         class="title-input" 
@@ -103,9 +103,9 @@
       <div class="offline-pill" v-if="isOffline">
         Offline
       </div>
-    </div>
+    </FloatingRail>
 
-    <div class="right">
+    <FloatingRail class="right">
       <div
         class="header-pill report-pill"
         v-if="compatibilityReport"
@@ -143,7 +143,7 @@
         <i-icon-park-outline:computer class="icon" />
         <span>Install KeyNot</span>
       </div>
-    </div>
+    </FloatingRail>
 
     <Drawer
       :width="340"
@@ -227,6 +227,7 @@ import Input from '@/components/Input.vue'
 import Popover from '@/components/Popover.vue'
 import PopoverMenuItem from '@/components/PopoverMenuItem.vue'
 import Divider from '@/components/Divider.vue'
+import FloatingRail from '@/components/ui/FloatingRail.vue'
 import KeynoteMenuBar from './KeynoteMenuBar.vue'
 
 const mainStore = useMainStore()
@@ -501,16 +502,14 @@ const openThemeChooser = () => {
 
 <style lang="scss" scoped>
 .editor-header {
-  background: var(--bg-header, rgba(245, 245, 247, 0.88));
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  background: transparent;
   color: var(--text-primary, #1d1d1f);
   user-select: none;
-  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  border-bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 12px;
+  padding: 3px 10px;
   font-size: 12px;
   position: relative;
   z-index: 1000;
@@ -832,6 +831,34 @@ const openThemeChooser = () => {
       font-size: 10px;
       color: var(--text-tertiary, #86868b);
     }
+  }
+}
+@media (max-width: 1024px) {
+  :deep(.keynote-menu-bar) {
+    display: none;
+  }
+  .report-pill, .offline-pill {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
+  .editor-header {
+    padding: 0 6px;
+  }
+  .top-quick-links {
+    display: none;
+  }
+  .header-pill span {
+    display: none;
+  }
+  .header-pill {
+    padding: 0 6px;
+  }
+  .center-title .title-text {
+    max-width: 130px;
+  }
+  .save-status-pill span:not(.dot) {
+    display: none;
   }
 }
 </style>

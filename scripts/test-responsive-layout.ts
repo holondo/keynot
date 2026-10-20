@@ -54,6 +54,13 @@ console.log('\n[2/5] Testing Editor Adaptive Layout & Drawer Toggles...')
   assert.ok(editorSrc.includes('toggle-inspector'), 'Editor must allow toggling inspector drawer')
   assert.ok(editorSrc.includes('layout-scrim'), 'Editor must render touch scrim when overlays are active')
 
+  const headerSrc = fs.readFileSync(path.resolve('src/views/Editor/EditorHeader/index.vue'), 'utf-8')
+  const canvasToolSrc = fs.readFileSync(path.resolve('src/views/Editor/CanvasTool/index.vue'), 'utf-8')
+  assert.ok(headerSrc.includes("import FloatingRail from '@/components/ui/FloatingRail.vue'"), 'Header must consume shared floating rails')
+  assert.ok(canvasToolSrc.includes("import FloatingRail from '@/components/ui/FloatingRail.vue'"), 'Creation toolbar must consume shared floating rails')
+  assert.ok(canvasToolSrc.includes('<FloatingRail'), 'Creation toolbar must render as a shared rail')
+  assert.ok(canvasToolSrc.includes('scroll-snap-type: x proximity'), 'Narrow toolbar must use scroll snap')
+
   console.log('  PASS: Editor shell dynamically adapts layout, overlays, and FAB drawers across tiers.')
 }
 

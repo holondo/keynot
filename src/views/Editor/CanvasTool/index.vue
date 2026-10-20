@@ -1,5 +1,5 @@
 <template>
-  <div class="canvas-tool">
+  <FloatingRail class="canvas-tool" scrollable>
     <!-- Left Floating Cluster: View | Zoom | Play | Add Slide | AI Studio | Undo/Redo -->
     <div class="toolbar-cluster left-cluster">
       <!-- View Capsule (Apple Keynote Style) -->
@@ -331,7 +331,7 @@
         @insert="path => insertSvgPath(path)"
       />
     </Modal>
-  </div>
+  </FloatingRail>
 </template>
 
 <script lang="ts" setup>
@@ -363,6 +363,7 @@ import Modal from '@/components/Modal.vue'
 import Popover from '@/components/Popover.vue'
 import PopoverMenuItem from '@/components/PopoverMenuItem.vue'
 import Divider from '@/components/Divider.vue'
+import FloatingRail from '@/components/ui/FloatingRail.vue'
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
@@ -544,10 +545,11 @@ const openThemeChooser = () => {
 .canvas-tool {
   position: relative;
   height: 46px;
-  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  background: var(--bg-toolbar, rgba(245, 245, 247, 0.88));
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   color: var(--text-primary, #1d1d1f);
   display: flex;
   justify-content: space-between;
@@ -915,9 +917,28 @@ const openThemeChooser = () => {
   .toolbar-cluster.center-cluster {
     position: static;
     transform: none;
+    margin: 0 auto;
   }
   .canvas-tool {
     overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    gap: 8px;
+  }
+  .toolbar-cluster { scroll-snap-align: center; flex: 0 0 auto; }
+}
+
+@media screen and (max-width: 768px) {
+  .canvas-tool {
+    padding: 0 6px;
+    height: 42px;
+  }
+  .left-cluster .zoom-pill,
+  .left-cluster .undo-capsule,
+  .left-cluster .ai-capsule-btn span {
+    display: none;
   }
 }
 </style>
