@@ -61,9 +61,9 @@ console.log('[2/6] Testing PreferencesModal controls (Language & Appearance)...'
   assert.ok(prefModalSrc.includes("mainStore.setColorMode('dark')"), 'PreferencesModal must support Dark mode')
   assert.ok(prefModalSrc.includes("mainStore.setColorMode('auto')"), 'PreferencesModal must support Auto mode')
 
-  // Narrow-screen rule must target the row class used by the template.
-  assert.ok(prefModalSrc.includes('@media (max-width: 600px)'), 'PreferencesModal must define a narrow-screen layout')
-  assert.ok(prefModalSrc.includes('.pref-row {\n    flex-direction: column;'), 'PreferencesModal must stack its actual .pref-row on narrow screens')
+  // Narrow-screen stacking lives in the shared settings row, not in the modal.
+  assert.ok(prefModalSrc.includes('<SettingsRow'), 'PreferencesModal must use the shared settings rows')
+  assert.ok(fs.readFileSync(path.resolve('src/components/ui/SettingsRow.vue'), 'utf-8').includes('@include bp(mobile)'), 'Settings rows must stack on phones')
 
   console.log('  PASS: PreferencesModal provides complete controls for Language, Appearance, and Storage.')
 }
@@ -81,8 +81,10 @@ console.log('[3/6] Testing global SCSS and menu contrast variables in dark mode.
   assert.ok(globalScss.includes('[data-theme="dark"], .dark'), 'global.scss must style both data-theme="dark" and .dark')
 
   // KeynoteMenuBar & MenuBranch must style dark menu panel explicitly
-  assert.ok(menuBarSrc.includes('data-theme="dark"') || menuBarSrc.includes('var(--bg-panel'), 'KeynoteMenuBar must support dark mode')
-  assert.ok(menuBranchSrc.includes('data-theme="dark"') || menuBranchSrc.includes('var(--bg-panel'), 'MenuBranch must support dark mode')
+  // Menus inherit dark mode through the shared themed menu surface.
+  assert.ok(menuBarSrc.includes('@include menu-surface'), 'KeynoteMenuBar must use the shared menu surface')
+  assert.ok(menuBranchSrc.includes('@include menu-surface'), 'MenuBranch must use the shared menu surface')
+  assert.ok(globalScss.includes('font-family: inherit;'), 'Form controls must inherit the UI font')
 
   console.log('  PASS: CSS variables define translucent dark panel background preventing white-on-white menus.')
 }
@@ -180,7 +182,7 @@ console.log('[6/6] Testing Unified Semantic Tokens and Dark Mode Consistency...'
   assert.ok(variableScss.includes('$bgApp: var(--bg-app'), 'variable.scss $bgApp must bridge to var(--bg-app)')
 
   // MoveablePanel must use semantic tokens, not hardcoded white
-  assert.ok(moveablePanelSrc.includes('background-color: var(--bg-panel'), 'MoveablePanel must use var(--bg-panel)')
+  assert.ok(moveablePanelSrc.includes('@include glass-surface(elevated)'), 'MoveablePanel must use the shared themed glass surface')
   assert.ok(!moveablePanelSrc.includes('background-color: #fff;'), 'MoveablePanel must not hardcode white background')
   assert.ok(moveablePanelSrc.includes('color: var(--text-primary'), 'MoveablePanel must use var(--text-primary)')
 
