@@ -521,6 +521,8 @@ const openThemeChooser = () => {
 .left, .right, .center-title {
   display: flex;
   align-items: center;
+  border-radius: 13px;
+  padding: 2px 4px;
 }
 .native-file-input { display: none; }
 .app-menu-btn {
@@ -731,6 +733,33 @@ const openThemeChooser = () => {
 
 }
 
+/* Flat hierarchy: glass belongs to rails; actions inside them stay quiet. */
+.left, .right, .center-title {
+  .header-pill,
+  .app-menu-btn,
+  .save-status-pill {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .header-pill {
+    background: transparent;
+    border-radius: 9px;
+
+    &:hover {
+      background: var(--bg-control, rgba(0, 0, 0, 0.05));
+    }
+  }
+}
+
+@media (min-width: 1025px) {
+  .center-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
 .popover-menu-item {
   display: flex;
   padding: 8px 10px;
@@ -837,9 +866,6 @@ const openThemeChooser = () => {
   }
 }
 @media (max-width: 1024px) {
-  :deep(.keynote-menu-bar) {
-    display: none;
-  }
   .report-pill, .offline-pill {
     display: none;
   }
@@ -852,6 +878,23 @@ const openThemeChooser = () => {
     display: none;
   }
   .header-pill span {
+    display: none;
+  }
+  .right {
+    display: none;
+  }
+  .left {
+    flex: 0 0 auto;
+  }
+  .center-title {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 0;
+  }
+  .app-menu-btn .app-name,
+  .app-menu-btn .caret,
+  .center-title .doc-icon,
+  .center-title .ext {
     display: none;
   }
   .header-pill {

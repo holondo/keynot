@@ -1,6 +1,6 @@
 <template>
   <div class="menu-branch">
-    <div v-for="command in commands" :key="command.id" class="command-wrap" @mouseenter="placeSubmenu(command.id, $event)">
+    <div v-for="command in commands" :key="command.id" class="command-wrap" @mouseenter="placeSubmenu(command.id, $event)" @focusin="placeSubmenu(command.id, $event)">
       <button
         class="command"
         role="menuitem"
@@ -26,7 +26,7 @@ import type { KeynoteCommand } from '@/commands/keynoteCommands'
 defineProps<{ commands: KeynoteCommand[] }>()
 const emit = defineEmits<{ (event: 'execute', commandId: string): void }>()
 const opensLeft = reactive<Record<string, boolean>>({})
-const placeSubmenu = (id: string, event: MouseEvent) => {
+const placeSubmenu = (id: string, event: Event) => {
   const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
   opensLeft[id] = rect.right + 220 > window.innerWidth
 }

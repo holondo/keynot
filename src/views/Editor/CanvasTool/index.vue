@@ -557,6 +557,10 @@ const openThemeChooser = () => {
   padding: 0 14px;
   user-select: none;
   z-index: 10;
+  margin: 3px 10px;
+  width: calc(100% - 20px);
+  height: 40px;
+  border-radius: 14px;
 }
 
 .toolbar-cluster {
@@ -932,13 +936,56 @@ const openThemeChooser = () => {
 
 @media screen and (max-width: 768px) {
   .canvas-tool {
-    padding: 0 6px;
-    height: 42px;
+    margin: 3px 6px;
+    width: calc(100% - 12px);
+    padding: 3px 5px;
+    height: 44px;
   }
   .left-cluster .zoom-pill,
   .left-cluster .undo-capsule,
   .left-cluster .ai-capsule-btn span {
     display: none;
+  }
+}
+
+/* Flat hierarchy: one glass rail, borderless inner controls. */
+.canvas-tool {
+  .keynote-pill-btn,
+  .keynote-pill-capsule,
+  .keynote-insert-capsule,
+  .keynote-inspector-capsule {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    border-radius: 10px;
+  }
+
+  .keynote-pill-btn:hover,
+  .keynote-pill-capsule:hover,
+  .keynote-insert-capsule:hover,
+  .keynote-inspector-capsule:hover {
+    background: var(--bg-control, rgba(0, 0, 0, 0.04));
+    box-shadow: none;
+    transform: none;
+  }
+
+  .capsule-item,
+  .capsule-caret,
+  .insert-item,
+  .insert-item-split,
+  .insert-item-split .split-left,
+  .insert-item-split .split-right,
+  .inspector-item {
+    border-radius: 8px;
+  }
+
+  .ai-capsule-btn {
+    background: rgba(175, 82, 222, 0.09);
+  }
+
+  .pill-divider,
+  .insert-sep {
+    opacity: .65;
   }
 }
 </style>

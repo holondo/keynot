@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="sheet">
-      <div v-if="visible" class="sheet-layer" @keydown.esc.prevent="closeSheet">
+      <div v-if="visible" ref="sheetLayer" class="sheet-layer" @keydown.esc.prevent="closeSheet" @keydown.tab="trapFocus">
         <button class="sheet-scrim" :aria-label="t('common.close')" @click="closeSheet"></button>
         <GlassSurface class="responsive-sheet" variant="elevated" role="dialog" aria-modal="true" :aria-label="title">
           <header class="sheet-header">
@@ -17,16 +17,28 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { t } from '@/i18n'
 import GlassSurface from './GlassSurface.vue'
 import PillButton from './PillButton.vue'
 
 const props = defineProps<{ visible: boolean; title: string; canGoBack?: boolean; returnFocus?: HTMLElement | null }>()
 const emit = defineEmits<{ close: []; back: [] }>()
+const sheetLayer = ref<HTMLElement | null>(null)
 const closeSheet = () => emit('close')
+const focusableElements = () => Array.from(sheetLayer.value?.querySelectorAll<HTMLElement>('button:not(:disabled), [href], input:not(:disabled), [tabindex]:not([tabindex="-1"])') || [])
+const trapFocus = (event: KeyboardEvent) => {
+  const items = focusableElements()
+  if (!items.length) return
+  const first = items[0]
+  const last = items[items.length - 1]
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+}
 watch(() => props.visible, async visible => {
-  if (!visible) { await nextTick(); props.returnFocus?.focus() }
+  await nextTick()
+  if (visible) focusableElements()[0]?.focus()
+  else props.returnFocus?.focus()
 })
 </script>
 

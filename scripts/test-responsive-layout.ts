@@ -15,8 +15,10 @@ console.log('=== KeyNot Responsive Layout & Modernization Test Suite ===\n')
   assert.ok(mobileMenu.includes('min-height: var(--control-touch)'), 'Mobile menu rows must meet touch sizing')
   assert.ok(sheet.includes('role="dialog"'), 'Responsive sheet must use dialog semantics')
   assert.ok(sheet.includes('returnFocus'), 'Responsive sheet must restore trigger focus')
+  assert.ok(sheet.includes('trapFocus'), 'Responsive sheet must contain keyboard focus')
   assert.ok(menuBar.includes('<MobileCommandMenu'), 'Menu bar must select the mobile renderer')
   assert.ok(branch.includes('opens-left'), 'Desktop nested menus must support leftward placement')
+  assert.ok(branch.includes('@focusin="placeSubmenu'), 'Keyboard focus must also calculate submenu edge placement')
 }
 
 // 1. Breakpoint Tier Calculations
@@ -62,6 +64,7 @@ console.log('\n[2/5] Testing Editor Adaptive Layout & Drawer Toggles...')
   const headerSrc = fs.readFileSync(path.resolve('src/views/Editor/EditorHeader/index.vue'), 'utf-8')
   const canvasToolSrc = fs.readFileSync(path.resolve('src/views/Editor/CanvasTool/index.vue'), 'utf-8')
   assert.ok(headerSrc.includes("import FloatingRail from '@/components/ui/FloatingRail.vue'"), 'Header must consume shared floating rails')
+  assert.ok(!headerSrc.includes(':deep(.keynote-menu-bar)'), 'Header must not hide the responsive menu component at tablet/mobile widths')
   assert.ok(canvasToolSrc.includes("import FloatingRail from '@/components/ui/FloatingRail.vue'"), 'Creation toolbar must consume shared floating rails')
   assert.ok(canvasToolSrc.includes('<FloatingRail'), 'Creation toolbar must render as a shared rail')
   assert.ok(canvasToolSrc.includes('scroll-snap-type: x proximity'), 'Narrow toolbar must use scroll snap')

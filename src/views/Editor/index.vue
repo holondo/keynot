@@ -177,6 +177,11 @@ usePasteEvent()
   @include bp(tablet) {
     --thumbs-w: 128px;
   }
+
+  &.tier-mobile {
+    --header-h: 54px;
+    --toolbar-h: 50px;
+  }
 }
 .layout-header {
   height: var(--header-h);

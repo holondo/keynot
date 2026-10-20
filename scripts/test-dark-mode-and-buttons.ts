@@ -30,6 +30,7 @@ console.log('[1/6] Testing CanvasTool and EditorHeader button cleanliness...')
 
   // CanvasTool right cluster must contain the 3 standard Keynote inspector triggers
   assert.ok(canvasToolSrc.includes('keynote-inspector-capsule'), 'CanvasTool must contain keynote-inspector-capsule')
+  assert.ok(canvasToolSrc.includes('Flat hierarchy: one glass rail, borderless inner controls'), 'Canvas toolbar must avoid nested glass pills')
   assert.ok(canvasToolSrc.includes("switchInspectorGroup('format')"), 'Must have format inspector trigger')
   assert.ok(canvasToolSrc.includes("switchInspectorGroup('animate')"), 'Must have animate inspector trigger')
   assert.ok(canvasToolSrc.includes("switchInspectorGroup('document')"), 'Must have document inspector trigger')
@@ -41,6 +42,7 @@ console.log('[1/6] Testing CanvasTool and EditorHeader button cleanliness...')
   // EditorHeader must have PreferencesModal trigger
   assert.ok(editorHeaderSrc.includes('preferencesModalVisible'), 'EditorHeader must expose preferencesModal')
   assert.ok(editorHeaderSrc.includes('<PreferencesModal'), 'EditorHeader must mount PreferencesModal')
+  assert.ok(editorHeaderSrc.includes('Flat hierarchy: glass belongs to rails'), 'Header must keep glass on rails and inner actions flat')
 
   console.log('  PASS: Header and canvas toolbar are clean; dark mode & language are relegated to Preferences.')
 }
