@@ -57,6 +57,7 @@ section {
   --bg-input: #ffffff;
   --bg-card: #ffffff;
   --bg-hover: rgba(0, 0, 0, 0.06);
+  --bg-panel: rgba(255, 255, 255, 0.98);
   --text-primary: rgba(0, 0, 0, 0.88);
   --text-secondary: rgb(121, 121, 121);
   --text-tertiary: #86868b;
@@ -80,7 +81,7 @@ section {
   --disabled-opacity: 0.3;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"], .dark {
   --bg-app: #1e1e20;
   --bg-header: rgba(30, 30, 34, 0.85);
   --bg-toolbar: rgba(30, 30, 34, 0.85);
@@ -94,18 +95,19 @@ section {
   --bg-inspector: rgb(34, 34, 38);
   --bg-inspector-header: rgba(25, 25, 28, 0.5);
   --bg-inspector-card: rgba(45, 45, 52, 0.75);
-  --bg-control: rgba(255, 255, 255, 0.08);
-  --bg-control-active: #4e4e56;
+  --bg-control: rgba(255, 255, 255, 0.1);
+  --bg-control-active: rgba(255, 255, 255, 0.18);
   --bg-input: #2a2a2e;
   --bg-card: #2c2c30;
   --bg-hover: rgba(255, 255, 255, 0.08);
+  --bg-panel: rgba(38, 38, 44, 0.98);
   --text-primary: #f5f5f7;
   --text-secondary: #d1d1d6;
   --text-tertiary: #8e8e93;
   --text-inspector: #e5e5ea;
-  --border-color: rgba(255, 255, 255, 0.1);
+  --border-color: rgba(255, 255, 255, 0.14);
   --border-divider: rgba(255, 255, 255, 0.08);
-  --popover-bg: rgba(38, 38, 44, 0.95);
+  --popover-bg: rgba(38, 38, 44, 0.96);
   --accent-color: #0a84ff;
   --accent-green: #30d158;
 

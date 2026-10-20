@@ -205,7 +205,7 @@ const { currentLocale, setLocale, t } = useI18n()
 
 .segmented-control {
   display: inline-flex;
-  background: var(--bg-card, #ffffff);
+  background: var(--bg-control, rgba(0, 0, 0, 0.05));
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   border-radius: 8px;
   padding: 2px;
@@ -235,7 +235,7 @@ const { currentLocale, setLocale, t } = useI18n()
     }
 
     &:hover:not(.active) {
-      color: var(--text-primary, #000);
+      color: var(--text-primary, #1d1d1f);
     }
 
     &.active {

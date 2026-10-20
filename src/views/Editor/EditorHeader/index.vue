@@ -130,39 +130,7 @@
         <span>{{ t('header.export') }}</span>
       </div>
 
-      <!-- Language Selector Capsule (English first default, switch to Portuguese) -->
-      <Popover trigger="click" placement="bottom-end" v-model:value="languageMenuVisible">
-        <template #content>
-          <div class="lang-popover-menu">
-            <div class="lang-popover-header">{{ t('header.language') }}</div>
-            <div
-              class="lang-popover-item"
-              :class="{ active: currentLocale === 'en-US' }"
-              @click="setLocale('en-US'); languageMenuVisible = false"
-            >
-              <span class="flag">🇺🇸</span>
-              <span class="name">English</span>
-              <span class="check" v-if="currentLocale === 'en-US'">✓</span>
-            </div>
-            <div
-              class="lang-popover-item"
-              :class="{ active: currentLocale === 'pt-BR' }"
-              @click="setLocale('pt-BR'); languageMenuVisible = false"
-            >
-              <span class="flag">🇧🇷</span>
-              <span class="name">Português (Brasil)</span>
-              <span class="check" v-if="currentLocale === 'pt-BR'">✓</span>
-            </div>
-          </div>
-        </template>
-        <div class="header-pill lang-pill" :title="t('header.language')">
-          <span class="lang-flag">{{ currentLocale === 'pt-BR' ? '🇧🇷' : '🇺🇸' }}</span>
-          <span class="lang-code">{{ currentLocale === 'pt-BR' ? 'PT' : 'EN' }}</span>
-          <i-icon-park-outline:down class="caret" />
-        </div>
-      </Popover>
-
-      <!-- Preferences Button -->
+      <!-- Preferences / Settings Button -->
       <div class="header-pill icon-only" :title="t('header.preferences')" @click="preferencesModalVisible = true">
         <i-icon-park-outline:setting-two class="icon" />
       </div>
@@ -333,7 +301,6 @@ const checkedMenuCommandIds = computed(() => [
 
 const { currentLocale, setLocale, t } = useI18n()
 const mainMenuVisible = ref(false)
-const languageMenuVisible = ref(false)
 const preferencesModalVisible = ref(false)
 const hotkeyDrawerVisible = ref(false)
 const compatibilityModalVisible = ref(false)
@@ -760,75 +727,8 @@ const openThemeChooser = () => {
     padding: 0 7px;
   }
 
-  &.lang-pill {
-    padding: 0 8px;
-    gap: 4px;
-    font-weight: 600;
-    font-size: 11px;
-
-    .lang-flag {
-      font-size: 12px;
-    }
-
-    .lang-code {
-      letter-spacing: 0.2px;
-    }
-
-    .caret {
-      font-size: 8px;
-      color: var(--text-tertiary, #86868b);
-    }
-  }
 }
 
-.lang-popover-menu {
-  min-width: 170px;
-  padding: 4px;
-
-  .lang-popover-header {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-tertiary, #86868b);
-    padding: 4px 8px 6px;
-  }
-
-  .lang-popover-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 6px;
-    font-size: 12.5px;
-    color: var(--text-primary, #1d1d1f);
-    cursor: pointer;
-    transition: background 0.12s;
-
-    .flag {
-      font-size: 14px;
-    }
-
-    .name {
-      flex: 1;
-    }
-
-    .check {
-      color: var(--accent-color, #007aff);
-      font-weight: 700;
-      font-size: 12px;
-    }
-
-    &:hover {
-      background: var(--bg-hover, rgba(0, 0, 0, 0.05));
-    }
-
-    &.active {
-      font-weight: 600;
-      color: var(--accent-color, #007aff);
-    }
-  }
-}
 .popover-menu-item {
   display: flex;
   padding: 8px 10px;

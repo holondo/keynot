@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
-    "test": "npm run type-check && node --experimental-strip-types scripts/test-command-registry.ts && node --experimental-strip-types scripts/test-image-tools.ts && node --experimental-strip-types scripts/test-inspector-regression.ts && node --experimental-strip-types scripts/test-table-and-motion-parity.ts && node --experimental-strip-types scripts/verify-keynote-and-motion.ts && node --experimental-strip-types scripts/test-i18n-parity.ts",
+    "test": "npm run type-check && node --experimental-strip-types scripts/test-command-registry.ts && node --experimental-strip-types scripts/test-image-tools.ts && node --experimental-strip-types scripts/test-inspector-regression.ts && node --experimental-strip-types scripts/test-table-and-motion-parity.ts && node --experimental-strip-types scripts/verify-keynote-and-motion.ts && node --experimental-strip-types scripts/test-i18n-parity.ts && node --experimental-strip-types scripts/test-dark-mode-and-buttons.ts",
     "test:image": "node --experimental-strip-types scripts/test-image-tools.ts && node --experimental-strip-types scripts/test-inspector-regression.ts",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "prepare": "husky install"

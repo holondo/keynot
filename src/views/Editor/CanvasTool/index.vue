@@ -270,28 +270,8 @@
       </div>
     </div>
 
-    <!-- Right Cluster: Light/Dark Mode | Share | Format / Animate / Document Capsule (Image 4) -->
+    <!-- Right Cluster: Format / Animate / Document Capsule (Keynote Parity) -->
     <div class="toolbar-cluster right-cluster">
-      <!-- Dark / Light Mode Pill -->
-      <div 
-        class="keynote-pill-btn icon-only theme-mode-pill" 
-        @click="toggleColorMode()" 
-        :title="mainStore.colorMode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-        v-tooltip="mainStore.colorMode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-      >
-        <i-icon-park-outline:sun-one v-if="mainStore.colorMode === 'dark'" class="main-icon mode-icon sun-icon" />
-        <i-icon-park-outline:moon v-else class="main-icon mode-icon moon-icon" />
-      </div>
-
-      <!-- Share / Export Pill -->
-      <div 
-        class="keynote-pill-btn icon-only share-pill" 
-        @click="openExportDialog()" 
-        v-tooltip="'Share & Export (.key, PPTX, PDF)'"
-      >
-        <i-icon-park-outline:share-two class="main-icon" />
-      </div>
-
       <!-- Inspector Mode Segmented Capsule (Image 4: [ 🖌 | ◇ | ▭ ]) -->
       <div class="keynote-inspector-capsule">
         <div
@@ -557,15 +537,6 @@ const openAIPPTDialog = () => {
 
 const openThemeChooser = () => {
   mainStore.setThemeChooserVisible(true)
-}
-
-const openExportDialog = () => {
-  mainStore.setDialogForExport('keynote')
-}
-
-const toggleColorMode = () => {
-  const nextMode = mainStore.colorMode === 'dark' ? 'light' : 'dark'
-  mainStore.setColorMode(nextMode)
 }
 </script>
 
@@ -906,15 +877,6 @@ const toggleColorMode = () => {
         color: #ffffff;
       }
     }
-  }
-}
-
-.theme-mode-pill {
-  .sun-icon {
-    color: #ff9500;
-  }
-  .moon-icon {
-    color: #5856d6;
   }
 }
 

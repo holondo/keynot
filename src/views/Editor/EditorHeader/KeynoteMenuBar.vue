@@ -133,5 +133,27 @@ onBeforeUnmount(() => document.removeEventListener('click', closeMenus))
 .menu-root { position: relative; overflow: visible; }
 .menu-trigger { border: 0; background: transparent; color: var(--text-primary, #1d1d1f); padding: 4px 7px; border-radius: 5px; font: inherit; cursor: default; }
 .menu-trigger:hover, .menu-trigger.open { background: var(--accent-color, #007aff); color: #fff; }
-.menu-panel { position: absolute; z-index: 1002; top: calc(100% + 5px); left: 0; min-width: 238px; padding: 5px; overflow: visible; border: 1px solid var(--border-color, rgba(0,0,0,.12)); border-radius: 9px; background: var(--bg-panel, rgba(255,255,255,.98)); box-shadow: 0 12px 36px rgba(0,0,0,.22); backdrop-filter: blur(24px); }
+.menu-panel { 
+  position: absolute; 
+  z-index: 1002; 
+  top: calc(100% + 5px); 
+  left: 0; 
+  min-width: 238px; 
+  padding: 5px; 
+  overflow: visible; 
+  border: 1px solid var(--border-color, rgba(0,0,0,.12)); 
+  border-radius: 9px; 
+  background: var(--bg-panel, #ffffff); 
+  color: var(--text-primary, #1d1d1f);
+  box-shadow: 0 12px 36px rgba(0,0,0,.35); 
+  backdrop-filter: blur(24px); 
+  -webkit-backdrop-filter: blur(24px);
+}
+
+:global([data-theme="dark"]) .menu-panel,
+:global(.dark) .menu-panel {
+  background: rgba(38, 38, 44, 0.98);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #f5f5f7;
+}
 </style>

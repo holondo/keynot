@@ -110,5 +110,11 @@ onMounted(() => {
 .tippy-box[data-theme~='popover'] {
   border: 0;
   outline: 0;
+  background-color: transparent !important;
+  box-shadow: none !important;
+
+  .tippy-content {
+    padding: 0 !important;
+  }
 }
 </style>

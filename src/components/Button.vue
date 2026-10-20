@@ -83,7 +83,7 @@ const handleClick = () => {
 
     &:hover {
       background-color: var(--bg-control-active, #ebebee);
-      color: var(--text-primary, #000);
+      color: var(--text-primary, #1d1d1f);
       border-color: var(--border-color, rgba(0, 0, 0, 0.18));
     }
   }
@@ -128,6 +128,19 @@ const handleClick = () => {
     color: var(--text-tertiary, #a1a1aa);
     cursor: default;
     box-shadow: none;
+  }
+}
+
+:global([data-theme="dark"]) .button.default,
+:global(.dark) .button.default {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f5f5f7;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
   }
 }
 </style>

@@ -85,7 +85,7 @@ export const useMainStore = defineStore('main', {
     showMarkupPanel: false, // 打开类型标注面板
     showImageLibPanel: false, // 打开图片库面板
     showAIPPTDialog: false, // 打开AIPPT创建窗口
-    colorMode: (localStorage.getItem('keynot_color_mode') as 'light' | 'dark' | 'auto') || 'light',
+    colorMode: ((typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('theme') as 'light' | 'dark' | 'auto') || localStorage.getItem('keynot_color_mode') as 'light' | 'dark' | 'auto') || 'light',
     themeChooserVisible: false,
     editorViewMode: 'navigator',
     showPresenterNotes: false,
