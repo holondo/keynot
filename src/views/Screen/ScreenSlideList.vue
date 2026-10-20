@@ -1,31 +1,28 @@
 <template>
-  <div class="screen-slide-list">
-    <div 
+  <div class="screen-slide-list" ref="listRef">
+    <div
       :class="[
-        'slide-item', 
-        `turning-mode-${slide.turningMode}`,
+        'slide-item',
         {
           'current': index === slideIndex,
-          'before': index < slideIndex,
-          'after': index > slideIndex,
-          'hide': (index === slideIndex - 1 || index === slideIndex + 1) && slide.turningMode !== slidesWithTurningMode[slideIndex].turningMode,
           'last': index === slideIndex - 1,
           'next': index === slideIndex + 1,
         }
       ]"
-      v-for="(slide, index) in slidesWithTurningMode" 
+      :data-index="index"
+      v-for="(slide, index) in slides"
       :key="slide.id"
     >
-      <div 
-        class="slide-content" 
+      <div
+        class="slide-content"
         :style="{
           width: slideWidth + 'px',
           height: slideHeight + 'px',
         }"
         v-if="Math.abs(slideIndex - index) < 2 || slide.animations?.length"
       >
-        <ScreenSlide 
-          :slide="slide" 
+        <ScreenSlide
+          :slide="slide"
           :scale="scale"
           :animationIndex="animationIndex"
           :turnSlideToId="turnSlideToId"
@@ -37,12 +34,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, provide, watch } from 'vue'
+import { computed, provide, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSlidesStore } from '@/store'
 import { injectKeySlideScale } from '@/types/injectKey'
-import { runMagicMoveTransition } from '@/utils/magicMove'
-import useSlidesWithTurningMode from './hooks/useSlidesWithTurningMode'
+import useSlideTransitions from './hooks/useSlideTransitions'
 
 import ScreenSlide from './ScreenSlide.vue'
 
@@ -56,23 +52,11 @@ const props = defineProps<{
 
 const { slides, slideIndex, viewportSize } = storeToRefs(useSlidesStore())
 
-const { slidesWithTurningMode } = useSlidesWithTurningMode()
-
 const scale = computed(() => props.slideWidth / viewportSize.value)
 provide(injectKeySlideScale, scale)
 
-watch(slideIndex, async (newIdx, oldIdx) => {
-  if (oldIdx === undefined || newIdx === oldIdx) return
-  const targetSlide = slides.value[newIdx]
-  const prevSlide = slides.value[oldIdx]
-  if (!targetSlide || !prevSlide) return
-
-  const mode = slidesWithTurningMode.value[newIdx]?.turningMode || targetSlide.turningMode
-  if (mode === 'magicMove') {
-    await nextTick()
-    runMagicMoveTransition(prevSlide, targetSlide, { mode: 'screen' })
-  }
-})
+const listRef = ref<HTMLElement | null>(null)
+useSlideTransitions(listRef, slides, slideIndex)
 </script>
 
 <style lang="scss" scoped>
@@ -88,130 +72,13 @@ watch(slideIndex, async (newIdx, oldIdx) => {
   left: 0;
   width: 100%;
   height: 100%;
-
-  &:not(.last, .next) {
-    z-index: -1;
-  }
+  // Only the current slide is visible; transitions reveal the outgoing one while they run.
+  visibility: hidden;
+  z-index: 0;
 
   &.current {
+    visibility: visible;
     z-index: 2;
-  }
-
-  &.hide {
-    opacity: 0;
-  }
-
-  &.turning-mode-no {
-    &.before {
-      transform: translateY(-100%);
-    }
-    &.after {
-      transform: translateY(100%);
-    }
-  }
-  &.turning-mode-magicMove {
-    transition: opacity .3s ease;
-    &.before {
-      pointer-events: none;
-      opacity: 0;
-    }
-    &.after {
-      pointer-events: none;
-      opacity: 0;
-    }
-  }
-  &.turning-mode-fade {
-    transition: opacity .75s;
-    &.before {
-      pointer-events: none;
-      opacity: 0;
-    }
-    &.after {
-      pointer-events: none;
-      opacity: 0;
-    }
-  }
-  &.turning-mode-slideX {
-    transition: transform .35s;
-    &.before {
-      transform: translateX(-100%);
-    }
-    &.after {
-      transform: translateX(100%);
-    }
-  }
-  &.turning-mode-slideY {
-    transition: transform .35s;
-    &.before {
-      transform: translateY(-100%);
-    }
-    &.after {
-      transform: translateY(100%);
-    }
-  }
-  &.turning-mode-slideX3D {
-    transition: transform .5s;
-    &.before {
-      transform: translateX(-100%) scale(.5);
-    }
-    &.after {
-      transform: translateX(100%) scale(.5);
-    }
-  }
-  &.turning-mode-slideY3D {
-    transition: transform .5s;
-    &.before {
-      transform: translateY(-100%) scale(.5);
-    }
-    &.after {
-      transform: translateY(100%) scale(.5);
-    }
-  }
-  &.turning-mode-rotate {
-    transition: transform .5s;
-    transform-origin: 0 0;
-    &.before {
-      transform: rotate(90deg);
-    }
-    &.after {
-      transform: rotate(-90deg);
-    }
-  }
-  &.turning-mode-scaleY {
-    transition: transform .5s;
-    &.before {
-      transform: scaleY(.1);
-    }
-    &.after {
-      transform: scaleY(.1);
-    }
-  }
-  &.turning-mode-scaleX {
-    transition: transform .5s;
-    &.before {
-      transform: scaleX(.1);
-    }
-    &.after {
-      transform: scaleX(.1);
-    }
-  }
-  &.turning-mode-scale {
-    transition: transform .5s;
-    &.before {
-      transform: scale(.25);
-    }
-    &.after {
-      transform: scale(.25);
-    }
-  }
-  &.turning-mode-scaleReverse {
-    transition: transform .5s;
-    &.before {
-      transform: scale(2);
-    }
-    &.after {
-      transform: scale(2);
-    }
   }
 }
 .slide-content {
@@ -224,4 +91,4 @@ watch(slideIndex, async (newIdx, oldIdx) => {
   justify-content: center;
   align-items: center;
 }
-</style>
+</style>

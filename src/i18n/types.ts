@@ -295,6 +295,20 @@ export interface I18nTranslations {
       automatically: string
       delay: string
       skipSlide: string
+      change: string
+      done: string
+      preview: string
+      direction: string
+      fadeUnmatched: string
+      matchedObjects: string
+      lastSlideHint: string
+      noMatchesHint: string
+      unlink: string
+      linkHint: string
+      linkPlaceholder: string
+      applyToAll: string
+      appliedToAll: string
+      approximateHint: string
     }
     builds: {
       buildIn: string

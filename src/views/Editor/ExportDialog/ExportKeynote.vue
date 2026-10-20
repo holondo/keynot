@@ -3,30 +3,30 @@
     <div class="configs">
       <div class="status-banner" :class="{ 'has-source': !!keynoteSourceBase64 }">
         <div class="status-title">
-          <strong v-if="keynoteSourceBase64">Source-Preserving .key Archive Patch Active</strong>
-          <strong v-else>Synthesized Apple Keynote (.key) Archive Bundle</strong>
+          <strong v-if="keynoteSourceBase64">{{ labels.sourceTitle }}</strong>
+          <strong v-else>{{ labels.newTitle }}</strong>
         </div>
         <div class="status-desc" v-if="keynoteSourceBase64">
-          This deck was imported from an Apple Keynote <code>.key</code> archive. Exporting will preserve the original IWA binary streams and media assets while embedding updated KeyNot scene metadata.
+          {{ labels.sourceDescription }}
         </div>
         <div class="status-desc" v-else>
-          Packages your presentation into a <code>.key</code> ZIP bundle with Snappy-framed <code>Index/Document.iwa</code>, <code>Index/Slide.iwa</code>, and lossless KeyNot round-trip metadata.
+          {{ labels.newDescription }}
         </div>
       </div>
 
       <div class="row">
-        <div class="title">Slide Range:</div>
+        <div class="title">{{ labels.range }}:</div>
         <RadioGroup
           class="config-item"
           v-model:value="rangeType"
         >
-          <RadioButton style="width: 33.33%;" value="all">All Slides</RadioButton>
-          <RadioButton style="width: 33.33%;" value="current">Current</RadioButton>
-          <RadioButton style="width: 33.33%;" value="custom">Custom</RadioButton>
+          <RadioButton style="width: 33.33%;" value="all">{{ labels.all }}</RadioButton>
+          <RadioButton style="width: 33.33%;" value="current">{{ labels.current }}</RadioButton>
+          <RadioButton style="width: 33.33%;" value="custom">{{ labels.custom }}</RadioButton>
         </RadioGroup>
       </div>
       <div class="row" v-if="rangeType === 'custom'">
-        <div class="title" :data-range="`(${range[0]} ~ ${range[1]})`">Custom Range:</div>
+        <div class="title" :data-range="`(${range[0]} ~ ${range[1]})`">{{ labels.customRange }}:</div>
         <Slider
           class="config-item"
           range
@@ -36,12 +36,20 @@
           v-model:value="range"
         />
       </div>
+
+      <div class="export-report" v-if="keynoteReport" role="status" aria-live="polite">
+        <div>{{ labels.written }}: {{ keynoteReport.written.length }}</div>
+        <details v-if="keynoteReport.keynotOnly.length" open>
+          <summary>{{ labels.keynotOnly }}: {{ keynoteReport.keynotOnly.length }}</summary>
+          <ul><li v-for="(entry, index) in keynoteReport.keynotOnly" :key="index"><strong>{{ entry.feature }}</strong>: {{ entry.message }}</li></ul>
+        </details>
+      </div>
     </div>
     <div class="btns">
-      <Button class="btn export" type="primary" @click="exportKeynote(selectedSlides)">
-        <i-icon-park-outline:download /> Export .key Archive
+      <Button class="btn export" type="primary" :disabled="exporting" @click="exportKeynote(selectedSlides)">
+        <i-icon-park-outline:download /> {{ labels.export }}
       </Button>
-      <Button class="btn close" @click="emit('close')">Close</Button>
+      <Button class="btn close" @click="emit('close')">{{ labels.close }}</Button>
     </div>
   </div>
 </template>
@@ -51,6 +59,7 @@ import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSlidesStore } from '@/store'
 import useExport from '@/hooks/useExport'
+import { currentLocale } from '@/i18n'
 
 import Slider from '@/components/Slider.vue'
 import Button from '@/components/Button.vue'
@@ -62,7 +71,21 @@ const emit = defineEmits<{
 }>()
 
 const { slides, currentSlide, keynoteSourceBase64 } = storeToRefs(useSlidesStore())
-const { exportKeynote } = useExport()
+const { exportKeynote, exporting, keynoteReport } = useExport()
+
+const labels = computed(() => currentLocale.value === 'pt-BR' ? {
+  sourceTitle: 'Edições no arquivo original do Keynote', newTitle: 'Apresentação nativa do Keynote',
+  sourceDescription: 'Texto formatado, geometria, estilos de formas, imagens, valores de células, dados de gráficos, slides, transições e builds são gravados nos registros nativos. O relatório identifica o que fica apenas no KeyNot.',
+  newDescription: 'Crie um .key nativo com o tema incluído. Texto, formas vetoriais, imagens, transições e builds permanecem editáveis. A renderização no Apple Keynote ainda precisa ser validada.',
+  range: 'Slides', all: 'Todos', current: 'Atual', custom: 'Intervalo', customRange: 'Intervalo personalizado',
+  export: 'Exportar .key', close: 'Fechar', written: 'Alterações nativas', keynotOnly: 'Disponível apenas no KeyNot',
+} : {
+  sourceTitle: 'Edits go back into the original Keynote file', newTitle: 'Native Keynote presentation',
+  sourceDescription: 'Text formatting, geometry, shape styles, images, table cell values, chart data, slides, transitions and builds are written into native Keynote records. The report identifies features that remain in KeyNot only.',
+  newDescription: 'Create a native .key presentation using the built-in theme. Text, vector shapes, images, transitions and builds remain editable. Rendering in Apple Keynote still requires validation.',
+  range: 'Slide Range', all: 'All Slides', current: 'Current', custom: 'Custom', customRange: 'Custom Range',
+  export: 'Export .key Archive', close: 'Close', written: 'Native changes', keynotOnly: 'Available in KeyNot only',
+})
 
 const rangeType = ref<'all' | 'current' | 'custom'>('all')
 const range = ref<[number, number]>([1, slides.value.length])
@@ -86,6 +109,13 @@ const selectedSlides = computed(() => {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+}
+.export-report {
+  max-height: 180px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  ul { padding-left: 20px; }
 }
 .configs {
   width: min(400px, calc(100vw - 48px));

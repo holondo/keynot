@@ -85,7 +85,7 @@
             <div class="card-meta">
               <div class="meta-left">
                 <span class="slide-number">{{ index + 1 }}</span>
-                <span class="badge magic" v-if="element.turningMode === 'magicMove'" title="Object Transition (Magic Move)">✦ Magic</span>
+                <span class="badge magic" v-if="isMagicMove(element.transition)" title="Object Transition (Magic Move)">✦ Magic</span>
                 <span class="badge builds" v-else-if="element.animations && element.animations.length" title="Element Builds">● {{ element.animations.length }}</span>
               </div>
               <div class="meta-right">
@@ -105,6 +105,7 @@
 </template>
 
 <script lang="ts" setup>
+import { isMagicMove } from '@/configs/transitions'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore } from '@/store'

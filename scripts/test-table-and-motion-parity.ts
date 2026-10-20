@@ -5,7 +5,7 @@ import {
 } from '../src/utils/tableDataFormatter.ts'
 import {
   ACCELERATION_EASINGS,
-  DEFAULT_TRANSITION_CONFIG,
+  DEFAULT_MAGIC_MOVE,
 } from '../src/utils/magicMove.ts'
 import type { CellDataFormat, PPTTableElement, Slide } from '../src/types/slides.ts'
 
@@ -132,10 +132,11 @@ console.log('\n[2/4] Testing Table Model Structure & Metadata...')
 // 3. Motion & Transition Acceleration Easing Parity
 console.log('\n[3/4] Testing Magic Move Acceleration & Matching Configuration...')
 {
-  assert.ok(DEFAULT_TRANSITION_CONFIG.duration > 0, 'Default duration must be positive')
-  assert.equal(DEFAULT_TRANSITION_CONFIG.textMatchMode, 'object', 'Default textMatchMode must be "object"')
-  assert.equal(DEFAULT_TRANSITION_CONFIG.acceleration, 'easeInOut', 'Default acceleration must be "easeInOut"')
-  assert.equal(DEFAULT_TRANSITION_CONFIG.startMode, 'click', 'Default startMode must be "click"')
+  assert.equal(DEFAULT_MAGIC_MOVE.effect, 'apple:magic-move-implied-motion-path', 'Magic Move uses the native Keynote effect id')
+  assert.equal(DEFAULT_MAGIC_MOVE.duration, 2000, 'Keynote Magic Move defaults to 2 seconds')
+  assert.equal(DEFAULT_MAGIC_MOVE.textMatchMode, 'object', 'Default textMatchMode must be "object"')
+  assert.equal(DEFAULT_MAGIC_MOVE.acceleration, 'easeInOut', 'Default acceleration must be "easeInOut"')
+  assert.equal(DEFAULT_MAGIC_MOVE.startMode, 'click', 'Default startMode must be "click"')
 
   // Verify all 4 Keynote acceleration curves are defined
   const easings = ['easeInOut', 'easeIn', 'easeOut', 'constant'] as const

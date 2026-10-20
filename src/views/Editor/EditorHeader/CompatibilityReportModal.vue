@@ -12,7 +12,7 @@
       <div class="measure-card">
         <div class="measure-label">1. Import Structure</div>
         <div class="measure-score-row">
-          <span class="score">{{ report.measures.importStructure.score }}%</span>
+          <span class="score">{{ formatScore(report.measures.importStructure.score) }}</span>
           <span class="status" :class="report.measures.importStructure.status.toLowerCase()">{{ report.measures.importStructure.status }}</span>
         </div>
         <div class="measure-desc">{{ report.measures.importStructure.summary }}</div>
@@ -21,7 +21,7 @@
       <div class="measure-card">
         <div class="measure-label">2. Visual Fidelity</div>
         <div class="measure-score-row">
-          <span class="score">{{ report.measures.visualFidelity.score }}%</span>
+          <span class="score">{{ formatScore(report.measures.visualFidelity.score) }}</span>
           <span class="status" :class="report.measures.visualFidelity.status.toLowerCase()">{{ report.measures.visualFidelity.status }}</span>
         </div>
         <div class="measure-desc">{{ report.measures.visualFidelity.summary }}</div>
@@ -30,7 +30,7 @@
       <div class="measure-card">
         <div class="measure-label">3. Editability</div>
         <div class="measure-score-row">
-          <span class="score">{{ report.measures.editability.score }}%</span>
+          <span class="score">{{ formatScore(report.measures.editability.score) }}</span>
           <span class="status" :class="report.measures.editability.status.toLowerCase()">{{ report.measures.editability.status }}</span>
         </div>
         <div class="measure-desc">{{ report.measures.editability.summary }}</div>
@@ -39,7 +39,7 @@
       <div class="measure-card">
         <div class="measure-label">4. Export &amp; Round-Trip</div>
         <div class="measure-score-row">
-          <span class="score">{{ report.measures.exportRoundTrip.score }}%</span>
+          <span class="score">{{ formatScore(report.measures.exportRoundTrip.score) }}</span>
           <span class="status" :class="report.measures.exportRoundTrip.status.toLowerCase()">{{ report.measures.exportRoundTrip.status }}</span>
         </div>
         <div class="measure-desc">{{ report.measures.exportRoundTrip.summary }}</div>
@@ -89,6 +89,8 @@ const emit = defineEmits<{
 
 const slidesStore = useSlidesStore()
 const { compatibilityReport: report } = storeToRefs(slidesStore)
+
+const formatScore = (score: number | null) => score === null ? '—' : `${score}%`
 
 const jumpToSlide = (index: number) => {
   if (index >= 0 && index < slidesStore.slides.length) {
@@ -154,6 +156,10 @@ const exportReportJson = () => {
       &.degraded {
         background: rgba(239, 68, 68, 0.16);
         color: #ef4444;
+      }
+      &.unverified {
+        background: rgba(128, 128, 128, 0.16);
+        color: var(--text-secondary, #8e8e93);
       }
     }
   }

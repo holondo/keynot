@@ -120,7 +120,7 @@
           @click="compatibilityModalVisible = true"
         >
           <i-icon-park-outline:check-correct />
-          <span>{{ compatibilityReport.measures.visualFidelity.score }}%</span>
+          <span>{{ compatibilityReport.measures.visualFidelity.score === null ? '—' : `${compatibilityReport.measures.visualFidelity.score}%` }}</span>
         </PillButton>
 
         <FileInput

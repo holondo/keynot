@@ -11,7 +11,7 @@ import { type AST, toAST } from '@/utils/htmlParser'
 import { type SvgPoints, toPoints } from '@/utils/svgPathParser'
 import { encrypt } from '@/utils/crypto'
 import { svg2Base64 } from '@/utils/svg2Base64'
-import { buildKeynoteArchiveBlob } from '@/utils/keynoteImporter'
+import { buildNativeKeynoteArchive, type KeynoteExportReport } from '@/utils/keynoteImporter'
 import message from '@/utils/message'
 
 import BaseLatexElement from '@/views/components/element/LatexElement/BaseLatexElement.vue'
@@ -24,6 +24,7 @@ interface ExportImageConfig {
 }
 
 export default () => {
+  const keynoteReport = ref<KeynoteExportReport | null>(null)
   const slidesStore = useSlidesStore()
   const { slides, theme, viewportRatio, title, viewportSize, compatibilityReport, keynoteSourceBase64 } = storeToRefs(slidesStore)
 
@@ -81,7 +82,7 @@ export default () => {
   // Export rasterized PPTX
   const exportImagePPTX = (domRefs: NodeListOf<Element>) => {
     exporting.value = true
-    
+
     setTimeout(() => {
       const pptx = new pptxgen()
       setPPTXLayout(pptx)
@@ -121,7 +122,7 @@ export default () => {
       })
     }, 200)
   }
-  
+
   // Export native .slate / .pptist file
   const exportSpecificFile = (_slides: Slide[]) => {
     const json = {
@@ -139,7 +140,7 @@ export default () => {
     saveAs(blob, `${title.value}.pptist`)
     slidesStore.markBackedUp()
   }
-  
+
   // Export JSON file
   const exportJSON = () => {
     const json = {
@@ -159,12 +160,20 @@ export default () => {
 
   // Export Apple Keynote (.key) package (source-preserving patch or synthesized IWA bundle)
   const exportKeynote = async (_slides: Slide[] = slides.value) => {
+    if (exporting.value) return
     exporting.value = true
+    keynoteReport.value = null
     try {
-      const blob = await buildKeynoteArchiveBlob(_slides, title.value, keynoteSourceBase64.value)
+      const { blob, report } = await buildNativeKeynoteArchive(_slides, title.value, keynoteSourceBase64.value, viewportSize.value, undefined, viewportRatio.value)
+      keynoteReport.value = report
       saveAs(blob, `${title.value}.key`)
       slidesStore.markBackedUp()
-      message.success(`Exported "${title.value}.key" archive`)
+      if (report.keynotOnly.length) {
+        message.warning(`Exported "${title.value}.key": ${report.written.length} edits written to Keynote, ${report.keynotOnly.length} kept in KeyNot only.`)
+      }
+      else {
+        message.success(`Exported "${title.value}.key": ${report.written.length} edits written to Keynote.`)
+      }
     }
     catch {
       message.error('Failed to export .key archive')
@@ -476,11 +485,11 @@ export default () => {
   // 获取边框配置
   const getOutlineOption = (outline: PPTElementOutline): pptxgen.ShapeLineProps => {
     const c = formatColor(outline?.color || '#000000')
-    
+
     return {
-      color: c.color, 
+      color: c.color,
       transparency: (1 - c.alpha) * 100,
-      width: (outline.width || 1) / ratioPx2Pt.value, 
+      width: (outline.width || 1) / ratioPx2Pt.value,
       dashType: outline.style ? dashTypeMap[outline.style] as 'solid' | 'dash' | 'sysDot' : 'solid',
     }
   }
@@ -687,7 +696,7 @@ export default () => {
               y: el.height / el.viewBox[1],
             }
             const points = formatPoints(toPoints(el.path), scale)
-  
+
             let fillColor = formatColor(el.fill)
             if (el.gradient) {
               const colors = el.gradient.colors
@@ -698,7 +707,7 @@ export default () => {
             }
             if (el.pattern) fillColor = formatColor('#00000000')
             const opacity = el.opacity === undefined ? 1 : el.opacity
-  
+
             const options: pptxgen.ShapeProps = {
               x: el.left / ratioPx2Inch.value,
               y: el.top / ratioPx2Inch.value,
@@ -750,7 +759,7 @@ export default () => {
             }
             if (isBase64Image(el.pattern)) options.data = el.pattern
             else options.path = el.pattern
-  
+
             if (el.flipH) options.flipH = el.flipH
             if (el.flipV) options.flipV = el.flipV
             if (el.rotate) options.rotate = el.rotate
@@ -775,9 +784,9 @@ export default () => {
             w: (maxX - minX) / ratioPx2Inch.value,
             h: (maxY - minY) / ratioPx2Inch.value,
             line: {
-              color: c.color, 
+              color: c.color,
               transparency: (1 - c.alpha) * 100,
-              width: el.width / ratioPx2Pt.value, 
+              width: el.width / ratioPx2Pt.value,
               dashType: dashTypeMap[el.style] as 'solid' | 'dash' | 'sysDot',
               beginArrowType: el.points[0] ? 'arrow' : 'none',
               endArrowType: el.points[1] ? 'arrow' : 'none',
@@ -808,7 +817,7 @@ export default () => {
             const supplement = tinycolor(el.themeColors[len - 1]).analogous(10 + 1 - len).map(color => color.toHexString())
             chartColors = [...el.themeColors.slice(0, len - 1), ...supplement].map(color => formatColor(color).color)
           }
-          
+
           const options: pptxgen.IChartOpts = {
             x: el.left / ratioPx2Inch.value,
             y: el.top / ratioPx2Inch.value,
@@ -824,7 +833,7 @@ export default () => {
           const fontSize = 14 / ratioPx2Pt.value
           options.catAxisLabelFontSize = fontSize
           options.valAxisLabelFontSize = fontSize
-          
+
           if (el.fill || el.outline) {
             const plotArea: pptxgen.IChartPropsFillLine = {}
             if (el.fill) {
@@ -878,7 +887,7 @@ export default () => {
             type = pptx.ChartType.doughnut
             options.holeSize = 60
           }
-          
+
           pptxSlide.addChart(type, chartData, options)
         }
 
@@ -978,7 +987,7 @@ export default () => {
 
           pptxSlide.addTable(tableData, options)
         }
-        
+
         else if (el.type === 'latex') {
           const container = document.createElement('div')
           const vm = createVNode(BaseLatexElement, { elementInfo: el }, null)
@@ -1003,7 +1012,7 @@ export default () => {
 
           pptxSlide.addImage(options)
         }
-        
+
         else if (!ignoreMedia && (el.type === 'video' || el.type === 'audio')) {
           const options: pptxgen.MediaProps = {
             x: el.left / ratioPx2Inch.value,
@@ -1018,7 +1027,7 @@ export default () => {
           const extMatch = el.src.match(/\.([a-zA-Z0-9]+)(?:[\?#]|$)/)
           if (extMatch && extMatch[1]) options.extn = extMatch[1]
           else if (el.ext) options.extn = el.ext
-          
+
           const videoExts = ['avi', 'mp4', 'm4v', 'mov', 'wmv']
           const audioExts = ['mp3', 'm4a', 'mp4', 'wav', 'wma']
           if (options.extn && [...videoExts, ...audioExts].includes(options.extn)) {
@@ -1046,6 +1055,7 @@ export default () => {
     exportJSON,
     exportSpecificFile,
     exportKeynote,
+    keynoteReport,
     exportPPTX,
   }
 }

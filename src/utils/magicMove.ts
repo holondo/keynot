@@ -1,4 +1,7 @@
-import type { PPTElement, Slide, SlideTransitionConfig } from '@/types/slides'
+import type { PPTElement, Slide, SlideTransition } from '@/types/slides'
+import { createTransition } from '../configs/transitions.ts'
+import { ACCELERATION_EASINGS } from './transitionEngine.ts'
+import { runTextMorph } from './textMorph.ts'
 
 export interface MatchedElementPair {
   continuityId: string
@@ -175,147 +178,82 @@ export const analyzeSlideTransitionMatches = (
   }
 }
 
-export const ACCELERATION_EASINGS: Record<string, string> = {
-  easeInOut: 'cubic-bezier(0.42, 0, 0.58, 1)',
-  easeIn: 'cubic-bezier(0.42, 0, 1, 1)',
-  easeOut: 'cubic-bezier(0, 0, 0.58, 1)',
-  constant: 'linear',
-}
+export { ACCELERATION_EASINGS }
 
-export const DEFAULT_TRANSITION_CONFIG: Required<SlideTransitionConfig> = {
-  duration: 900,
-  easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-  acceleration: 'easeInOut',
-  startMode: 'click',
-  startDelayMs: 0,
-  unmatchedBehavior: 'fade',
-  textMatchMode: 'object',
-}
+/** Keynote's Magic Move defaults (Duration 2 s, Ease In & Ease Out, fade unmatched, by object). */
+export const DEFAULT_MAGIC_MOVE: SlideTransition = createTransition('apple:magic-move')
 
 /**
- * Execute Web Animations API (WAAPI) Object Transition (Magic Move) on the target DOM container.
- * Supports both Screen player (`#screen-element-${id} [class^=base-element-]`)
- * and Editor canvas preview (`#editable-element-${id}`).
+ * Play Magic Move from `fromSlide` (whose transition is Magic Move) to `toSlide`
+ * with the Web Animations API. In the player, word and character matching morph
+ * text token by token; the editor preview animates whole objects.
  */
 export const runMagicMoveTransition = (
   fromSlide: Slide | undefined,
   toSlide: Slide | undefined,
   options?: {
     mode?: 'screen' | 'editor'
-    containerEl?: HTMLElement | null
   }
-): Animation[] => {
-  if (!fromSlide || !toSlide) return []
+): Promise<void> => {
+  if (!fromSlide || !toSlide) return Promise.resolve()
 
   const mode = options?.mode || 'screen'
-  const config: Required<SlideTransitionConfig> = {
-    ...DEFAULT_TRANSITION_CONFIG,
-    ...(toSlide.transitionConfig || {}),
-  }
-
-  const effectiveEasing =
-    config.acceleration && ACCELERATION_EASINGS[config.acceleration]
-      ? ACCELERATION_EASINGS[config.acceleration]
-      : config.easing
+  const config: SlideTransition = { ...DEFAULT_MAGIC_MOVE, ...(fromSlide.transition ?? {}) }
+  const easing = ACCELERATION_EASINGS[config.acceleration ?? 'easeInOut']
+  const fadeUnmatched = config.unmatchedBehavior !== 'instant'
+  const granularity = config.textMatchMode ?? 'object'
 
   const analysis = analyzeSlideTransitionMatches(fromSlide, toSlide)
-  const activeAnimations: Animation[] = []
+  const running: Promise<unknown>[] = []
 
+  const wrapperSelector = (elId: string) => mode === 'editor' ? `#editable-element-${elId}` : `#screen-element-${elId}`
   const findTargetDomNode = (elId: string): HTMLElement | null => {
-    if (mode === 'editor') {
-      return document.querySelector(`#editable-element-${elId}`) as HTMLElement | null
-    }
-    return document.querySelector(`#screen-element-${elId} [class^=base-element-]`) as HTMLElement | null
+    if (mode === 'editor') return document.querySelector(`#editable-element-${elId}`) as HTMLElement | null
+    return document.querySelector(`.slide-item.current #screen-element-${elId} [class^=base-element-]`) as HTMLElement | null
   }
 
-  // 1. Animate matched pairs from previous slide geometry to current slide geometry
+  // 1. Matched objects travel from their previous geometry to the new one.
   for (const pair of analysis.matchedPairs) {
     const targetNode = findTargetDomNode(pair.toElement.id)
     if (!targetNode) continue
 
+    const textLike = pair.fromElement.type === 'text' && pair.toElement.type === 'text'
+    if (textLike && granularity !== 'object' && mode === 'screen') {
+      const fromWrapper = document.querySelector(`.slide-item.last ${wrapperSelector(pair.fromElement.id)}`) as HTMLElement | null
+      const toWrapper = document.querySelector(`.slide-item.current ${wrapperSelector(pair.toElement.id)}`) as HTMLElement | null
+      if (fromWrapper && toWrapper) {
+        running.push(runTextMorph({ fromWrapper, toWrapper, granularity, duration: config.duration, easing, fadeUnmatched }))
+        continue
+      }
+    }
+
     const { dx, dy, scaleX, scaleY, dRotate, fromOpacity, toOpacity } = pair.deltas
     const finalRotate = getElementRotate(pair.toElement)
+    const startTransform = mode === 'editor'
+      ? `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY}) rotate(${dRotate}deg)`
+      : `translate(${dx}px, ${dy}px) rotate(${finalRotate + dRotate}deg) scale(${scaleX}, ${scaleY})`
+    const endTransform = mode === 'editor'
+      ? 'translate(0px, 0px) scale(1, 1) rotate(0deg)'
+      : `translate(0px, 0px) rotate(${finalRotate}deg) scale(1, 1)`
 
-    const isTextMatch = pair.fromElement.type === 'text' && pair.toElement.type === 'text'
-    const matchGranularity = config.textMatchMode || 'object'
-
-    if (isTextMatch && (matchGranularity === 'word' || matchGranularity === 'character')) {
-      // Enhanced text granularity transition: matched text container morphs with smooth scale & drift
-      const anim = targetNode.animate(
-        [
-          {
-            transform: mode === 'editor'
-              ? `translate(${dx * 0.7}px, ${dy * 0.7}px) scale(${scaleX}, ${scaleY})`
-              : `translate(${dx * 0.7}px, ${dy * 0.7}px) scale(${scaleX}, ${scaleY})`,
-            opacity: 0.2,
-            filter: matchGranularity === 'character' ? 'blur(2px)' : 'none',
-          },
-          {
-            transform: 'translate(0px, 0px) scale(1, 1)',
-            opacity: toOpacity,
-            filter: 'none',
-          },
-        ],
-        {
-          duration: config.duration,
-          easing: effectiveEasing,
-          fill: 'none',
-        }
-      )
-      activeAnimations.push(anim)
-    } else {
-      const startTransform =
-        mode === 'editor'
-          ? `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY}) rotate(${dRotate}deg)`
-          : `translate(${dx}px, ${dy}px) rotate(${finalRotate + dRotate}deg) scale(${scaleX}, ${scaleY})`
-
-      const endTransform =
-        mode === 'editor'
-          ? 'translate(0px, 0px) scale(1, 1) rotate(0deg)'
-          : `translate(0px, 0px) rotate(${finalRotate}deg) scale(1, 1)`
-
-      targetNode.style.transformOrigin = 'center center'
-      const anim = targetNode.animate(
-        [
-          {
-            transform: startTransform,
-            opacity: fromOpacity,
-          },
-          {
-            transform: endTransform,
-            opacity: toOpacity,
-          },
-        ],
-        {
-          duration: config.duration,
-          easing: effectiveEasing,
-          fill: 'none',
-        }
-      )
-      activeAnimations.push(anim)
-    }
+    targetNode.style.transformOrigin = 'center center'
+    running.push(targetNode.animate(
+      [{ transform: startTransform, opacity: fromOpacity }, { transform: endTransform, opacity: toOpacity }],
+      { duration: config.duration, easing, fill: 'none' }
+    ).finished)
   }
 
-  // 2. Handle unmatched incoming elements according to unmatchedBehavior
-  if (config.unmatchedBehavior === 'fade') {
+  // 2. Objects only on the new slide dissolve in (or appear at once).
+  if (fadeUnmatched) {
     for (const incomingEl of analysis.unmatchedIncoming) {
       const targetNode = findTargetDomNode(incomingEl.id)
       if (!targetNode) continue
-      const toOpacity = getElementOpacity(incomingEl)
-      const anim = targetNode.animate(
-        [
-          { opacity: 0 },
-          { opacity: toOpacity },
-        ],
-        {
-          duration: Math.round(config.duration * 0.75),
-          easing: 'ease-out',
-          fill: 'none',
-        }
-      )
-      activeAnimations.push(anim)
+      running.push(targetNode.animate(
+        [{ opacity: 0 }, { opacity: getElementOpacity(incomingEl) }],
+        { duration: Math.round(config.duration * 0.75), easing: 'ease-out', fill: 'none' }
+      ).finished)
     }
   }
 
-  return activeAnimations
+  return Promise.allSettled(running).then(() => undefined)
 }

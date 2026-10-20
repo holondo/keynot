@@ -117,12 +117,12 @@ export default () => {
       }
 
       const animationName = `${ANIMATION_CLASS_PREFIX}${animation.effect}`
-      
+
       elRef.style.removeProperty('--animate-duration')
       for (const classname of elRef.classList) {
         if (classname.indexOf(ANIMATION_CLASS_PREFIX) !== -1) elRef.classList.remove(classname, `${ANIMATION_CLASS_PREFIX}animated`)
       }
-      
+
       const startCssAnim = () => {
         elRef.style.setProperty('--animate-duration', `${animation.duration}ms`)
         elRef.classList.add(animationName, `${ANIMATION_CLASS_PREFIX}animated`)
@@ -175,7 +175,7 @@ export default () => {
     for (const animation of animations) {
       const elRef: HTMLElement | null = document.querySelector(`#screen-element-${animation.elId} [class^=base-element-]`)
       if (!elRef) continue
-      
+
       elRef.getAnimations?.().forEach(anim => anim.cancel())
       elRef.style.removeProperty('--animate-duration')
       for (const classname of elRef.classList) {
@@ -243,6 +243,20 @@ export default () => {
     }
   }
 
+  // Keynote "Start Transition: Automatically": once the slide's builds have played,
+  // wait the transition delay and advance.
+  let automaticTransitionTimer = 0
+  watch([slideIndex, animationIndex, inAnimation], () => {
+    window.clearTimeout(automaticTransitionTimer)
+    if (isAudienceMode || inAnimation.value) return
+    const transition = slides.value[slideIndex.value]?.transition
+    if (!transition || transition.effect === 'none' || transition.startMode !== 'auto') return
+    if (animationIndex.value < formatedAnimations.value.length) return
+    if (slideIndex.value >= slides.value.length - 1 && !loopPlay.value) return
+    automaticTransitionTimer = window.setTimeout(execNext, transition.delay)
+  }, { immediate: true })
+  onUnmounted(() => window.clearTimeout(automaticTransitionTimer))
+
   const autoPlayInterval = ref(2500)
   const autoPlay = () => {
     closeAutoPlay()
@@ -288,9 +302,9 @@ export default () => {
 
     if (key === KEYS.UP || key === KEYS.LEFT || key === KEYS.PAGEUP) execPrev()
     else if (
-      key === KEYS.DOWN || 
+      key === KEYS.DOWN ||
       key === KEYS.RIGHT ||
-      key === KEYS.SPACE || 
+      key === KEYS.SPACE ||
       key === KEYS.ENTER ||
       key === KEYS.PAGEDOWN
     ) execNext()

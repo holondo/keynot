@@ -1,44 +1,42 @@
 <template>
-  <div class="mobile-player" 
+  <div class="mobile-player"
     :style="{
       width: playerSize.width + 'px',
       height: playerSize.height + 'px',
       transform: `rotate(90deg) translateY(-${playerSize.height}px)`,
     }"
   >
-    <div 
-      class="screen-slide-list" 
+    <div
+      class="screen-slide-list"
+      ref="listRef"
       @click="toolVisible = !toolVisible"
       @touchstart="$event => touchStartListener($event)"
       @touchend="$event => touchEndListener($event)"
     >
-      <div 
+      <div
         :class="[
-          'slide-item', 
-          `turning-mode-${slide.turningMode || 'slideY'}`,
+          'slide-item',
           {
             'current': index === slideIndex,
-            'before': index < slideIndex,
-            'after': index > slideIndex,
-            'hide': (index === slideIndex - 1 || index === slideIndex + 1) && slide.turningMode !== slidesWithTurningMode[slideIndex].turningMode,
             'last': index === slideIndex - 1,
             'next': index === slideIndex + 1,
           }
         ]"
-        v-for="(slide, index) in slidesWithTurningMode" 
+        :data-index="index"
+        v-for="(slide, index) in slides"
         :key="slide.id"
       >
-        <div 
-          class="slide-content" 
+        <div
+          class="slide-content"
           :style="{
             width: slideSize.width + 'px',
             height: slideSize.height + 'px',
           }"
           v-if="Math.abs(slideIndex - index) < 2"
         >
-          <ThumbnailSlide 
-            :slide="slide" 
-            :size="slideSize.width" 
+          <ThumbnailSlide
+            :slide="slide"
+            :size="slideSize.width"
           />
         </div>
       </div>
@@ -58,7 +56,7 @@ import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSlidesStore } from '@/store'
 import type { Mode } from '@/types/mobile'
-import useSlidesWithTurningMode from '../Screen/hooks/useSlidesWithTurningMode'
+import useSlideTransitions from '../Screen/hooks/useSlideTransitions'
 
 import ThumbnailSlide from '@/views/components/ThumbnailSlide/index.vue'
 import MobileThumbnails from './MobileThumbnails.vue'
@@ -70,7 +68,9 @@ defineProps<{
 const slidesStore = useSlidesStore()
 const { slides, slideIndex, viewportRatio } = storeToRefs(slidesStore)
 
-const { slidesWithTurningMode } = useSlidesWithTurningMode()
+const listRef = ref<HTMLElement | null>(null)
+// Slides are drawn as thumbnails here, so Magic Move plays as a dissolve.
+useSlideTransitions(listRef, slides, slideIndex, { objectTransitions: false })
 
 const toolVisible = ref(false)
 
@@ -150,55 +150,12 @@ const touchEndListener = (e: TouchEvent) => {
   left: 0;
   width: 100%;
   height: 100%;
-
-  &:not(.last, .next) {
-    z-index: -1;
-  }
+  visibility: hidden;
+  z-index: 0;
 
   &.current {
+    visibility: visible;
     z-index: 2;
-  }
-
-  &.hide {
-    opacity: 0;
-  }
-
-  &.turning-mode-no {
-    &.before {
-      transform: translateY(-100%);
-    }
-    &.after {
-      transform: translateY(100%);
-    }
-  }
-  &.turning-mode-fade {
-    transition: opacity .75s;
-    &.before {
-      pointer-events: none;
-      opacity: 0;
-    }
-    &.after {
-      pointer-events: none;
-      opacity: 0;
-    }
-  }
-  &.turning-mode-slideX {
-    transition: transform .35s;
-    &.before {
-      transform: translateX(-100%);
-    }
-    &.after {
-      transform: translateX(100%);
-    }
-  }
-  &.turning-mode-slideY {
-    transition: transform .35s;
-    &.before {
-      transform: translateY(-100%);
-    }
-    &.after {
-      transform: translateY(100%);
-    }
   }
 }
 .slide-content {

@@ -1,7 +1,15 @@
 [
   {
     "id": "slate-slide-1",
-    "turningMode": "fade",
+    "transition": {
+      "effect": "apple:magic-move-implied-motion-path",
+      "duration": 950,
+      "startMode": "click",
+      "delay": 0,
+      "acceleration": "easeInOut",
+      "unmatchedBehavior": "fade",
+      "textMatchMode": "object"
+    },
     "elements": [
       {
         "type": "shape",
@@ -121,10 +129,12 @@
   },
   {
     "id": "slate-slide-2",
-    "turningMode": "magicMove",
-    "transitionConfig": {
-      "duration": 950,
-      "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "transition": {
+      "effect": "apple:magic-move-implied-motion-path",
+      "duration": 1000,
+      "startMode": "click",
+      "delay": 0,
+      "acceleration": "easeInOut",
       "unmatchedBehavior": "fade",
       "textMatchMode": "object"
     },
@@ -282,12 +292,12 @@
   },
   {
     "id": "slate-slide-3",
-    "turningMode": "magicMove",
-    "transitionConfig": {
-      "duration": 1000,
-      "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
-      "unmatchedBehavior": "fade",
-      "textMatchMode": "object"
+    "transition": {
+      "effect": "apple:push",
+      "duration": 500,
+      "startMode": "click",
+      "delay": 0,
+      "direction": 12
     },
     "elements": [
       {
@@ -377,7 +387,6 @@
   },
   {
     "id": "slate-slide-4",
-    "turningMode": "slideX",
     "elements": [
       {
         "type": "text",
@@ -517,4 +526,4 @@
     },
     "remark": "<p>Slide 4 demonstrates sequenced animations: the chart and table build in simultaneously on click, followed automatically by an Action Transform build on the callout box.</p>"
   }
-]
+]

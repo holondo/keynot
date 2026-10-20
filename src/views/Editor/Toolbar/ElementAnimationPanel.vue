@@ -1,18 +1,18 @@
 <template>
   <div class="element-animation-panel">
     <div class="element-animation" v-if="handleElement">
-      <Popover 
-        trigger="click" 
-        v-model:value="animationPoolVisible" 
+      <Popover
+        trigger="click"
+        v-model:value="animationPoolVisible"
         @update:value="visible => handlePopoverVisibleChange(visible)"
         style="width: 100%;"
       >
         <template #content>
-          <Tabs 
-            :tabs="tabs" 
-            v-model:value="activeTab" 
-            :tabsStyle="{ marginBottom: '20px' }" 
-            :tabStyle="{ width: '25%' }" 
+          <Tabs
+            :tabs="tabs"
+            v-model:value="activeTab"
+            :tabsStyle="{ marginBottom: '20px' }"
+            :tabStyle="{ width: '25%' }"
             spaceAround
           />
           <template v-for="key in animationTypes">
@@ -20,14 +20,19 @@
               <div class="pool-type" :key="effect.name" v-for="effect in animations[key]">
                 <div class="type-title">{{effect.name}}:</div>
                 <div class="pool-item-wrapper">
-                  <div 
-                    class="pool-item" 
-                    v-for="item in effect.children" :key="item.name"
+                  <div
+                    class="pool-item"
+                    v-for="item in effect.children" :key="item.nativeId ?? item.name"
+                    :data-build-effect="item.nativeId"
+                    role="button"
+                    tabindex="0"
                     @mouseenter="hoverPreviewAnimation = item.value"
                     @mouseleave="hoverPreviewAnimation = ''"
-                    @click="addAnimation(key, item.value)"
+                    @click="addAnimation(key, item.value, item.nativeId)"
+                    @keydown.enter="addAnimation(key, item.value, item.nativeId)"
+                    @keydown.space.prevent="addAnimation(key, item.value, item.nativeId)"
                   >
-                    <div 
+                    <div
                       class="animation-box"
                       :class="[
                         `${ANIMATION_CLASS_PREFIX}animated`,
@@ -49,10 +54,10 @@
     </div>
 
     <div class="tip" v-else><i-icon-park-outline:click style="margin-right: 5px;" /> Select an object on canvas to add a Build</div>
-    
+
     <Divider />
 
-    <Draggable 
+    <Draggable
       class="animation-sequence"
       :modelValue="animationSequence"
       :animation="200"
@@ -78,24 +83,24 @@
 
             <div class="config-item">
               <div style="width: 38%;">Duration (ms):</div>
-              <NumberInput 
+              <NumberInput
                 :min="100"
                 :max="5000"
                 :step="100"
-                :value="element.duration" 
-                @update:value="value => updateElementAnimationDuration(element.id, value)" 
-                style="width: 62%;" 
+                :value="element.duration"
+                @update:value="value => updateElementAnimationDuration(element.id, value)"
+                style="width: 62%;"
               />
             </div>
             <div class="config-item">
               <div style="width: 38%;">Delay (ms):</div>
-              <NumberInput 
+              <NumberInput
                 :min="0"
                 :max="5000"
                 :step="100"
-                :value="element.delay || 0" 
-                @update:value="value => updateElementAnimationDelay(element.id, value)" 
-                style="width: 62%;" 
+                :value="element.delay || 0"
+                @update:value="value => updateElementAnimationDelay(element.id, value)"
+                style="width: 62%;"
               />
             </div>
             <div class="config-item">
@@ -193,7 +198,7 @@ import { nanoid } from 'nanoid'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore } from '@/store'
 import type { ActionAnimationParams, AnimationTrigger, AnimationType, PPTAnimation } from '@/types/slides'
-import { 
+import {
   ENTER_ANIMATIONS,
   EXIT_ANIMATIONS,
   ATTENTION_ANIMATIONS,
@@ -202,6 +207,8 @@ import {
   ANIMATION_DEFAULT_TRIGGER,
   ANIMATION_CLASS_PREFIX,
 } from '@/configs/animation'
+import { BUILDS, BUILD_KINDS } from '@/configs/builds'
+import { currentLocale } from '@/i18n'
 import { ELEMENT_TYPE_ZH } from '@/configs/element'
 import useHistorySnapshot from '@/hooks/useHistorySnapshot'
 import useSelectElement from '@/hooks/useSelectElement'
@@ -248,12 +255,10 @@ const slidesStore = useSlidesStore()
 const { handleElement, handleElementId } = storeToRefs(useMainStore())
 const { currentSlide, formatedAnimations, currentSlideAnimations } = storeToRefs(slidesStore)
 
-const tabs: TabItem[] = [
-  { key: 'in', label: 'Build In', color: '#10b981' },
-  { key: 'action', label: 'Action', color: '#4f46e5' },
-  { key: 'attention', label: 'Emphasis', color: '#f59e0b' },
-  { key: 'out', label: 'Build Out', color: '#ef4444' },
-]
+const tabs = computed<TabItem[]>(() => [
+  ...BUILD_KINDS.map(kind => ({ key: kind.id, label: kind.label[currentLocale.value], color: kind.id === 'in' ? '#10b981' : kind.id === 'out' ? '#ef4444' : '#4f46e5' })),
+  { key: 'attention', label: currentLocale.value === 'pt-BR' ? 'Ênfase' : 'Emphasis', color: '#f59e0b' },
+])
 const activeTab = ref<AnimationType>('in')
 const animateIn = ref(false)
 watch(() => handleElementId.value, () => {
@@ -276,7 +281,7 @@ const animationSequence = computed(() => {
       if (!el) continue
 
       const elType = ELEMENT_TYPE_ZH[el.type]
-      const animationEffect = animationEffects[animation.effect] || animation.effect
+      const animationEffect = BUILDS.find(build => build.id === animation.keynoteEffect && build.type === animation.type)?.label[currentLocale.value] || animationEffects[animation.effect] || animation.effect
       animationSequence.push({
         ...animation,
         index: j === 0 ? i + 1 : '',
@@ -308,7 +313,7 @@ const handleDragEnd = (eventData: { newIndex: number; oldIndex: number }) => {
   const animation = animations[oldIndex]
   animations.splice(oldIndex, 1)
   animations.splice(newIndex, 0, animation)
-  
+
   slidesStore.updateSlide({ animations })
   addHistorySnapshot()
 }
@@ -355,7 +360,7 @@ const runAllAnimation = async () => {
   for (let i = 0; i < animationSequence.value.length; i++) {
     if (!animateIn.value) break
     const item = animationSequence.value[i]
-    if (item.index !== 1 && item.trigger !== 'meantime') await new Promise(resolve => setTimeout(resolve, item.duration + 100)) 
+    if (item.index !== 1 && item.trigger !== 'meantime') await new Promise(resolve => setTimeout(resolve, item.duration + 100))
     runAnimation(item.elId, item.effect, item.duration, item)
     if (i >= animationSequence.value.length - 1) animateIn.value = false
   }
@@ -417,13 +422,14 @@ const getDefaultActionParams = (effect: string): ActionAnimationParams => {
   return { dx: 40, dy: -20, scale: 1.15, rotate: 10, opacity: 1 }
 }
 
-const updateElementAnimation = (type: AnimationType, effect: string) => {
+const updateElementAnimation = (type: AnimationType, effect: string, keynoteEffect?: string) => {
   const animations = currentSlideAnimations.value.map(item => {
     if (item.id === handleAnimationId.value) {
       return {
         ...item,
         type,
         effect,
+        keynoteEffect: keynoteEffect ?? BUILDS.find(build => build.type === type && build.player === effect)?.id,
         actionParams: type === 'action' ? getDefaultActionParams(effect) : item.actionParams,
       }
     }
@@ -442,9 +448,10 @@ const updateElementAnimation = (type: AnimationType, effect: string) => {
 }
 
 const handleAnimationId = ref('')
-const addAnimation = (type: AnimationType, effect: string) => {
+const addAnimation = (type: AnimationType, effect: string, keynoteEffect?: string) => {
+  if (keynoteEffect) type = BUILDS.find(build => build.id === keynoteEffect && build.player === effect)?.type ?? type
   if (handleAnimationId.value) {
-    updateElementAnimation(type, effect)
+    updateElementAnimation(type, effect, keynoteEffect)
     return
   }
 
@@ -454,6 +461,7 @@ const addAnimation = (type: AnimationType, effect: string) => {
     elId: handleElementId.value,
     type,
     effect,
+    keynoteEffect: keynoteEffect ?? BUILDS.find(build => build.type === type && build.player === effect)?.id,
     duration: ANIMATION_DEFAULT_DURATION,
     delay: 0,
     trigger: ANIMATION_DEFAULT_TRIGGER,
@@ -483,12 +491,18 @@ const openAnimationPool = (elementId: string) => {
   handlePopoverVisibleChange(true)
 }
 
-const animations = {
-  in: ENTER_ANIMATIONS,
-  action: ACTION_ANIMATIONS,
-  attention: ATTENTION_ANIMATIONS,
-  out: EXIT_ANIMATIONS,
-}
+const animations = computed(() => {
+  const native = (kind: 'in' | 'action' | 'out') => [{
+    name: BUILD_KINDS.find(item => item.id === kind)!.label[currentLocale.value],
+    children: BUILDS.filter(build => build.kind === kind).map(build => ({
+      name: build.label[currentLocale.value], value: build.player, nativeId: build.id,
+    })),
+  }]
+  return {
+    in: native('in'), action: native('action'), out: native('out'),
+    attention: ATTENTION_ANIMATIONS.map(group => ({ ...group, children: group.children.map(item => ({ ...item, nativeId: undefined })) })),
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -645,4 +659,4 @@ $outColor: #ef4444;
     }
   }
 }
-</style>
+</style>

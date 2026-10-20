@@ -5,133 +5,71 @@
         <i-icon-park-outline:switch class="header-icon" />
         <span class="header-title">{{ t('inspector.tabs.transition') }}</span>
       </div>
-      <span class="active-badge">{{ currentAnimationLabel }}</span>
+      <span class="active-badge">{{ label(definition) }}</span>
     </div>
 
-    <div class="animation-pool">
-      <div 
-        class="animation-item" 
-        :class="{ 'active': currentTurningMode === item.value }" 
-        v-for="item in animations" 
-        :key="item.label"
-        @click="updateTurningMode(item.value)"
-      >
-        <div :class="['animation-block', item.value]">
-          <svg v-if="item.value === 'no'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <circle cx="12" cy="12" r="8" opacity="0.4" />
-            <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round" />
-          </svg>
-          <span v-else-if="item.value === 'magicMove'" class="magic-sparkle">✦</span>
-          <svg v-else-if="item.value === 'fade'" viewBox="0 0 24 24" fill="currentColor" class="anim-svg">
-            <rect x="4" y="5" width="10" height="10" rx="2" opacity="0.4" />
-            <rect x="10" y="9" width="10" height="10" rx="2" opacity="0.9" />
-          </svg>
-          <svg v-else-if="item.value === 'slideX'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <rect x="3" y="6" width="10" height="12" rx="2" opacity="0.4" />
-            <path d="M11 12h9m-3-3l3 3-3 3" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <svg v-else-if="item.value === 'slideY'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <rect x="6" y="3" width="12" height="10" rx="2" opacity="0.4" />
-            <path d="M12 11v9m-3-3l3 3 3-3" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <svg v-else-if="item.value === 'slideX3D'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="anim-svg">
-            <path d="M12 2L4 6.5V17.5L12 22L20 17.5V6.5L12 2Z" stroke-linejoin="round" />
-            <path d="M12 22V12M12 12L20 6.5M12 12L4 6.5" stroke-linejoin="round" />
-          </svg>
-          <svg v-else-if="item.value === 'slideY3D'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="anim-svg">
-            <path d="M2 12L6.5 4H17.5L22 12L17.5 20H6.5L2 12Z" stroke-linejoin="round" />
-            <path d="M22 12H12M12 12L6.5 4M12 12L6.5 20" stroke-linejoin="round" />
-          </svg>
-          <svg v-else-if="item.value === 'rotate'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <path d="M4 12a8 8 0 0 1 14.93-4M20 12a8 8 0 0 1-14.93 4" stroke-linecap="round" />
-            <path d="M20 7v4h-4M4 17v-4h4" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <svg v-else-if="item.value === 'scaleY'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <rect x="5" y="8" width="14" height="8" rx="2" opacity="0.4" />
-            <path d="M12 8V3m-2 2l2-2 2 2M12 16v5m-2-2l2 2 2-2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <svg v-else-if="item.value === 'scaleX'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <rect x="8" y="5" width="8" height="14" rx="2" opacity="0.4" />
-            <path d="M8 12H3m2-2l-2 2 2 2M16 12h5m-2-2l2 2-2 2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <svg v-else-if="item.value === 'scale'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <circle cx="10" cy="10" r="6" />
-            <path d="M10 7v6M7 10h6M21 21l-5.5-5.5" stroke-linecap="round" />
-          </svg>
-          <svg v-else-if="item.value === 'scaleReverse'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <circle cx="10" cy="10" r="6" />
-            <path d="M7 10h6M21 21l-5.5-5.5" stroke-linecap="round" />
-          </svg>
-          <svg v-else-if="item.value === 'random'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="anim-svg">
-            <path d="M18 4l3 3-3 3M18 20l3-3-3-3" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M3 7h3a5 5 0 0 1 4 2l4 6a5 5 0 0 0 4 2h3M3 17h3a5 5 0 0 0 4-2l4-6a5 5 0 0 1 4-2h3" stroke-linecap="round" />
-          </svg>
-        </div>
-        <div class="animation-text">{{ item.label }}</div>
-        <div class="active-check" v-if="currentTurningMode === item.value">
-          <i-icon-park-outline:check />
-        </div>
+    <div class="effect-summary" v-if="!galleryOpen">
+      <div class="effect-name">
+        <span>{{ label(definition) }}</span>
+        <span class="fidelity" v-if="transition.effect !== 'none' && definition.fidelity === 'approximate'" v-tooltip="t('inspector.transition.approximateHint')">≈</span>
       </div>
+      <Button size="small" @click="galleryOpen = true">
+        {{ transition.effect === 'none' ? t('inspector.transition.addEffect') : t('inspector.transition.change') }}
+      </Button>
     </div>
 
-    <Button class="apply-all-btn" @click="applyAllSlide()">
-      <i-icon-park-outline:check /> Apply Transition to All Slides
-    </Button>
+    <div class="gallery" v-else>
+      <template v-for="group in TRANSITION_GROUPS" :key="group.id">
+        <div class="group-title" v-if="group.id !== 'none' && group.id !== 'magicMove'">{{ group.label[currentLocale] }}</div>
+        <div class="animation-pool">
+          <div
+            class="animation-item"
+            :class="{ active: transition.effect === item.id }"
+            v-for="item in TRANSITIONS.filter(effect => effect.group === group.id)"
+            :key="item.id"
+            :data-effect="item.id"
+            @click="chooseEffect(item.id)"
+          >
+            <span class="animation-text">{{ label(item) }}</span>
+            <span class="fidelity" v-if="item.fidelity === 'approximate'">≈</span>
+          </div>
+        </div>
+      </template>
+      <Button class="gallery-done" size="small" @click="galleryOpen = false">{{ t('inspector.transition.done') }}</Button>
+    </div>
 
-    <div class="magic-move-inspector" v-if="currentTurningMode === 'magicMove'">
-      <Divider :margin="12" />
-      <div class="inspector-header">
-        <span class="inspector-title">Object Transition Inspector</span>
-        <span class="inspector-badge">{{ matchAnalysis.matchedPairs.length }} Matched</span>
-      </div>
+    <template v-if="transition.effect !== 'none' && !galleryOpen">
+      <Button class="preview-btn" :disabled="!nextSlide" @click="previewTransition()">
+        <i-icon-park-outline:play-one /> {{ t('inspector.transition.preview') }}
+      </Button>
 
       <div class="config-row">
-        <div class="config-label">Duration (ms):</div>
+        <div class="config-label">{{ t('inspector.transition.duration') }} (s):</div>
         <NumberInput
-          :min="200"
-          :max="5000"
-          :step="100"
-          :value="transitionConfig.duration"
-          @update:value="updateDuration"
+          :min="0.1"
+          :max="60"
+          :step="0.1"
+          :value="transition.duration / 1000"
+          @update:value="value => update({ duration: Math.round(value * 1000) })"
           style="width: 60%;"
         />
       </div>
 
-      <div class="config-row">
-        <div class="config-label">Match:</div>
-        <RadioGroup
-          class="radio-cluster"
-          button-style="solid"
-          :value="transitionConfig.textMatchMode || 'object'"
-          @update:value="updateTextMatchMode"
-          style="width: 60%;"
-        >
-          <RadioButton value="object" style="flex: 1;">By Object</RadioButton>
-          <RadioButton value="word" style="flex: 1;">By Word</RadioButton>
-          <RadioButton value="character" style="flex: 1;">By Character</RadioButton>
-        </RadioGroup>
-      </div>
-
-      <div class="config-row">
-        <div class="config-label">{{ t('inspector.transition.acceleration') }}:</div>
+      <div class="config-row" v-if="definition.directional">
+        <div class="config-label">{{ t('inspector.transition.direction') }}:</div>
         <Select
-          :value="transitionConfig.acceleration || 'easeInOut'"
-          @update:value="updateAcceleration"
+          :value="transition.direction ?? 12"
+          @update:value="value => update({ direction: Number(value) })"
           style="width: 60%;"
-          :options="[
-            { label: t('inspector.transition.easeInOut'), value: 'easeInOut' },
-            { label: t('inspector.transition.easeIn'), value: 'easeIn' },
-            { label: t('inspector.transition.easeOut'), value: 'easeOut' },
-            { label: t('inspector.transition.linear'), value: 'constant' },
-          ]"
+          :options="TRANSITION_DIRECTIONS.map(direction => ({ label: direction.label[currentLocale], value: direction.value }))"
         />
       </div>
 
       <div class="config-row">
         <div class="config-label">{{ t('inspector.transition.start') }}:</div>
         <Select
-          :value="transitionConfig.startMode || 'click'"
-          @update:value="updateStartMode"
+          :value="transition.startMode"
+          @update:value="value => update({ startMode: value as TransitionStartMode })"
           style="width: 60%;"
           :options="[
             { label: t('inspector.transition.onClick'), value: 'click' },
@@ -140,125 +78,137 @@
         />
       </div>
 
-      <div class="config-row" v-if="transitionConfig.startMode === 'auto'">
-        <div class="config-label">{{ t('inspector.transition.delay') }} (ms):</div>
+      <div class="config-row" v-if="transition.startMode === 'auto'">
+        <div class="config-label">{{ t('inspector.transition.delay') }} (s):</div>
         <NumberInput
           :min="0"
-          :max="10000"
-          :step="100"
-          :value="transitionConfig.startDelayMs || 500"
-          @update:value="updateStartDelayMs"
+          :max="600"
+          :step="0.1"
+          :value="transition.delay / 1000"
+          @update:value="value => update({ delay: Math.round(value * 1000) })"
           style="width: 60%;"
         />
       </div>
 
-      <div class="config-row">
-        <div class="config-label">Unmatched Objects:</div>
-        <Select
-          :value="transitionConfig.unmatchedBehavior"
-          @update:value="updateUnmatchedBehavior"
-          style="width: 60%;"
-          :options="[
-            { label: 'Dissolve In / Out', value: 'fade' },
-            { label: 'Instant Cut', value: 'instant' },
-          ]"
-        />
-      </div>
-
-      <Button
-        type="primary"
-        style="width: 100%; margin: 10px 0;"
-        :disabled="!previousSlide"
-        @click="previewTransitionOnCanvas()"
-      >
-        <i-icon-park-outline:play-one /> Preview Transition from Previous Slide
-      </Button>
-
-      <div v-if="!previousSlide" class="empty-hint">
-        This is Slide 1. Object Transition morphs objects from the preceding slide into this slide.
-      </div>
-
-      <template v-else>
-        <div class="section-subtitle">Matched Object Pairs (Slide {{ slideIndex }} → Slide {{ slideIndex + 1 }})</div>
-        <div v-if="!matchAnalysis.matchedPairs.length" class="empty-hint">
-          No matched objects yet. Duplicate a slide or link an object below to morph it across slides.
+      <template v-if="definition.engine === 'magicMove'">
+        <div class="config-row">
+          <Checkbox
+            :value="transition.unmatchedBehavior !== 'instant'"
+            @update:value="value => update({ unmatchedBehavior: value ? 'fade' : 'instant' })"
+          >{{ t('inspector.transition.fadeUnmatched') }}</Checkbox>
         </div>
-        <div class="pair-list" v-else>
-          <div
-            class="pair-item"
-            v-for="pair in matchAnalysis.matchedPairs"
-            :key="pair.toElement.id"
-            @click="selectElement(pair.toElement.id)"
+
+        <div class="config-row">
+          <div class="config-label">{{ t('inspector.transition.matchBy') }}:</div>
+          <RadioGroup
+            class="radio-cluster"
+            button-style="solid"
+            :value="transition.textMatchMode || 'object'"
+            @update:value="value => update({ textMatchMode: value as TextMatchGranularity })"
+            style="width: 60%;"
           >
-            <div class="pair-info">
-              <div class="pair-names">
-                <strong>{{ getElementDisplayLabel(pair.fromElement) }}</strong>
-                <span class="arrow">→</span>
-                <strong>{{ getElementDisplayLabel(pair.toElement) }}</strong>
-              </div>
-              <div class="pair-meta">
-                <span class="reason-tag">{{ pair.matchReason }}</span>
-                <span>Δx {{ Math.round(-pair.deltas.dx) }}px, Δy {{ Math.round(-pair.deltas.dy) }}px</span>
-              </div>
-            </div>
-            <Button
-              size="small"
-              v-tooltip="'Unlink continuity match'"
-              @click.stop="unlinkElementContinuity(pair.toElement.id)"
+            <RadioButton value="object" style="flex: 1;">{{ t('inspector.transition.matchObject') }}</RadioButton>
+            <RadioButton value="word" style="flex: 1;">{{ t('inspector.transition.matchWord') }}</RadioButton>
+            <RadioButton value="character" style="flex: 1;">{{ t('inspector.transition.matchCharacter') }}</RadioButton>
+          </RadioGroup>
+        </div>
+
+        <div class="config-row">
+          <div class="config-label">{{ t('inspector.transition.acceleration') }}:</div>
+          <Select
+            :value="transition.acceleration || 'easeInOut'"
+            @update:value="value => update({ acceleration: value as TransitionAcceleration })"
+            style="width: 60%;"
+            :options="[
+              { label: t('inspector.transition.easeInOut'), value: 'easeInOut' },
+              { label: t('inspector.transition.easeIn'), value: 'easeIn' },
+              { label: t('inspector.transition.easeOut'), value: 'easeOut' },
+              { label: t('inspector.transition.linear'), value: 'constant' },
+            ]"
+          />
+        </div>
+
+        <Divider :margin="12" />
+        <div class="inspector-header">
+          <span class="inspector-title">{{ t('inspector.transition.matchedObjects') }}</span>
+          <span class="inspector-badge">{{ matchAnalysis.matchedPairs.length }}</span>
+        </div>
+
+        <div v-if="!nextSlide" class="empty-hint">{{ t('inspector.transition.lastSlideHint') }}</div>
+        <template v-else>
+          <div v-if="!matchAnalysis.matchedPairs.length" class="empty-hint">{{ t('inspector.transition.noMatchesHint') }}</div>
+          <div class="pair-list" v-else>
+            <div
+              class="pair-item"
+              v-for="pair in matchAnalysis.matchedPairs"
+              :key="pair.toElement.id"
+              @click="selectElement(pair.fromElement.id)"
             >
-              Unlink
-            </Button>
-          </div>
-        </div>
-
-        <template v-if="matchAnalysis.unmatchedIncoming.length && previousSlide?.elements?.length">
-          <div class="section-subtitle" style="margin-top: 12px;">Link Unmatched Object on Current Slide</div>
-          <div
-            class="unmatched-item"
-            v-for="el in matchAnalysis.unmatchedIncoming"
-            :key="el.id"
-          >
-            <div class="unmatched-name" @click="selectElement(el.id)">
-              {{ getElementDisplayLabel(el) }}
+              <div class="pair-info">
+                <div class="pair-names">
+                  <strong>{{ getElementDisplayLabel(pair.fromElement) }}</strong>
+                  <span class="arrow">→</span>
+                  <strong>{{ getElementDisplayLabel(pair.toElement) }}</strong>
+                </div>
+                <div class="pair-meta">
+                  <span class="reason-tag">{{ pair.matchReason }}</span>
+                  <span>Δx {{ Math.round(-pair.deltas.dx) }}px, Δy {{ Math.round(-pair.deltas.dy) }}px</span>
+                </div>
+              </div>
+              <Button size="small" @click.stop="unlinkFromNextSlide(pair.toElement.id)">{{ t('inspector.transition.unlink') }}</Button>
             </div>
-            <Select
-              :value="''"
-              @update:value="prevElId => linkElementToPreviousSlide(el.id, prevElId as string)"
-              style="width: 55%;"
-              :options="previousSlideElementOptions"
-            />
           </div>
+
+          <template v-if="matchAnalysis.unmatchedIncoming.length && currentSlide.elements.length">
+            <div class="section-subtitle">{{ t('inspector.transition.linkHint', undefined, { slide: slideIndex + 2 }) }}</div>
+            <div class="unmatched-item" v-for="el in matchAnalysis.unmatchedIncoming" :key="el.id">
+              <div class="unmatched-name">{{ getElementDisplayLabel(el) }}</div>
+              <Select
+                :value="''"
+                @update:value="value => linkToCurrentSlide(el.id, value as string)"
+                style="width: 55%;"
+                :options="currentSlideElementOptions"
+              />
+            </div>
+          </template>
         </template>
       </template>
-    </div>
+
+      <Button class="apply-all-btn" @click="applyToAllSlides()">
+        <i-icon-park-outline:check /> {{ t('inspector.transition.applyToAll') }}
+      </Button>
+    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { nanoid } from 'nanoid'
 import { useSlidesStore } from '@/store'
 import type {
-  SlideTransitionConfig,
-  TurningMode,
-  UnmatchedTransitionBehavior,
+  SlideTransition,
   TextMatchGranularity,
   TransitionAcceleration,
   TransitionStartMode,
 } from '@/types/slides'
-import { SLIDE_ANIMATIONS } from '@/configs/animation'
 import {
-  analyzeSlideTransitionMatches,
-  DEFAULT_TRANSITION_CONFIG,
-  getElementDisplayLabel,
-  runMagicMoveTransition,
-} from '@/utils/magicMove'
+  DEFAULT_TRANSITION,
+  TRANSITIONS,
+  TRANSITION_DIRECTIONS,
+  TRANSITION_GROUPS,
+  createTransition,
+  getTransitionDefinition,
+  type TransitionDefinition,
+} from '@/configs/transitions'
+import { analyzeSlideTransitionMatches, getElementDisplayLabel, runMagicMoveTransition } from '@/utils/magicMove'
+import { playSlideTransition } from '@/utils/transitionEngine'
 import useHistorySnapshot from '@/hooks/useHistorySnapshot'
 import useSelectElement from '@/hooks/useSelectElement'
 import message from '@/utils/message'
-import { t } from '@/i18n'
+import { currentLocale, t } from '@/i18n'
 import Button from '@/components/Button.vue'
+import Checkbox from '@/components/Checkbox.vue'
 import Divider from '@/components/Divider.vue'
 import NumberInput from '@/components/NumberInput.vue'
 import Select from '@/components/Select.vue'
@@ -267,135 +217,84 @@ import RadioButton from '@/components/RadioButton.vue'
 
 const slidesStore = useSlidesStore()
 const { slides, currentSlide, slideIndex } = storeToRefs(slidesStore)
-
-const currentTurningMode = computed(() => currentSlide.value?.turningMode || 'slideY')
-const previousSlide = computed(() => (slideIndex.value > 0 ? slides.value[slideIndex.value - 1] : undefined))
-
-const transitionConfig = computed<Required<SlideTransitionConfig>>(() => ({
-  ...DEFAULT_TRANSITION_CONFIG,
-  ...(currentSlide.value?.transitionConfig || {}),
-}))
-
-const matchAnalysis = computed(() => analyzeSlideTransitionMatches(previousSlide.value, currentSlide.value))
-
-const previousSlideElementOptions = computed(() => {
-  if (!previousSlide.value || !previousSlide.value.elements) return []
-  return [
-    { label: 'Link to Slide ' + slideIndex.value + ' object...', value: '' },
-    ...previousSlide.value.elements.map((el, idx) => ({
-      label: getElementDisplayLabel(el, idx),
-      value: el.id,
-    })),
-  ]
-})
-
-const animations = SLIDE_ANIMATIONS
-
-const currentAnimationLabel = computed(() => {
-  const item = animations.find(a => a.value === currentTurningMode.value)
-  return item ? item.label : 'None'
-})
-
 const { addHistorySnapshot } = useHistorySnapshot()
 const { selectElement } = useSelectElement()
 
-const updateTurningMode = (mode: TurningMode) => {
-  if (mode === currentTurningMode.value) return
-  slidesStore.updateSlide({
-    turningMode: mode,
-    transitionConfig: mode === 'magicMove' ? transitionConfig.value : currentSlide.value.transitionConfig,
-  })
+/** As in Keynote, the transition belongs to this slide and plays when leaving it. */
+const transition = computed<SlideTransition>(() => currentSlide.value?.transition ?? DEFAULT_TRANSITION)
+const definition = computed(() => getTransitionDefinition(transition.value.effect))
+const nextSlide = computed(() => slides.value[slideIndex.value + 1])
+const galleryOpen = ref(false)
+
+const label = (item: TransitionDefinition) => item.label[currentLocale.value]
+
+const matchAnalysis = computed(() => analyzeSlideTransitionMatches(currentSlide.value, nextSlide.value))
+
+const currentSlideElementOptions = computed(() => [
+  { label: t('inspector.transition.linkPlaceholder'), value: '' },
+  ...currentSlide.value.elements.map((el, index) => ({ label: getElementDisplayLabel(el, index), value: el.id })),
+])
+
+const setTransition = (next: SlideTransition | undefined) => {
+  slidesStore.updateSlide({ transition: next })
   addHistorySnapshot()
 }
 
-const updateTransitionConfig = (patch: Partial<SlideTransitionConfig>) => {
-  slidesStore.updateSlide({
-    transitionConfig: {
-      ...transitionConfig.value,
-      ...patch,
-    },
-  })
+const chooseEffect = (effect: string) => {
+  galleryOpen.value = false
+  if (effect === transition.value.effect) return
+  setTransition(effect === 'none' ? undefined : createTransition(effect, currentSlide.value.transition))
+}
+
+const update = (patch: Partial<SlideTransition>) => setTransition({ ...transition.value, ...patch })
+
+const applyToAllSlides = () => {
+  const source = currentSlide.value.transition
+  slidesStore.setSlides(slides.value.map(slide => ({ ...slide, transition: source ? { ...source } : undefined })))
+  message.success(t('inspector.transition.appliedToAll'))
   addHistorySnapshot()
 }
 
-const updateTextMatchMode = (val: string | number) => {
-  updateTransitionConfig({ textMatchMode: val as TextMatchGranularity })
-}
-
-const updateAcceleration = (val: string | number) => {
-  updateTransitionConfig({ acceleration: val as TransitionAcceleration })
-}
-
-const updateStartMode = (val: string | number) => {
-  updateTransitionConfig({ startMode: val as TransitionStartMode })
-}
-
-const updateUnmatchedBehavior = (val: string | number) => {
-  updateTransitionConfig({ unmatchedBehavior: val as UnmatchedTransitionBehavior })
-}
-
-const updateDuration = (val: number) => {
-  updateTransitionConfig({ duration: val })
-}
-
-const updateStartDelayMs = (val: number) => {
-  updateTransitionConfig({ startDelayMs: val })
-}
-
-const applyAllSlide = () => {
-  const newSlides = slides.value.map(slide => {
-    return {
-      ...slide,
-      turningMode: currentSlide.value.turningMode,
-      transitionConfig: currentSlide.value.transitionConfig,
+/** Play the transition in the editor: show the next slide and animate into it. */
+const previewTransition = async () => {
+  const from = currentSlide.value
+  const to = nextSlide.value
+  if (!to) return
+  const fromIndex = slideIndex.value
+  // The wrapper carries position only (the viewport inside it carries the zoom scale).
+  const snapshot = document.querySelector('.canvas .viewport-wrapper') as HTMLElement | null
+  const outgoing = snapshot?.cloneNode(true) as HTMLElement | undefined
+  slidesStore.updateSlideIndex(fromIndex + 1)
+  await nextTick()
+  if (definition.value.engine === 'magicMove') {
+    await runMagicMoveTransition(from, to, { mode: 'editor' })
+  }
+  else {
+    const incoming = document.querySelector('.canvas .viewport-wrapper') as HTMLElement | null
+    if (incoming && outgoing) {
+      outgoing.style.pointerEvents = 'none'
+      incoming.parentElement?.insertBefore(outgoing, incoming)
+      await playSlideTransition({ outgoing, incoming, transition: transition.value })
+      outgoing.remove()
     }
-  })
-  slidesStore.setSlides(newSlides)
-  message.success('Applied transition to all slides')
+  }
+  slidesStore.updateSlideIndex(fromIndex)
+}
+
+const unlinkFromNextSlide = (nextElementId: string) => {
+  if (!nextSlide.value) return
+  slidesStore.updateElement({ id: nextElementId, slideId: nextSlide.value.id, props: { continuityId: `unlinked-${nanoid(8)}` } })
   addHistorySnapshot()
 }
 
-const previewTransitionOnCanvas = () => {
-  if (!previousSlide.value) {
-    message.info('Select Slide 2 or later to preview Object Transition')
-    return
-  }
-  const anims = runMagicMoveTransition(previousSlide.value, currentSlide.value, { mode: 'editor' })
-  if (!anims.length) {
-    message.info('No matched or incoming elements to animate on this slide')
-  }
-}
-
-const unlinkElementContinuity = (elementId: string) => {
-  slidesStore.updateElement({
-    id: elementId,
-    props: {
-      continuityId: `unlinked-${nanoid(8)}`,
-    },
-  })
+const linkToCurrentSlide = (nextElementId: string, currentElementId: string) => {
+  if (!currentElementId || !nextSlide.value) return
+  const source = currentSlide.value.elements.find(item => item.id === currentElementId)
+  if (!source) return
+  const sharedContinuityId = source.continuityId || source.id
+  if (!source.continuityId) slidesStore.updateElement({ id: source.id, props: { continuityId: sharedContinuityId } })
+  slidesStore.updateElement({ id: nextElementId, slideId: nextSlide.value.id, props: { continuityId: sharedContinuityId } })
   addHistorySnapshot()
-  message.success('Unlinked object from previous slide')
-}
-
-const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
-  if (!prevElId || !previousSlide.value) return
-  const prevEl = previousSlide.value.elements.find(item => item.id === prevElId)
-  if (!prevEl) return
-
-  const sharedContinuityId = prevEl.continuityId || prevEl.id
-  if (!prevEl.continuityId) {
-    slidesStore.updateElement({
-      id: prevEl.id,
-      slideId: previousSlide.value.id,
-      props: { continuityId: sharedContinuityId },
-    })
-  }
-  slidesStore.updateElement({
-    id: currentElId,
-    props: { continuityId: sharedContinuityId },
-  })
-  addHistorySnapshot()
-  message.success('Linked object pair for Object Transition')
 }
 </script>
 
@@ -437,174 +336,110 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   }
 }
 
-.animation-pool {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+.effect-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
+  margin-bottom: 12px;
+
+  .effect-name {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text-primary, #1d1d1f);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.fidelity {
+  margin-left: 4px;
+  font-size: var(--text-xs);
+  color: var(--text-secondary, #8e8e93);
+}
+
+.gallery {
   margin-bottom: 12px;
 }
 
+.group-title {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary, #8e8e93);
+  margin: 10px 2px 6px;
+}
+
+.animation-pool {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
 .animation-item {
-  height: 84px;
+  min-height: 36px;
   background-color: var(--bg-card, #ffffff);
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   border-radius: var(--radius-control);
   box-sizing: border-box;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 8px 6px;
-  position: relative;
+  justify-content: space-between;
+  padding: 6px 10px;
   cursor: pointer;
-  transition: all 0.15s ease;
   user-select: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 
   &:hover:not(.active) {
     background-color: var(--bg-hover, rgba(0, 0, 0, 0.03));
     border-color: var(--border-color-active, rgba(0, 122, 255, 0.35));
-    transform: translateY(-1px);
   }
 
   &.active {
     border-color: var(--accent-color, #007aff);
-    background-color: var(--bg-control-active, #ffffff);
-    box-shadow: 0 0 0 1px var(--accent-color, #007aff), 0 2px 8px rgba(0, 122, 255, 0.15);
-    z-index: 1;
-
-    .animation-text {
-      color: var(--accent-color, #007aff);
-      font-weight: 600;
-    }
-
-    .animation-block {
-      background: rgba(0, 122, 255, 0.12);
-      color: var(--accent-color, #007aff);
-    }
+    background-color: rgba(0, 122, 255, 0.08);
   }
-}
-
-.animation-block {
-  width: 52px;
-  height: 30px;
-  background: var(--bg-control, rgba(0, 0, 0, 0.05));
-  border-radius: var(--radius-control);
-  position: relative;
-  overflow: hidden;
-  color: var(--text-secondary, #515154);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 6px;
-  transition: all 0.15s ease;
-
-  .anim-svg {
-    width: 18px;
-    height: 18px;
-    overflow: visible;
-  }
-
-  .magic-sparkle {
-    font-size: var(--text-lg);
-  }
-
-  &.magicMove {
-    background: linear-gradient(135deg, #007aff, #af52de);
-    color: #ffffff;
-    box-shadow: 0 2px 6px rgba(175, 82, 222, 0.3);
-  }
-
-  @mixin elAnimation($animationType) {
-    content: 'Slide';
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    background-color: var(--accent-color, #007aff);
-    color: #ffffff;
-    font-size: var(--text-xs);
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: $animationType $transitionDelaySlow linear;
-  }
-
-  &.magicMove:hover { &::after { @include elAnimation(scale); } }
-  &.fade:hover { &::after { @include elAnimation(fade); } }
-  &.slideX:hover { &::after { @include elAnimation(slideX); } }
-  &.slideY:hover { &::after { @include elAnimation(slideY); } }
-  &.slideX3D:hover { &::after { @include elAnimation(slideX3D); } }
-  &.slideY3D:hover { &::after { @include elAnimation(slideY3D); } }
-  &.rotate:hover { &::after { transform-origin: 0 0; @include elAnimation(rotate); } }
-  &.scaleY:hover { &::after { @include elAnimation(scaleY); } }
-  &.scaleX:hover { &::after { @include elAnimation(scaleX); } }
-  &.scale:hover { &::after { @include elAnimation(scale); } }
-  &.scaleReverse:hover { &::after { @include elAnimation(scaleReverse); } }
 }
 
 .animation-text {
-  font-size: var(--text-xs);
-  color: var(--text-primary, #1d1d1f);
-  text-align: center;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 105px;
-}
-
-.active-check {
-  position: absolute;
-  top: 4px;
-  right: 5px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--accent-color, #007aff);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-xs);
-}
-
-.apply-all-btn {
-  width: 100%;
-  height: 28px;
-  font-size: var(--text-xs);
-  margin-bottom: 12px;
-  border-radius: var(--radius-control);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.magic-move-inspector {
   font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-done {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.preview-btn,
+.apply-all-btn {
+  width: 100%;
+  margin: 4px 0 12px;
 }
 
 .inspector-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  margin-bottom: 8px;
 
   .inspector-title {
-    font-weight: 700;
     font-size: var(--text-sm);
+    font-weight: 600;
     color: var(--text-primary, #1d1d1f);
   }
+
   .inspector-badge {
-    background: rgba(0, 122, 255, 0.15);
-    color: var(--accent-color, #007aff);
-    padding: 2px 8px;
-    border-radius: var(--radius-menu);
-    font-weight: 600;
     font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--accent-color, #007aff);
+    background: rgba(0, 122, 255, 0.1);
+    padding: 1px 8px;
+    border-radius: 9999px;
   }
 }
 
@@ -612,86 +447,78 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 
   .config-label {
-    width: 42%;
-    color: var(--text-secondary, #515154);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
+    color: var(--text-secondary, #6e6e73);
   }
 }
 
 .section-subtitle {
-  font-weight: 600;
-  color: var(--text-primary, #1d1d1f);
   font-size: var(--text-xs);
-  margin: 10px 0 6px;
+  font-weight: 600;
+  color: var(--text-secondary, #8e8e93);
+  margin: 12px 0 6px;
 }
 
 .empty-hint {
-  background: var(--bg-control, rgba(0, 0, 0, 0.04));
-  border: 1px dashed var(--border-color, rgba(0, 0, 0, 0.12));
-  border-radius: var(--radius-control);
-  padding: 8px 10px;
-  color: var(--text-tertiary, #86868b);
-  line-height: 1.4;
   font-size: var(--text-xs);
+  color: var(--text-secondary, #8e8e93);
+  line-height: 1.5;
+  padding: 8px 10px;
+  border-radius: var(--radius-control);
+  background: var(--bg-control, rgba(0, 0, 0, 0.04));
+  margin-bottom: 10px;
 }
 
 .pair-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-bottom: 10px;
 }
 
 .pair-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 8px;
-  border: 1px solid transparent;
+  gap: 8px;
+  padding: 8px 10px;
   border-radius: var(--radius-control);
-  background: var(--bg-card, #ffffff);
+  background: var(--bg-control, rgba(0, 0, 0, 0.04));
   cursor: pointer;
-  transition: all 0.15s ease;
 
   &:hover {
-    border-color: var(--accent-color, #007aff);
+    background: var(--bg-hover, rgba(0, 0, 0, 0.06));
   }
 }
 
 .pair-info {
-  flex: 1;
   min-width: 0;
-  margin-right: 6px;
 
   .pair-names {
     font-size: var(--text-xs);
     color: var(--text-primary, #1d1d1f);
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 
     .arrow {
       margin: 0 4px;
-      color: var(--accent-color, #007aff);
+      color: var(--text-secondary, #8e8e93);
     }
   }
+
   .pair-meta {
     display: flex;
-    align-items: center;
     gap: 6px;
-    margin-top: 3px;
+    margin-top: 2px;
     font-size: var(--text-xs);
-    color: var(--text-tertiary, #86868b);
+    color: var(--text-secondary, #8e8e93);
 
     .reason-tag {
-      background: rgba(0, 122, 255, 0.12);
-      color: var(--accent-color, #007aff);
-      padding: 1px 5px;
-      border-radius: 4px;
-      font-size: var(--text-xs);
-      font-weight: 500;
+      font-weight: 600;
     }
   }
 }
@@ -700,62 +527,15 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 6px;
 
   .unmatched-name {
-    width: 43%;
-    white-space: nowrap;
+    font-size: var(--text-xs);
+    color: var(--text-primary, #1d1d1f);
     overflow: hidden;
     text-overflow: ellipsis;
-    cursor: pointer;
-    font-size: var(--text-xs);
-    color: var(--text-secondary, #515154);
-
-    &:hover {
-      color: var(--accent-color, #007aff);
-    }
+    white-space: nowrap;
   }
 }
-
-@keyframes fade {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-@keyframes slideX {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(0); }
-}
-@keyframes slideY {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(0); }
-}
-@keyframes slideX3D {
-  0% { transform: translateX(100%) scale(.5); }
-  100% { transform: translateX(0); }
-}
-@keyframes slideY3D {
-  0% { transform: translateY(100%) scale(.5); }
-  100% { transform: translateY(0); }
-}
-@keyframes rotate {
-  0% { transform: rotate(-90deg); }
-  100% { transform: rotate(0); }
-}
-@keyframes scaleY {
-  0% { transform: scaleY(.1); }
-  100% { transform: scaleY(1); }
-}
-@keyframes scaleX {
-  0% { transform: scaleX(.1); }
-  100% { transform: scaleX(1); }
-}
-@keyframes scale {
-  0% { transform: scale(.25); }
-  100% { transform: scale(1); }
-}
-@keyframes scaleReverse {
-  0% { transform: scale(2); }
-  100% { transform: scale(1); }
-}
-</style>
+</style>

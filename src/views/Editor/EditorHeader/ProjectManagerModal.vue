@@ -96,7 +96,6 @@ const createNewProject = async () => {
   const newId = nanoid(12)
   const blankSlide = {
     id: nanoid(10),
-    turningMode: 'magicMove' as const,
     elements: [
       {
         type: 'text' as const,

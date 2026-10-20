@@ -5,7 +5,7 @@
     @mousedown="() => setThumbnailsFocus(true)"
     v-click-outside="() => setThumbnailsFocus(false)"
   >
-    <Draggable 
+    <Draggable
       class="thumbnail-list"
       ref="thumbnailsRef"
       :modelValue="slides"
@@ -21,12 +21,12 @@
         <div class="thumbnail-container">
           <div class="section-title"
             :data-section-id="element?.sectionTag?.id || ''"
-            v-if="element.sectionTag || (hasSection && index === 0)" 
+            v-if="element.sectionTag || (hasSection && index === 0)"
             v-contextmenu="contextmenusSection"
             @dblclick="() => editSection(element?.sectionTag?.id || '')"
           >
-            <input 
-              :id="`section-title-input-${element?.sectionTag?.id || 'default'}`" 
+            <input
+              :id="`section-title-input-${element?.sectionTag?.id || 'default'}`"
               type="text"
               :value="element?.sectionTag?.title || ''"
               placeholder="Section name"
@@ -52,7 +52,7 @@
               <div class="slide-num">{{ index + 1 }}</div>
               <div
                 class="magic-move-dot"
-                v-if="element.turningMode === 'magicMove'"
+                v-if="isMagicMove(element.transition)"
                 v-tooltip="'Magic Move Object Transition active'"
               >✦</div>
               <div
@@ -62,7 +62,7 @@
               >●</div>
             </div>
             <ThumbnailSlide class="thumbnail" :slide="element" :size="thumbSize" :visible="index < slidesLoadLimit" />
-  
+
             <div class="note-flag" v-if="element.notes && element.notes.length" @click="openNotesPanel()">{{ element.notes.length }}</div>
           </div>
         </div>
@@ -85,6 +85,7 @@
 </template>
 
 <script lang="ts" setup>
+import { isMagicMove } from '@/configs/transitions'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore, useKeyboardStore } from '@/store'

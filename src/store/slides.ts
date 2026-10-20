@@ -3,6 +3,7 @@ import { omit } from 'lodash'
 import { nanoid } from 'nanoid'
 import type { Slide, SlideTheme, PPTElement, PPTAnimation, SlideTemplate, CompatibilityReport, SaveStatus, PresentationSoundtrack } from '@/types/slides'
 import { STARTER_SLIDES } from '@/configs/starterSlides'
+import { migrateLegacyTransitions } from '@/utils/transitionEngine'
 
 interface RemovePropData {
   id: string
@@ -88,7 +89,7 @@ export const useSlidesStore = defineStore('slides', {
     currentSlide(state) {
       return state.slides[state.slideIndex]
     },
-  
+
     currentSlideAnimations(state) {
       const currentSlide = state.slides[state.slideIndex]
       if (!currentSlide?.animations) return []
@@ -113,7 +114,6 @@ export const useSlidesStore = defineStore('slides', {
         }
         else if (animation.trigger === 'meantime') {
           const last = formatedAnimations[formatedAnimations.length - 1]
-          last.animations = last.animations.filter(item => item.elId !== animation.elId)
           last.animations.push(animation)
           formatedAnimations[formatedAnimations.length - 1] = last
         }
@@ -163,16 +163,17 @@ export const useSlidesStore = defineStore('slides', {
     setTheme(themeProps: Partial<SlideTheme>) {
       this.theme = { ...this.theme, ...themeProps }
     },
-  
+
     setViewportSize(size: number) {
       this.viewportSize = size
     },
-  
+
     setViewportRatio(viewportRatio: number) {
       this.viewportRatio = viewportRatio
     },
-  
-    setSlides(slides: Slide[], themeProps?: Partial<SlideTheme>) {
+
+    setSlides(input: Slide[], themeProps?: Partial<SlideTheme>) {
+      const slides = migrateLegacyTransitions(input)
       for (const slide of slides) {
         if (!slide.elements) continue
         for (const el of slide.elements) {
@@ -182,13 +183,13 @@ export const useSlidesStore = defineStore('slides', {
       this.slides = slides
       if (themeProps) this.setTheme(themeProps)
     },
-  
+
     setTemplates(templates: SlideTemplate[]) {
       this.templates = templates
     },
-  
+
     addSlide(slide: Slide | Slide[]) {
-      const slides = Array.isArray(slide) ? slide : [slide]
+      const slides = migrateLegacyTransitions(Array.isArray(slide) ? slide : [slide])
       for (const s of slides) {
         if (s.sectionTag) delete s.sectionTag
         if (s.elements) {
@@ -202,13 +203,13 @@ export const useSlidesStore = defineStore('slides', {
       this.slides.splice(addIndex, 0, ...slides)
       this.slideIndex = addIndex
     },
-  
+
     updateSlide(props: Partial<Slide>, slideId?: string) {
       const slideIndex = slideId ? this.slides.findIndex(item => item.id === slideId) : this.slideIndex
       if (slideIndex === -1) return
       this.slides[slideIndex] = { ...this.slides[slideIndex], ...props }
     },
-  
+
     removeSlideProps(data: RemovePropData) {
       const { id, propName } = data
 
@@ -217,11 +218,11 @@ export const useSlidesStore = defineStore('slides', {
       }) as Slide[]
       this.slides = slides
     },
-  
+
     deleteSlide(slideId: string | string[]) {
       const slidesId = Array.isArray(slideId) ? slideId : [slideId]
       const slides: Slide[] = JSON.parse(JSON.stringify(this.slides))
-  
+
       const deleteSlidesIndex = []
       for (const deletedId of slidesId) {
         const index = slides.findIndex(item => item.id === deletedId)
@@ -239,18 +240,18 @@ export const useSlidesStore = defineStore('slides', {
         slides.splice(index, 1)
       }
       let newIndex = Math.min(...deleteSlidesIndex)
-  
+
       const maxIndex = slides.length - 1
       if (newIndex > maxIndex) newIndex = maxIndex
-  
+
       this.slideIndex = newIndex
       this.slides = slides
     },
-  
+
     updateSlideIndex(index: number) {
       this.slideIndex = index
     },
-  
+
     addElement(element: PPTElement | PPTElement[]) {
       const elements = Array.isArray(element) ? element : [element]
       for (const el of elements) {
@@ -267,7 +268,7 @@ export const useSlidesStore = defineStore('slides', {
       const newEls = currentSlideEls.filter(item => !elementIdList.includes(item.id))
       this.slides[this.slideIndex].elements = newEls
     },
-  
+
     updateElement(data: UpdateElementData) {
       const { id, props, slideId } = data
       const elIdList = typeof id === 'string' ? [id] : id
@@ -280,11 +281,11 @@ export const useSlidesStore = defineStore('slides', {
       })
       this.slides[slideIndex].elements = (elements as PPTElement[])
     },
-  
+
     removeElementProps(data: RemovePropData) {
       const { id, propName } = data
       const propsNames = typeof propName === 'string' ? [propName] : propName
-  
+
       const slideIndex = this.slideIndex
       const slide = this.slides[slideIndex]
       const elements = slide.elements.map(el => {
@@ -311,4 +312,4 @@ export const useSlidesStore = defineStore('slides', {
       this.viewportRatio = height / width
     },
   },
-})
+})
