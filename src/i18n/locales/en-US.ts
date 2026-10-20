@@ -143,9 +143,9 @@ export const enUS: I18nTranslations = {
     insertMedia: 'Media (Image, Video, Audio)',
     insertLatex: 'LaTeX Equation',
     insertComment: 'Comment',
-    formatInspector: 'Format Inspector',
-    animateInspector: 'Animate Inspector',
-    documentInspector: 'Document Settings',
+    formatInspector: 'Format',
+    animateInspector: 'Animate',
+    documentInspector: 'Document',
   },
   inspector: {
     tabs: {

@@ -71,11 +71,22 @@ console.log('\n[2/5] Testing Editor Adaptive Layout & Drawer Toggles...')
   assert.ok(headerSrc.includes("import FloatingRail from '@/components/ui/FloatingRail.vue'"), 'Header must consume shared floating rails')
   assert.ok(headerSrc.includes("import PillButton from '@/components/ui/PillButton.vue'"), 'Header actions must reuse the shared pill button')
   assert.ok(headerSrc.includes('document-row'), 'Document controls and menus must share the first floating row')
+  assert.ok(headerSrc.includes('class="save-status-pill"\n        variant="quiet"'), 'Document status must be a quiet control inside its parent pill')
   assert.ok(!headerSrc.includes(':deep(.keynote-menu-bar)'), 'Header must not hide the responsive menu component at tablet/mobile widths')
   assert.ok(canvasToolSrc.includes("import FloatingRail from '@/components/ui/FloatingRail.vue'"), 'Creation toolbar must consume shared floating rails')
   assert.ok(canvasToolSrc.includes('<FloatingRail'), 'Creation toolbar must render as a shared rail')
   assert.ok(canvasToolSrc.includes('toolbar-row'), 'Editing tools and playback must occupy the second floating row')
-  assert.ok(canvasToolSrc.includes('inspector-cluster'), 'Inspector controls must stay grouped by the panel they open')
+  assert.ok(canvasToolSrc.includes('<FloatingRail class="toolbar-cluster'), 'Second-row tool groups must be independent floating bubbles')
+  assert.ok(canvasToolSrc.includes('history-cluster'), 'Undo and redo must remain visible in their own hierarchy bubble')
+  assert.ok(!canvasToolSrc.includes('inspector-cluster'), 'Inspector mode controls must not live in the canvas toolbar')
+  assert.ok(!editorSrc.includes('padding-top: calc(116px'), 'Canvas must remain edge-to-edge behind floating chrome')
+
+  const inspectorSrc = fs.readFileSync(path.resolve('src/views/Editor/Toolbar/index.vue'), 'utf-8')
+  assert.ok(inspectorSrc.includes('inspector-mode-switch'), 'Format, Animate, and Document must live in the inspector they control')
+  assert.ok(inspectorSrc.includes('setInspectorMode'), 'Inspector mode switch must directly control its panel')
+
+  const pillButtonSrc = fs.readFileSync(path.resolve('src/components/ui/PillButton.vue'), 'utf-8')
+  assert.ok(pillButtonSrc.includes("variant?: 'glass' | 'quiet'"), 'Shared pills must expose a DRY quiet variant for nested controls')
   assert.ok(canvasToolSrc.includes('scroll-snap-type: x proximity'), 'Narrow toolbar must use scroll snap')
 
   console.log('  PASS: Editor shell dynamically adapts layout, overlays, and FAB drawers across tiers.')
@@ -86,15 +97,11 @@ console.log('\n[3/5] Testing App Viewport Device Routing & Overrides...')
 {
   const appSrc = fs.readFileSync(path.resolve('src/App.vue'), 'utf-8')
 
-  assert.ok(appSrc.includes('useBreakpoint'), 'App.vue must import breakpoint helper')
-  assert.ok(appSrc.includes('uiOverride'), 'App.vue must support ?ui= override for deterministic testing and manual switching')
-  assert.ok(appSrc.includes("uiOverride === 'desktop'"), 'App.vue must support ?ui=desktop')
-  assert.ok(appSrc.includes("uiOverride === 'mobile'"), 'App.vue must support ?ui=mobile')
-  assert.ok(appSrc.includes('const _isPC = computed('), 'App viewport routing must react to resize and orientation changes')
-  assert.ok(appSrc.includes('height.value'), 'App viewport routing must consider reactive viewport height')
+  assert.ok(appSrc.includes('<Editor v-else />'), 'Every device must receive the same responsive editor')
+  assert.ok(!appSrc.includes('<Mobile'), 'Real touch devices must not route to the legacy mobile interface')
   assert.ok(appSrc.includes('await saveCurrentProject()'), 'Initial project persistence must be awaited before version history can run')
 
-  console.log('  PASS: App.vue provides responsive device detection and debug overrides.')
+  console.log('  PASS: Touch and desktop share one responsive editor.')
 }
 
 // 4. Modal and MoveablePanel Viewport Bounding

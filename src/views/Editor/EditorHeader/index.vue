@@ -52,7 +52,7 @@
           <Divider :margin="10" />
           <div class="statement">{{ t('header.statement') }}</div>
         </template>
-        <PillButton class="app-menu-btn" size="compact" v-tooltip="'KeyNot File Menu & Import'">
+        <PillButton class="app-menu-btn" variant="quiet" size="compact" v-tooltip="'KeyNot File Menu & Import'">
           <span class="keynot-podium-icon">
             <i-icon-park-outline:ppt />
           </span>
@@ -62,6 +62,7 @@
       </Popover>
 
       <KeynoteMenuBar
+        ref="commandMenu"
         :disabled-command-ids="disabledMenuCommandIds"
         :checked-command-ids="checkedMenuCommandIds"
         @execute="executeMenuCommand"
@@ -90,6 +91,7 @@
 
       <PillButton
         class="save-status-pill"
+        variant="quiet"
         size="compact"
         :class="saveStatus"
         @click="projectManagerVisible = true"
@@ -110,6 +112,7 @@
     <FloatingRail class="right">
       <PillButton
         class="header-pill report-pill"
+        variant="quiet"
         size="compact"
         v-if="compatibilityReport"
         :title="t('header.compatibilityReport')"
@@ -124,19 +127,19 @@
         accept=".key,application/vnd.apple.keynote,.pptx"
         @change="files => handleQuickFileOpen(files)"
       >
-        <PillButton class="header-pill" size="compact">
+        <PillButton class="header-pill" variant="quiet" size="compact">
           <i-icon-park-outline:folder-open class="icon" />
           <span>Open .key</span>
         </PillButton>
       </FileInput>
 
-      <PillButton class="header-pill" size="compact" @click="setDialogForExport('keynote')">
+      <PillButton class="header-pill" variant="quiet" size="compact" @click="setDialogForExport('keynote')">
         <i-icon-park-outline:share class="icon" />
         <span>{{ t('header.export') }}</span>
       </PillButton>
 
       <!-- Preferences / Settings Button -->
-      <PillButton class="header-pill" icon-only size="compact" :title="t('header.preferences')" @click="preferencesModalVisible = true">
+      <PillButton class="header-pill" variant="quiet" icon-only size="compact" :title="t('header.preferences')" @click="preferencesModalVisible = true">
         <i-icon-park-outline:setting-two class="icon" />
       </PillButton>
 
@@ -238,6 +241,11 @@ import PillButton from '@/components/ui/PillButton.vue'
 import KeynoteMenuBar from './KeynoteMenuBar.vue'
 
 const emit = defineEmits<{ mobileMenuState: [open: boolean] }>()
+const commandMenu = ref<InstanceType<typeof KeynoteMenuBar> | null>(null)
+defineExpose({
+  openCommandMenu: () => commandMenu.value?.open(),
+  executeCommand: (id: string) => executeMenuCommand(id),
+})
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
@@ -642,8 +650,8 @@ const openThemeChooser = () => {
   gap: 5px;
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: 4px;
-  background: var(--bg-control, rgba(0, 0, 0, 0.04));
+  border-radius: var(--radius-pill);
+  background: transparent;
   color: var(--text-secondary, #515154);
   cursor: pointer;
 
@@ -748,6 +756,7 @@ const openThemeChooser = () => {
   .save-status-pill {
     border-color: transparent;
     box-shadow: none;
+    border-radius: var(--radius-pill);
   }
 
   .header-pill {
@@ -891,8 +900,14 @@ const openThemeChooser = () => {
     display: none;
   }
   .right {
-    display: none;
+    display: flex;
+    gap: 0;
+    padding: 2px;
   }
+  .right .report-pill,
+  .right .primary-pill,
+  .right .header-pill.icon-only { display: none; }
+  .right .header-pill { min-width: 40px; height: 40px; padding: 0; }
   .left {
     flex: 0 0 auto;
   }
@@ -912,8 +927,14 @@ const openThemeChooser = () => {
     padding: 0 6px;
   }
   .center-title .title-text {
-    max-width: 130px;
+    max-width: 100%;
+    min-width: 0;
   }
+  .center-title { gap: 0; padding-inline: 4px; }
+  .center-title .save-status-pill { min-width: 18px; padding: 0 4px; }
+  .editor-header { gap: 5px; padding: 0; }
+  .left { gap: 0; padding: 2px; }
+  .app-menu-btn { padding-inline: 4px; min-width: 32px; height: 40px; }
   .save-status-pill span:not(.dot) {
     display: none;
   }

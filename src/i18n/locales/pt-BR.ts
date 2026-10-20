@@ -143,9 +143,9 @@ export const ptBR: I18nTranslations = {
     insertMedia: 'Mídia (Imagem, Vídeo, Áudio)',
     insertLatex: 'Equação LaTeX',
     insertComment: 'Comentário',
-    formatInspector: 'Inspetor de Formato',
-    animateInspector: 'Inspetor de Animação',
-    documentInspector: 'Ajustes do Documento',
+    formatInspector: 'Formato',
+    animateInspector: 'Animar',
+    documentInspector: 'Documento',
   },
   inspector: {
     tabs: {

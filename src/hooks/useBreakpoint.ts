@@ -35,7 +35,10 @@ export default () => {
   onMounted(() => window.addEventListener('resize', update, { passive: true }))
   onUnmounted(() => window.removeEventListener('resize', update))
 
-  const tier = computed(() => getTier(width.value))
+  // Compact touch landscape needs the same reachable dock as phone portrait.
+  const tier = computed(() => isTouch.value && width.value < 1000 && height.value < 500
+    ? 'mobile'
+    : getTier(width.value))
 
   return { width, height, tier, isTouch }
 }

@@ -1,7 +1,14 @@
 <template>
-  <FloatingRail class="canvas-tool toolbar-row" scrollable>
+  <div class="canvas-tool toolbar-row" :class="{ 'compact-dock': tier === 'mobile' }">
+    <FloatingRail v-if="tier === 'mobile'" class="mobile-tool-dock" aria-label="Presentation controls">
+      <PillButton variant="quiet" size="touch" icon-only :disabled="!canUndo" :aria-label="t('toolbar.undo')" @click="undo()"><i-icon-park-outline:back /></PillButton>
+      <PillButton variant="quiet" size="touch" icon-only :disabled="!canRedo" :aria-label="t('toolbar.redo')" @click="redo()"><i-icon-park-outline:next /></PillButton>
+      <PillButton variant="quiet" size="touch" icon-only :aria-label="t('toolbar.playSlideshow')" @click="enterScreening()"><i-icon-park-outline:play-one /></PillButton>
+      <PillButton variant="quiet" size="touch" class="mobile-tools-trigger" aria-haspopup="dialog" @click="emit('openTools')"><i-icon-park-outline:plus />{{ t('header.menu') }}</PillButton>
+    </FloatingRail>
+    <template v-if="tier !== 'mobile'">
     <!-- Left Floating Cluster: View | Zoom | Play | Add Slide | AI Studio | Undo/Redo -->
-    <div class="toolbar-cluster left-cluster">
+    <FloatingRail class="toolbar-cluster left-cluster" scrollable>
       <!-- View Capsule (Apple Keynote Style) -->
       <Popover trigger="click" v-model:value="viewMenuVisible" placement="bottom-start" :offset="8">
         <template #content>
@@ -128,9 +135,10 @@
         <span class="ai-label">{{ t('toolbar.aiStudio') }}</span>
       </div>
 
-      <div class="pill-divider"></div>
+    </FloatingRail>
 
-      <!-- Undo / Redo Capsule -->
+    <!-- Undo / Redo stays visible in its own hierarchy bubble. -->
+    <FloatingRail class="toolbar-cluster history-cluster">
       <div class="keynote-pill-capsule undo-capsule">
         <div class="capsule-item" :class="{ disable: !canUndo }" @click="undo()" :title="t('toolbar.undo')">
           <i-icon-park-outline:back class="main-icon" />
@@ -139,10 +147,10 @@
           <i-icon-park-outline:next class="main-icon" />
         </div>
       </div>
-    </div>
+    </FloatingRail>
 
     <!-- Center Cluster: Unified Apple Insert Capsule (Table | Chart | Text | Shape | Line | Media) -->
-    <div class="toolbar-cluster center-cluster">
+    <FloatingRail class="toolbar-cluster center-cluster" scrollable>
       <div class="keynote-insert-capsule">
         <!-- Table -->
         <Popover trigger="click" v-model:value="tableGeneratorVisible" :offset="8">
@@ -268,41 +276,9 @@
       >
         <i-icon-park-outline:comment class="main-icon" />
       </div>
-    </div>
+    </FloatingRail>
 
-    <!-- Right Cluster: Format / Animate / Document Capsule (Keynote Parity) -->
-    <div class="toolbar-cluster right-cluster inspector-cluster">
-      <!-- Inspector Mode Segmented Capsule (Image 4: [ 🖌 | ◇ | ▭ ]) -->
-      <div class="keynote-inspector-capsule">
-        <div
-          class="inspector-item"
-          :class="{ active: activeInspectorGroup === 'format' }"
-          @click="switchInspectorGroup('format')"
-          :title="t('toolbar.formatInspector')"
-        >
-          <i-icon-park-outline:platte class="main-icon" />
-        </div>
-
-        <div
-          class="inspector-item"
-          :class="{ active: activeInspectorGroup === 'animate' }"
-          @click="switchInspectorGroup('animate')"
-          :title="t('toolbar.animateInspector')"
-        >
-          <i-icon-park-outline:effects class="main-icon" />
-        </div>
-
-        <div
-          class="inspector-item"
-          :class="{ active: activeInspectorGroup === 'document' }"
-          @click="switchInspectorGroup('document')"
-          :title="t('toolbar.documentInspector')"
-        >
-          <i-icon-park-outline:doc-detail class="main-icon" />
-        </div>
-      </div>
-    </div>
-
+    </template>
     <!-- Modals -->
     <Modal v-model:visible="mediaInputVisible" :width="520">
       <MediaInput
@@ -331,11 +307,11 @@
         @insert="path => insertSvgPath(path)"
       />
     </Modal>
-  </FloatingRail>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore, useSnapshotStore } from '@/store'
 import { t } from '@/i18n'
@@ -364,6 +340,11 @@ import Popover from '@/components/Popover.vue'
 import PopoverMenuItem from '@/components/PopoverMenuItem.vue'
 import Divider from '@/components/Divider.vue'
 import FloatingRail from '@/components/ui/FloatingRail.vue'
+import PillButton from '@/components/ui/PillButton.vue'
+import useBreakpoint from '@/hooks/useBreakpoint'
+
+const emit = defineEmits<{ openTools: [] }>()
+const { tier } = useBreakpoint()
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
@@ -407,14 +388,6 @@ const applyCanvasPresetScale = (value: number) => {
 const insertAllTemplates = ({ slides, theme }: { slides: Slide[], theme: Partial<SlideTheme> }) => {
   if (isEmptySlide.value) slidesStore.setSlides(slides, theme)
   else addSlidesFromData(slides)
-}
-
-const activeInspectorGroup = computed<'format' | 'animate' | 'document'>(() => {
-  return mainStore.inspectorMode
-})
-
-const switchInspectorGroup = (group: 'format' | 'animate' | 'document') => {
-  mainStore.setInspectorMode(group)
 }
 
 const {
@@ -545,39 +518,41 @@ const openThemeChooser = () => {
 .canvas-tool {
   position: relative;
   height: 44px;
-  background: var(--glass-surface-regular);
-  border: 1px solid var(--glass-border-outer);
-  box-shadow: inset 0 1px 0 var(--glass-border), var(--glass-shadow-md);
-  backdrop-filter: saturate(150%) blur(var(--glass-blur-regular));
-  -webkit-backdrop-filter: saturate(150%) blur(var(--glass-blur-regular));
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   color: var(--text-primary, #1d1d1f);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 4px 8px;
+  gap: 8px;
+  padding: 0;
   user-select: none;
   z-index: 10;
   margin: 0;
   width: 100%;
-  border-radius: var(--radius-pill);
+  border-radius: 0;
 }
 
 .toolbar-cluster {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex: 0 0 auto;
 
   &.center-cluster {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    gap: 8px;
-  }
-
-  &.right-cluster {
     gap: 8px;
   }
 }
+.mobile-tool-dock {
+  flex: 0 0 auto;
+  max-width: 100%;
+  gap: 0;
+  padding: 4px;
+}
+.mobile-tools-trigger { font-size: 13px; font-weight: 600; }
 
 .pill-divider {
   width: 1px;
@@ -840,51 +815,6 @@ const openThemeChooser = () => {
   }
 }
 
-/* Inspector Mode Capsule (Image 4: [ 🖌 | ◇ | ▭ ]) */
-.keynote-inspector-capsule {
-  height: 32px;
-  border-radius: 9999px;
-  background: var(--bg-pill, rgba(255, 255, 255, 0.85));
-  border: 1px solid var(--border-pill, rgba(0, 0, 0, 0.08));
-  box-shadow: var(--shadow-pill, 0 1px 3px rgba(0, 0, 0, 0.05));
-  display: inline-flex;
-  align-items: center;
-  padding: 2px;
-  gap: 1px;
-
-  .inspector-item {
-    height: 28px;
-    min-width: 32px;
-    padding: 0 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9999px;
-    color: var(--text-secondary, #515154);
-    cursor: pointer;
-    transition: all 0.15s ease;
-
-    .main-icon {
-      font-size: 14px;
-    }
-
-    &:hover:not(.active) {
-      background: var(--bg-control-active, rgba(0, 0, 0, 0.05));
-      color: var(--text-primary, #1d1d1f);
-    }
-
-    &.active {
-      background: var(--accent-color, #007aff);
-      color: #ffffff;
-      box-shadow: 0 1px 3px rgba(0, 122, 255, 0.35);
-
-      .main-icon {
-        color: #ffffff;
-      }
-    }
-  }
-}
-
 .popover-menu-item {
   display: flex;
   align-items: center;
@@ -917,12 +847,8 @@ const openThemeChooser = () => {
 }
 
 @media screen and (max-width: 1200px) {
-  .toolbar-cluster.center-cluster {
-    position: static;
-    transform: none;
-    margin: 0 auto;
-  }
   .canvas-tool {
+    justify-content: flex-start;
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: none;
@@ -937,22 +863,43 @@ const openThemeChooser = () => {
   .canvas-tool {
     margin: 0;
     width: 100%;
-    padding: 3px 5px;
-    height: 44px;
+    padding: 4px 0;
+    height: 52px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-padding-inline: 4px;
   }
+  .toolbar-cluster { min-height: 44px; padding: 4px; overflow: visible; }
+  .keynote-pill-btn,
+  .keynote-pill-capsule,
+  .keynote-insert-capsule { min-height: 44px; }
+  .capsule-item,
+  .insert-item,
+  .split-left { min-width: 44px; min-height: 44px; }
+  .capsule-caret,
+  .split-right { min-width: 28px; min-height: 44px; }
+  .left-cluster .ai-capsule-btn,
+  .pill-divider,
+  .insert-sep { display: none; }
   .left-cluster .zoom-pill,
-  .left-cluster .undo-capsule,
   .left-cluster .ai-capsule-btn span {
     display: none;
   }
 }
 
-/* Flat hierarchy: one glass rail, borderless inner controls. */
+.canvas-tool.compact-dock {
+  justify-content: center;
+  overflow: visible;
+  padding: 0;
+  height: 52px;
+  box-sizing: border-box;
+}
+
+/* Flat hierarchy: each cluster owns one glass rail; inner controls stay quiet. */
 .canvas-tool {
   .keynote-pill-btn,
   .keynote-pill-capsule,
-  .keynote-insert-capsule,
-  .keynote-inspector-capsule {
+  .keynote-insert-capsule {
     background: transparent;
     border-color: transparent;
     box-shadow: none;
@@ -961,8 +908,7 @@ const openThemeChooser = () => {
 
   .keynote-pill-btn:hover,
   .keynote-pill-capsule:hover,
-  .keynote-insert-capsule:hover,
-  .keynote-inspector-capsule:hover {
+  .keynote-insert-capsule:hover {
     background: var(--bg-control, rgba(0, 0, 0, 0.04));
     box-shadow: none;
     transform: none;
@@ -973,8 +919,7 @@ const openThemeChooser = () => {
   .insert-item,
   .insert-item-split,
   .insert-item-split .split-left,
-  .insert-item-split .split-right,
-  .inspector-item {
+  .insert-item-split .split-right {
     border-radius: var(--radius-pill);
   }
 

@@ -1,5 +1,13 @@
 <template>
   <div class="keynote-inspector">
+    <div class="inspector-mode-switch">
+      <Tabs
+        :tabs="inspectorModes"
+        :value="inspectorMode"
+        segmented
+        @update:value="switchInspectorMode"
+      />
+    </div>
     <div class="inspector-tabs-header">
       <Tabs 
         v-if="currentTabs.length > 1"
@@ -81,6 +89,14 @@ const formatSubTab = ref('style')
 const animateSubTab = ref('transition')
 const documentSubTab = ref('document')
 const panelError = ref<Error | null>(null)
+const inspectorModes = computed(() => [
+  { label: t('toolbar.formatInspector'), key: 'format' },
+  { label: t('toolbar.animateInspector'), key: 'animate' },
+  { label: t('toolbar.documentInspector'), key: 'document' },
+])
+const switchInspectorMode = (mode: string) => {
+  mainStore.setInspectorMode(mode as 'format' | 'animate' | 'document')
+}
 
 onErrorCaptured((err) => {
   console.error('[Inspector Error Boundary]', err)
@@ -254,19 +270,27 @@ const activeComponent = computed(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-inspector, rgb(250, 250, 250));
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  background: transparent;
+  border: 0;
   color: var(--text-inspector, rgb(50, 50, 50));
   font-family: var(--font-ui);
   box-sizing: border-box;
 }
 
+.inspector-mode-switch {
+  flex: 0 0 auto;
+  padding: 10px 10px 0;
+
+  :deep(.tabs) {
+    width: 100%;
+    min-height: 34px;
+  }
+}
+
 .inspector-tabs-header {
   flex-shrink: 0;
   padding: 8px 10px;
-  background: var(--bg-inspector, rgb(250, 250, 250));
+  background: transparent;
   border-bottom: 1px solid var(--border-divider, rgba(0, 0, 0, 0.08));
 
   ::v-deep(.tabs.card) {

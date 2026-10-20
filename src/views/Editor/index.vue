@@ -1,7 +1,11 @@
 <template>
   <div class="keynot-editor" :class="`tier-${tier}`" :data-tier="tier">
-    <EditorHeader class="layout-header" @mobile-menu-state="handleMobileMenuState" />
-    <CanvasTool class="layout-toolbar" />
+    <div class="layout-header">
+      <EditorHeader ref="editorHeader" @mobile-menu-state="handleMobileMenuState" />
+    </div>
+    <div class="layout-toolbar">
+      <CanvasTool @open-tools="editorHeader?.openCommandMenu()" />
+    </div>
     <div class="layout-content">
       <!-- Light Table View Mode -->
       <LightTable v-if="editorViewMode === 'lightTable'" class="layout-light-table" />
@@ -122,6 +126,7 @@ import Modal from '@/components/Modal.vue'
 import PillButton from '@/components/ui/PillButton.vue'
 
 const mainStore = useMainStore()
+const editorHeader = ref<InstanceType<typeof EditorHeader> | null>(null)
 const {
   dialogForExport,
   showSelectPanel,
@@ -203,9 +208,7 @@ usePasteEvent()
   transform: translateX(-50%);
   width: min(980px, calc(100% - 24px));
   z-index: 90;
-  overflow-x: auto;
-  overflow-y: visible;
-  scrollbar-width: none;
+  overflow: visible;
 }
 .layout-content {
   flex: 1;
@@ -245,8 +248,6 @@ usePasteEvent()
   flex: 1;
   min-width: 0;
   height: 100%;
-  box-sizing: border-box;
-  padding-top: calc(116px + env(safe-area-inset-top));
 }
 .layout-light-table {
   width: 100%;
@@ -326,5 +327,21 @@ usePasteEvent()
     top: calc(112px + env(safe-area-inset-top));
     bottom: 10px;
   }
+}
+.tier-mobile {
+  .layout-toolbar { width: calc(100% - 16px); top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); height: 52px; }
+  .layout-content-left.overlay,
+  .layout-content-right.overlay {
+    top: calc(70px + env(safe-area-inset-top));
+    bottom: calc(132px + env(safe-area-inset-bottom));
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: 380px;
+    margin-left: auto;
+    border-radius: var(--radius-sheet);
+  }
+  .layout-content-left.overlay { margin-left: 0; max-width: 220px; }
+  .layout-fabs { flex-direction: row; gap: 8px; bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 </style>

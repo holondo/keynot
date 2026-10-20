@@ -22,18 +22,18 @@ console.log('[1/6] Testing CanvasTool and EditorHeader button cleanliness...')
 {
   const canvasToolSrc = fs.readFileSync(path.resolve('src/views/Editor/CanvasTool/index.vue'), 'utf-8')
   const editorHeaderSrc = fs.readFileSync(path.resolve('src/views/Editor/EditorHeader/index.vue'), 'utf-8')
+  const inspectorSrc = fs.readFileSync(path.resolve('src/views/Editor/Toolbar/index.vue'), 'utf-8')
 
   // CanvasTool right cluster should NOT have theme-mode-pill or share-pill
   assert.ok(!canvasToolSrc.includes('theme-mode-pill'), 'CanvasTool must not contain loose theme toggle pill')
   assert.ok(!canvasToolSrc.includes('toggleColorMode'), 'CanvasTool must not define loose toggleColorMode')
   assert.ok(!canvasToolSrc.includes('share-pill'), 'CanvasTool right cluster must not contain loose share-pill')
 
-  // CanvasTool right cluster must contain the 3 standard Keynote inspector triggers
-  assert.ok(canvasToolSrc.includes('keynote-inspector-capsule'), 'CanvasTool must contain keynote-inspector-capsule')
-  assert.ok(canvasToolSrc.includes('Flat hierarchy: one glass rail, borderless inner controls'), 'Canvas toolbar must avoid nested glass pills')
-  assert.ok(canvasToolSrc.includes("switchInspectorGroup('format')"), 'Must have format inspector trigger')
-  assert.ok(canvasToolSrc.includes("switchInspectorGroup('animate')"), 'Must have animate inspector trigger')
-  assert.ok(canvasToolSrc.includes("switchInspectorGroup('document')"), 'Must have document inspector trigger')
+  // Inspector modes belong to the panel they control, never to the canvas tool row.
+  assert.ok(!canvasToolSrc.includes('keynote-inspector-capsule'), 'CanvasTool must not contain detached inspector triggers')
+  assert.ok(canvasToolSrc.includes('Flat hierarchy: each cluster owns one glass rail'), 'Canvas toolbar must avoid nested glass pills')
+  assert.ok(inspectorSrc.includes('inspector-mode-switch'), 'Inspector must own its Format/Animate/Document switch')
+  assert.ok(inspectorSrc.includes('mainStore.setInspectorMode'), 'Inspector mode switch must control the inspector directly')
 
   // EditorHeader should NOT have loose lang-pill or languageMenuVisible
   assert.ok(!editorHeaderSrc.includes('lang-pill'), 'EditorHeader must not contain loose lang-pill')

@@ -1,14 +1,13 @@
 <template>
   <template v-if="slides.length">
     <Screen v-if="screening" />
-    <Editor v-else-if="_isPC" />
-    <Mobile v-else />
+    <Editor v-else />
   </template>
   <FullscreenSpin tip="Initializing KeyNot Presentation Studio..." v-else loading :mask="false" />
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { nanoid } from 'nanoid'
 import { debounce } from 'lodash'
@@ -16,26 +15,14 @@ import { useScreenStore, useMainStore, useSnapshotStore, useSlidesStore } from '
 import { applyColorMode } from '@/store/main'
 import { LOCALSTORAGE_KEY_DISCARDED_DB, LOCALSTORAGE_KEY_ACTIVE_PROJECT } from '@/configs/storage'
 import { deleteDiscardedDB, getLocalProject, listLocalProjects, saveLocalProject } from '@/utils/database'
-import { isPC } from '@/utils/common'
-import useBreakpoint, { getTier, BREAKPOINTS } from '@/hooks/useBreakpoint'
 import { STARTER_SLIDES } from '@/configs/starterSlides'
 import api from '@/services'
 
 import Editor from './views/Editor/index.vue'
 import Screen from './views/Screen/index.vue'
-import Mobile from './views/Mobile/index.vue'
 import FullscreenSpin from '@/components/FullscreenSpin.vue'
 
-// UI selection: ?ui=desktop|mobile override; otherwise the mobile UI is used only on
-// small touch screens. Desktop windows of any width get the responsive Editor.
-const uiOverride = new URLSearchParams(window.location.search).get('ui')
-const { width, height, isTouch } = useBreakpoint()
-const _isPC = computed(() => {
-  if (uiOverride === 'desktop') return true
-  if (uiOverride === 'mobile') return false
-  const isSmallTouch = isTouch.value && getTier(Math.min(width.value, height.value)) === 'mobile'
-  return !isSmallTouch && (isPC() || width.value >= BREAKPOINTS.tablet)
-})
+// One responsive editor for touch, mouse, and every viewport size.
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()

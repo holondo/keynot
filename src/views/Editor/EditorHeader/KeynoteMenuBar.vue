@@ -4,6 +4,7 @@
       <div v-for="menu in resolvedMenus" :key="menu.id" class="menu-root">
         <PillButton
           class="menu-trigger"
+          variant="quiet"
           size="compact"
           :active="openMenu === menu.id"
           :aria-expanded="openMenu === menu.id"
@@ -16,7 +17,7 @@
         </div>
       </div>
     </template>
-    <PillButton v-else ref="mobileTrigger" class="mobile-menu-trigger" size="regular" @click.stop="mobileMenuOpen = true">☰ <span>{{ t('header.menu') }}</span></PillButton>
+    <PillButton v-else ref="mobileTrigger" class="mobile-menu-trigger" variant="quiet" size="regular" @click.stop="mobileMenuOpen = true">☰ <span>{{ t('header.menu') }}</span></PillButton>
     <MobileCommandMenu :visible="mobileMenuOpen" :disabled-command-ids="disabledCommandIds" :checked-command-ids="checkedCommandIds" :return-focus="mobileTrigger?.$el" @execute="execute" @close="mobileMenuOpen = false" />
   </nav>
 </template>
@@ -46,6 +47,7 @@ const openMenu = ref('')
 const mobileMenuOpen = ref(false)
 const mobileTrigger = ref<any>(null)
 const { tier } = useBreakpoint()
+defineExpose({ open: () => { mobileMenuOpen.value = true } })
 watch(mobileMenuOpen, open => emit('mobileOpenChange', open))
 const resolvedMenus = computed(() => {
   const disabled = new Set(props.disabledCommandIds)
