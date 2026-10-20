@@ -52,4 +52,9 @@ watch(() => props.visible, async visible => {
 .sheet-enter-active .responsive-sheet, .sheet-leave-active .responsive-sheet { transition: transform var(--motion-regular) var(--ease-out); }
 .sheet-enter-from, .sheet-leave-to { opacity: 0; }
 .sheet-enter-from .responsive-sheet, .sheet-leave-to .responsive-sheet { transform: translateY(28px); }
+@media (min-width: 768px) {
+  .sheet-layer { align-items: center; padding: 24px; }
+  .responsive-sheet { width: min(480px, calc(100vw - 48px)); max-height: min(720px, calc(100dvh - 48px)); border-radius: var(--radius-sheet); padding-bottom: 0; }
+  .sheet-body { max-height: min(620px, calc(100dvh - 120px)); }
+}
 </style>

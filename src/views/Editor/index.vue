@@ -173,6 +173,8 @@ usePasteEvent()
   flex-direction: column;
   background-color: var(--bg-app, #f5f5f7);
   color: var(--text-primary, #1d1d1f);
+  position: relative;
+  overflow: hidden;
 
   @include bp(tablet) {
     --thumbs-w: 128px;
@@ -184,31 +186,48 @@ usePasteEvent()
   }
 }
 .layout-header {
-  height: var(--header-h);
-  flex-shrink: 0;
-  position: relative;
+  /* Canvas-first floating shell: chrome is detached from document flow. */
+  height: 44px;
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top));
+  left: 10px;
+  right: 10px;
   z-index: 1000;
   overflow: visible;
 }
 .layout-toolbar {
-  height: var(--toolbar-h);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 20;
+  height: 44px;
+  position: absolute;
+  top: calc(62px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(980px, calc(100% - 24px));
+  z-index: 90;
   overflow-x: auto;
   overflow-y: visible;
   scrollbar-width: none;
 }
 .layout-content {
   flex: 1;
+  height: 100%;
   min-height: 0;
   display: flex;
   position: relative;
 }
 .layout-content-left {
   width: var(--thumbs-w);
-  height: 100%;
-  flex-shrink: 0;
+  position: absolute;
+  left: 12px;
+  top: calc(118px + env(safe-area-inset-top));
+  bottom: 12px;
+  height: auto;
+  z-index: 40;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--glass-surface-regular);
+  border: 1px solid var(--glass-border-outer);
+  box-shadow: var(--glass-shadow-md);
+  backdrop-filter: blur(var(--glass-blur-regular));
 
   &.overlay {
     position: absolute;
@@ -226,6 +245,8 @@ usePasteEvent()
   flex: 1;
   min-width: 0;
   height: 100%;
+  box-sizing: border-box;
+  padding-top: calc(116px + env(safe-area-inset-top));
 }
 .layout-light-table {
   width: 100%;
@@ -233,8 +254,18 @@ usePasteEvent()
 }
 .layout-content-right {
   width: var(--inspector-width, 270px);
-  height: 100%;
-  flex-shrink: 0;
+  position: absolute;
+  right: 12px;
+  top: calc(118px + env(safe-area-inset-top));
+  bottom: 12px;
+  height: auto;
+  z-index: 40;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--glass-surface-regular);
+  border: 1px solid var(--glass-border-outer);
+  box-shadow: var(--glass-shadow-md);
+  backdrop-filter: blur(var(--glass-blur-regular));
 
   &.overlay {
     position: absolute;
@@ -286,5 +317,14 @@ usePasteEvent()
 }
 @keyframes inspector-in {
   from { transform: translateX(24px); opacity: 0; }
+}
+
+.tier-mobile,
+.tier-tablet {
+  .layout-content-left,
+  .layout-content-right {
+    top: calc(112px + env(safe-area-inset-top));
+    bottom: 10px;
+  }
 }
 </style>

@@ -1,21 +1,22 @@
 <template>
   <nav ref="menuBar" class="keynote-menu-bar" aria-label="Presentation menus" @keydown="handleKeydown">
-    <template v-if="tier !== 'mobile'">
-    <div v-for="menu in resolvedMenus" :key="menu.id" class="menu-root">
-      <button
-        class="menu-trigger"
-        :class="{ open: openMenu === menu.id }"
-        :aria-expanded="openMenu === menu.id"
-        aria-haspopup="menu"
-        @click.stop="toggleMenu(menu.id)"
-        @mouseenter="openMenu && (openMenu = menu.id)"
-      >{{ menu.label }}</button>
-      <div v-if="openMenu === menu.id" class="menu-panel" role="menu">
-        <MenuBranch :commands="menu.commands" @execute="execute" />
+    <template v-if="tier === 'desktop'">
+      <div v-for="menu in resolvedMenus" :key="menu.id" class="menu-root">
+        <PillButton
+          class="menu-trigger"
+          size="compact"
+          :active="openMenu === menu.id"
+          :aria-expanded="openMenu === menu.id"
+          aria-haspopup="menu"
+          @click.stop="toggleMenu(menu.id)"
+          @mouseenter="openMenu && (openMenu = menu.id)"
+        >{{ menu.label }}</PillButton>
+        <div v-if="openMenu === menu.id" class="menu-panel" role="menu">
+          <MenuBranch :commands="menu.commands" @execute="execute" />
+        </div>
       </div>
-    </div>
     </template>
-    <PillButton v-else ref="mobileTrigger" class="mobile-menu-trigger" size="touch" @click.stop="mobileMenuOpen = true">☰ <span>{{ t('header.menu') }}</span></PillButton>
+    <PillButton v-else ref="mobileTrigger" class="mobile-menu-trigger" size="regular" @click.stop="mobileMenuOpen = true">☰ <span>{{ t('header.menu') }}</span></PillButton>
     <MobileCommandMenu :visible="mobileMenuOpen" :disabled-command-ids="disabledCommandIds" :checked-command-ids="checkedCommandIds" :return-focus="mobileTrigger?.$el" @execute="execute" @close="mobileMenuOpen = false" />
   </nav>
 </template>
@@ -143,11 +144,11 @@ onBeforeUnmount(() => document.removeEventListener('click', closeMenus))
 </script>
 
 <style scoped lang="scss">
-.keynote-menu-bar { position: relative; z-index: 1001; display: flex; align-items: center; height: 100%; gap: 1px; overflow: visible; }
-.mobile-menu-trigger { box-shadow: none; }
+.keynote-menu-bar { position: relative; z-index: 1001; display: flex; align-items: center; height: 100%; gap: 0; overflow: visible; }
+.mobile-menu-trigger,
+.menu-trigger { box-shadow: none; border-color: transparent; background: transparent; }
 .menu-root { position: relative; overflow: visible; }
-.menu-trigger { border: 0; background: transparent; color: var(--text-primary, #1d1d1f); padding: 4px 7px; border-radius: 5px; font: inherit; cursor: default; }
-.menu-trigger:hover, .menu-trigger.open { background: var(--accent-color, #007aff); color: #fff; }
+.menu-trigger { min-width: 0; padding-inline: 7px; font: inherit; cursor: default; }
 .menu-panel { 
   position: absolute; 
   z-index: 1002; 

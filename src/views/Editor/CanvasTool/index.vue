@@ -1,5 +1,5 @@
 <template>
-  <FloatingRail class="canvas-tool" scrollable>
+  <FloatingRail class="canvas-tool toolbar-row" scrollable>
     <!-- Left Floating Cluster: View | Zoom | Play | Add Slide | AI Studio | Undo/Redo -->
     <div class="toolbar-cluster left-cluster">
       <!-- View Capsule (Apple Keynote Style) -->
@@ -271,7 +271,7 @@
     </div>
 
     <!-- Right Cluster: Format / Animate / Document Capsule (Keynote Parity) -->
-    <div class="toolbar-cluster right-cluster">
+    <div class="toolbar-cluster right-cluster inspector-cluster">
       <!-- Inspector Mode Segmented Capsule (Image 4: [ 🖌 | ◇ | ▭ ]) -->
       <div class="keynote-inspector-capsule">
         <div
@@ -544,23 +544,22 @@ const openThemeChooser = () => {
 <style lang="scss" scoped>
 .canvas-tool {
   position: relative;
-  height: 46px;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  height: 44px;
+  background: var(--glass-surface-regular);
+  border: 1px solid var(--glass-border-outer);
+  box-shadow: inset 0 1px 0 var(--glass-border), var(--glass-shadow-md);
+  backdrop-filter: saturate(150%) blur(var(--glass-blur-regular));
+  -webkit-backdrop-filter: saturate(150%) blur(var(--glass-blur-regular));
   color: var(--text-primary, #1d1d1f);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 14px;
+  padding: 4px 8px;
   user-select: none;
   z-index: 10;
-  margin: 3px 10px;
-  width: calc(100% - 20px);
-  height: 40px;
-  border-radius: 14px;
+  margin: 0;
+  width: 100%;
+  border-radius: var(--radius-pill);
 }
 
 .toolbar-cluster {
@@ -936,8 +935,8 @@ const openThemeChooser = () => {
 
 @media screen and (max-width: 768px) {
   .canvas-tool {
-    margin: 3px 6px;
-    width: calc(100% - 12px);
+    margin: 0;
+    width: 100%;
     padding: 3px 5px;
     height: 44px;
   }
@@ -957,7 +956,7 @@ const openThemeChooser = () => {
     background: transparent;
     border-color: transparent;
     box-shadow: none;
-    border-radius: 10px;
+    border-radius: var(--radius-pill);
   }
 
   .keynote-pill-btn:hover,
@@ -976,7 +975,7 @@ const openThemeChooser = () => {
   .insert-item-split .split-left,
   .insert-item-split .split-right,
   .inspector-item {
-    border-radius: 8px;
+    border-radius: var(--radius-pill);
   }
 
   .ai-capsule-btn {

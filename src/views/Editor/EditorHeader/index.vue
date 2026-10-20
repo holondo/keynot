@@ -1,5 +1,5 @@
 <template>
-  <div class="editor-header">
+  <div class="editor-header document-row">
     <FloatingRail class="left">
       <Popover trigger="click" placement="bottom-start" v-model:value="mainMenuVisible">
         <template #content>
@@ -52,13 +52,13 @@
           <Divider :margin="10" />
           <div class="statement">{{ t('header.statement') }}</div>
         </template>
-        <div class="app-menu-btn" v-tooltip="'KeyNot File Menu & Import'">
+        <PillButton class="app-menu-btn" size="compact" v-tooltip="'KeyNot File Menu & Import'">
           <span class="keynot-podium-icon">
             <i-icon-park-outline:ppt />
           </span>
           <span class="app-name">KeyNot</span>
           <i-icon-park-outline:down class="caret" />
-        </div>
+        </PillButton>
       </Popover>
 
       <KeynoteMenuBar
@@ -88,8 +88,9 @@
         v-else
       >{{ title }}<span class="ext">.key</span></div>
 
-      <div
+      <PillButton
         class="save-status-pill"
+        size="compact"
         :class="saveStatus"
         @click="projectManagerVisible = true"
         :title="t('header.manageTooltip')"
@@ -99,7 +100,7 @@
         <span v-else-if="saveStatus === 'backed_up'">{{ t('header.backedUp') }}</span>
         <span v-else-if="saveStatus === 'unsaved'">{{ t('header.unsaved') }}</span>
         <span v-else>{{ t('header.saved') }}</span>
-      </div>
+      </PillButton>
 
       <div class="offline-pill" v-if="isOffline">
         Offline
@@ -107,43 +108,47 @@
     </FloatingRail>
 
     <FloatingRail class="right">
-      <div
+      <PillButton
         class="header-pill report-pill"
+        size="compact"
         v-if="compatibilityReport"
         :title="t('header.compatibilityReport')"
         @click="compatibilityModalVisible = true"
       >
         <i-icon-park-outline:check-correct class="icon" />
         <span>Fidelity {{ compatibilityReport.measures.visualFidelity.score }}%</span>
-      </div>
+      </PillButton>
 
       <FileInput
-        class="header-pill"
+        class="header-file-action"
         accept=".key,application/vnd.apple.keynote,.pptx"
         @change="files => handleQuickFileOpen(files)"
       >
-        <i-icon-park-outline:folder-open class="icon" />
-        <span>Open .key</span>
+        <PillButton class="header-pill" size="compact">
+          <i-icon-park-outline:folder-open class="icon" />
+          <span>Open .key</span>
+        </PillButton>
       </FileInput>
 
-      <div class="header-pill" @click="setDialogForExport('keynote')">
+      <PillButton class="header-pill" size="compact" @click="setDialogForExport('keynote')">
         <i-icon-park-outline:share class="icon" />
         <span>{{ t('header.export') }}</span>
-      </div>
+      </PillButton>
 
       <!-- Preferences / Settings Button -->
-      <div class="header-pill icon-only" :title="t('header.preferences')" @click="preferencesModalVisible = true">
+      <PillButton class="header-pill" icon-only size="compact" :title="t('header.preferences')" @click="preferencesModalVisible = true">
         <i-icon-park-outline:setting-two class="icon" />
-      </div>
+      </PillButton>
 
-      <div
+      <PillButton
         class="header-pill primary-pill"
+        size="compact"
         v-if="deferredInstallPrompt"
         @click="installPWA()"
       >
         <i-icon-park-outline:computer class="icon" />
         <span>Install KeyNot</span>
-      </div>
+      </PillButton>
     </FloatingRail>
 
     <Drawer
@@ -229,6 +234,7 @@ import Popover from '@/components/Popover.vue'
 import PopoverMenuItem from '@/components/PopoverMenuItem.vue'
 import Divider from '@/components/Divider.vue'
 import FloatingRail from '@/components/ui/FloatingRail.vue'
+import PillButton from '@/components/ui/PillButton.vue'
 import KeynoteMenuBar from './KeynoteMenuBar.vue'
 
 const emit = defineEmits<{ mobileMenuState: [open: boolean] }>()
@@ -511,6 +517,7 @@ const openThemeChooser = () => {
   border-bottom: 0;
   display: flex;
   justify-content: space-between;
+  gap: 8px;
   align-items: center;
   padding: 3px 10px;
   font-size: 12px;
@@ -521,7 +528,7 @@ const openThemeChooser = () => {
 .left, .right, .center-title {
   display: flex;
   align-items: center;
-  border-radius: 13px;
+  border-radius: var(--radius-pill);
   padding: 2px 4px;
 }
 .native-file-input { display: none; }
@@ -677,6 +684,7 @@ const openThemeChooser = () => {
 }
 .right {
   gap: 6px;
+  flex: 0 0 auto;
 }
 .header-pill {
   height: 26px;
@@ -752,12 +760,9 @@ const openThemeChooser = () => {
   }
 }
 
-@media (min-width: 1025px) {
-  .center-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+@media (min-width: 1200px) {
+  .left { flex: 1 1 auto; min-width: 0; }
+  .center-title { flex: 0 1 280px; justify-content: center; }
 }
 
 .popover-menu-item {
@@ -870,6 +875,11 @@ const openThemeChooser = () => {
     display: none;
   }
 }
+@media (min-width: 769px) and (max-width: 1199px) {
+  .center-title { flex: 1 1 auto; justify-content: center; min-width: 0; }
+  .right { max-width: 230px; }
+  .right .header-pill span { display: none; }
+}
 @media (max-width: 768px) {
   .editor-header {
     padding: 0 6px;
@@ -888,6 +898,7 @@ const openThemeChooser = () => {
   }
   .center-title {
     flex: 1 1 auto;
+    width: 0;
     justify-content: center;
     min-width: 0;
   }
