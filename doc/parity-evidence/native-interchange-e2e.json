@@ -1,0 +1,14 @@
+{
+  "verifiedAt": "2026-10-20T16:32:39.515Z",
+  "nativeSlides": 2,
+  "nativeBuilds": 1,
+  "assertions": [
+    "native File > Open",
+    "native build gallery",
+    "source slide range",
+    "new deck theme load",
+    "actual export download",
+    "sidecar removed before re-import"
+  ],
+  "appleOpenValidated": false
+}

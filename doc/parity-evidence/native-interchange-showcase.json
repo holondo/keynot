@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-10-20T16:31:54.604Z",
+  "report": {
+    "written": [
+      {
+        "feature": "Slides",
+        "message": "Wrote native slide order and skip flags; created 2 slides."
+      },
+      {
+        "feature": "Objects",
+        "message": "Created 8 native Keynote objects."
+      },
+      {
+        "feature": "Appearance",
+        "message": "Wrote 10 native object styles and slide backgrounds."
+      },
+      {
+        "feature": "Presenter notes",
+        "message": "Wrote 2 native presenter notes."
+      },
+      {
+        "feature": "Text",
+        "message": "Wrote 4 native rich-text storages and their character and paragraph styles."
+      },
+      {
+        "feature": "Groups",
+        "message": "Wrote native grouping and ungrouping on 2 slides."
+      },
+      {
+        "feature": "Builds",
+        "message": "Created 2 native Keynote builds."
+      },
+      {
+        "slideIndex": 1,
+        "feature": "Transition",
+        "message": "The edited slide transition was written into the Keynote slide."
+      },
+      {
+        "slideIndex": 2,
+        "feature": "Transition",
+        "message": "The edited slide transition was written into the Keynote slide."
+      }
+    ],
+    "keynotOnly": []
+  },
+  "appleOpenValidated": false
+}
