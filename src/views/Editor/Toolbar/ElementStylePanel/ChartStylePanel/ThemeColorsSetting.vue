@@ -84,7 +84,7 @@ const deleteThemeColor = (index: number) => {
   margin-bottom: 10px;
 }
 .label {
-  font-size: 13px;
+  font-size: var(--text-md);
 }
 .btn {
   width: 100%;

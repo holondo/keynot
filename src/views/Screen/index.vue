@@ -10,6 +10,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { KEYS } from '@/configs/hotkey'
 import useScreening from '@/hooks/useScreening'
+import { useBackHandler } from '@/hooks/useBackStack'
 
 import AudienceView from './AudienceView.vue'
 import BaseView from './BaseView.vue'
@@ -27,6 +28,8 @@ const { exitScreening: _exitScreening } = useScreening()
 
 const syncChannel = !isAudienceMode ? new BroadcastChannel('pptist-audience-sync') : null
 
+// Back leaves the slideshow (the slideshow is mounted only while it runs).
+useBackHandler(() => true, () => exitScreening())
 const exitScreening = () => {
   syncChannel?.postMessage({ type: 'EXIT' })
   _exitScreening()

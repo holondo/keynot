@@ -21,12 +21,12 @@ import { HOTKEY_DOC } from '@/configs/hotkey'
 .hotkey-doc {
   height: 100%;
   overflow: auto;
-  font-size: 12px;
+  font-size: var(--text-sm);
   margin: 0 -15px;
   padding: 0 15px 15px;
 }
 .title {
-  font-size: 13px;
+  font-size: var(--text-md);
   font-weight: 700;
   color: var(--text-primary, #1d1d1f);
   border-bottom: 1px solid var(--border-color, rgba(128, 128, 128, 0.15));
@@ -50,8 +50,8 @@ import { HOTKEY_DOC } from '@/configs/hotkey'
   @include ellipsis-oneline();
 }
 .value {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-monospace, monospace;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   font-weight: 500;
   padding: 2px 6px;
   border-radius: 4px;

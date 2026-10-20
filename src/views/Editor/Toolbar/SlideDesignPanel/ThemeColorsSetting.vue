@@ -96,7 +96,7 @@ const handleDragEnd = (eventData: { newIndex: number; oldIndex: number }) => {
   margin-bottom: 10px;
 }
 .label {
-  font-size: 13px;
+  font-size: var(--text-md);
   cursor: move;
 }
 .btn {

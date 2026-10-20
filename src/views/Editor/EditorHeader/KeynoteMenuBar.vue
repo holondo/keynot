@@ -4,7 +4,6 @@
       <div v-for="menu in resolvedMenus" :key="menu.id" class="menu-root">
         <PillButton
           class="menu-trigger"
-          variant="quiet"
           size="compact"
           :active="openMenu === menu.id"
           :aria-expanded="openMenu === menu.id"
@@ -17,8 +16,18 @@
         </div>
       </div>
     </template>
-    <PillButton v-else ref="mobileTrigger" class="mobile-menu-trigger" variant="quiet" size="regular" @click.stop="mobileMenuOpen = true">☰ <span>{{ t('header.menu') }}</span></PillButton>
-    <MobileCommandMenu :visible="mobileMenuOpen" :disabled-command-ids="disabledCommandIds" :checked-command-ids="checkedCommandIds" :return-focus="mobileTrigger?.$el" @execute="execute" @close="mobileMenuOpen = false" />
+    <PillButton
+      v-else
+      ref="mobileTrigger"
+      class="mobile-menu-trigger"
+      icon-only
+      :size="tier === 'mobile' ? 'touch' : 'regular'"
+      :aria-label="t('header.menu')"
+      :hint="t('header.menu')"
+      aria-haspopup="dialog"
+      @click.stop="open()"
+    ><i-icon-park-outline:more /></PillButton>
+    <MobileCommandMenu :visible="mobileMenuOpen" :initial-path="mobileStartPath" :disabled-command-ids="disabledCommandIds" :checked-command-ids="checkedCommandIds" :return-focus="mobileTrigger?.$el" @execute="execute" @close="mobileMenuOpen = false" />
   </nav>
 </template>
 
@@ -47,7 +56,13 @@ const openMenu = ref('')
 const mobileMenuOpen = ref(false)
 const mobileTrigger = ref<any>(null)
 const { tier } = useBreakpoint()
-defineExpose({ open: () => { mobileMenuOpen.value = true } })
+const mobileStartPath = ref<string[]>([])
+/** Opens the touch command sheet, optionally already inside one root menu (e.g. 'insert'). */
+const open = (menuId?: string) => {
+  mobileStartPath.value = menuId ? [menuId] : []
+  mobileMenuOpen.value = true
+}
+defineExpose({ open })
 watch(mobileMenuOpen, open => emit('mobileOpenChange', open))
 const resolvedMenus = computed(() => {
   const disabled = new Set(props.disabledCommandIds)
@@ -146,32 +161,17 @@ onBeforeUnmount(() => document.removeEventListener('click', closeMenus))
 </script>
 
 <style scoped lang="scss">
-.keynote-menu-bar { position: relative; z-index: 1001; display: flex; align-items: center; height: 100%; gap: 0; overflow: visible; }
-.mobile-menu-trigger,
-.menu-trigger { box-shadow: none; border-color: transparent; background: transparent; }
+@import '@/assets/styles/glass-system.scss';
+.keynote-menu-bar { position: relative; z-index: 1001; display: flex; align-items: center; gap: 0; overflow: visible; }
 .menu-root { position: relative; overflow: visible; }
-.menu-trigger { min-width: 0; padding-inline: 7px; font: inherit; cursor: default; }
-.menu-panel { 
-  position: absolute; 
-  z-index: 1002; 
-  top: calc(100% + 5px); 
-  left: 0; 
-  min-width: 238px; 
-  padding: 5px; 
-  overflow: visible; 
-  border: 1px solid var(--border-color, rgba(0,0,0,.12)); 
-  border-radius: 9px; 
-  background: var(--bg-panel, #ffffff); 
-  color: var(--text-primary, #1d1d1f);
-  box-shadow: 0 12px 36px rgba(0,0,0,.35); 
-  backdrop-filter: blur(24px); 
-  -webkit-backdrop-filter: blur(24px);
-}
-
-:global([data-theme="dark"]) .menu-panel,
-:global(.dark) .menu-panel {
-  background: rgba(38, 38, 44, 0.98);
-  border-color: rgba(255, 255, 255, 0.14);
-  color: #f5f5f7;
+.menu-trigger { padding-inline: 9px; cursor: default; }
+.menu-panel {
+  @include menu-surface;
+  position: absolute;
+  z-index: 1002;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 240px;
+  overflow: visible;
 }
 </style>

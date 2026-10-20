@@ -27,6 +27,7 @@ export const KEYNOTE_MENUS: KeynoteMenu[] = [
       { id: 'file.export.images', label: 'Images…' },
     ] },
     { id: 'file.compatibility', label: 'Compatibility Report…' },
+    { id: 'file.preferences', label: 'Preferences…', shortcut: 'Ctrl+,' },
   ] },
   { id: 'edit', label: 'Edit', commands: [
     { id: 'edit.undo', label: 'Undo', shortcut: 'Ctrl+Z' },

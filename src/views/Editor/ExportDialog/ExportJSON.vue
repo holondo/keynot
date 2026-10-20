@@ -53,12 +53,12 @@ const json = computed(() => {
   background-color: var(--bg-control, #f9f9f9);
   color: var(--accent-color, #0451a5);
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   padding: 12px;
   overflow: auto;
 }
 pre {
-  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-family: var(--font-mono);
 }
 .btns {
   width: 100%;
@@ -83,6 +83,6 @@ pre {
 }
 ::-webkit-scrollbar-thumb {
   background-color: #e1e1e1;
-  border-radius: 5px;
+  border-radius: var(--radius-control);
 }
 </style>

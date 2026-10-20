@@ -140,7 +140,7 @@ const expImage = () => {
   z-index: -1;
 }
 .configs {
-  width: 360px;
+  width: min(360px, calc(100vw - 48px));
   height: calc(100% - 80px);
   display: flex;
   flex-direction: column;
@@ -156,7 +156,7 @@ const expImage = () => {
 
   .title {
     width: 110px;
-    font-size: 13px;
+    font-size: var(--text-md);
     font-weight: 500;
     color: var(--text-primary, #1d1d1f);
     position: relative;
@@ -167,7 +167,7 @@ const expImage = () => {
       top: 20px;
       left: 0;
       color: var(--text-secondary, #86868b);
-      font-size: 11px;
+      font-size: var(--text-xs);
     }
   }
   .config-item {

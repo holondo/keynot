@@ -692,7 +692,7 @@ onUnmounted(() => {
   overflow: auto;
 }
 .section-title {
-  font-size: 13px;
+  font-size: var(--text-md);
   margin-bottom: 8px;
 }
 .segment-type {
@@ -734,14 +734,14 @@ onUnmounted(() => {
   border: 1px solid #d9d9d9;
   border-radius: $borderRadius;
   padding: 8px 10px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   line-height: 1.5;
   color: #666;
   background-color: #fafafa;
   white-space: pre-wrap;
   word-break: break-all;
   user-select: text;
-  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-family: var(--font-mono);
 }
 .footer {
   display: flex;
@@ -755,7 +755,7 @@ onUnmounted(() => {
   flex: 1;
   color: #888;
   font-style: italic;
-  font-size: 12px;
+  font-size: var(--text-sm);
 }
 .footer-actions {
   display: flex;

@@ -112,8 +112,8 @@ const handleFocus = (e: Event) => {
 
 <style lang="scss" scoped>
 .number-input {
-  background-color: var(--bg-card, var(--bg-control, #ffffff));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  background-color: var(--bg-control);
+  border: 1px solid transparent;
   padding: 0 0 0 6px;
   border-radius: var(--inspector-control-radius, 8px);
   transition: all .15s ease;
@@ -138,11 +138,11 @@ const handleFocus = (e: Event) => {
     height: 100%;
     display: flex;
     flex-direction: column;
-    font-size: 7px;
+    font-size: var(--text-xs);
     color: var(--text-tertiary, #86868b);
     user-select: none;
     background-color: var(--bg-control, #f5f5f7);
-    border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    border-left: 1px solid var(--border-divider);
 
     .handler {
       width: 100%;
@@ -154,7 +154,7 @@ const handleFocus = (e: Event) => {
       transition: background-color .1s;
 
       & + .handler {
-        border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+        border-top: 1px solid var(--border-divider);
       }
 
       &:hover {
@@ -187,7 +187,7 @@ const handleFocus = (e: Event) => {
 
   &.disabled {
     background-color: var(--bg-control, rgba(128, 128, 128, 0.1));
-    border-color: var(--border-color, rgba(0, 0, 0, 0.06));
+    border-color: transparent;
     color: var(--text-tertiary, #a1a1aa);
     opacity: var(--disabled-opacity, 0.3);
 
@@ -202,7 +202,7 @@ const handleFocus = (e: Event) => {
     align-items: center;
     line-height: calc(var(--inspector-control-height, 28px) - 2px);
     user-select: none;
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: var(--text-tertiary, #86868b);
     padding-right: 4px;
   }

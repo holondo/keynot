@@ -417,18 +417,18 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 13px;
+    font-size: var(--text-md);
     font-weight: 700;
     color: var(--text-primary, #1d1d1f);
 
     .header-icon {
-      font-size: 14px;
+      font-size: var(--text-lg);
       color: var(--accent-color, #007aff);
     }
   }
 
   .active-badge {
-    font-size: 10.5px;
+    font-size: var(--text-xs);
     font-weight: 600;
     color: var(--accent-color, #007aff);
     background: rgba(0, 122, 255, 0.1);
@@ -447,8 +447,8 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
 .animation-item {
   height: 84px;
   background-color: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -488,7 +488,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   width: 52px;
   height: 30px;
   background: var(--bg-control, rgba(0, 0, 0, 0.05));
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   position: relative;
   overflow: hidden;
   color: var(--text-secondary, #515154);
@@ -505,7 +505,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   }
 
   .magic-sparkle {
-    font-size: 16px;
+    font-size: var(--text-lg);
   }
 
   &.magicMove {
@@ -523,7 +523,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
     top: 0;
     background-color: var(--accent-color, #007aff);
     color: #ffffff;
-    font-size: 10.5px;
+    font-size: var(--text-xs);
     font-weight: 600;
     display: flex;
     justify-content: center;
@@ -545,7 +545,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
 }
 
 .animation-text {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--text-primary, #1d1d1f);
   text-align: center;
   line-height: 1.2;
@@ -567,15 +567,15 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: var(--text-xs);
 }
 
 .apply-all-btn {
   width: 100%;
   height: 28px;
-  font-size: 11.5px;
+  font-size: var(--text-xs);
   margin-bottom: 12px;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -583,7 +583,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
 }
 
 .magic-move-inspector {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
 }
 
@@ -595,16 +595,16 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
 
   .inspector-title {
     font-weight: 700;
-    font-size: 12.5px;
+    font-size: var(--text-sm);
     color: var(--text-primary, #1d1d1f);
   }
   .inspector-badge {
     background: rgba(0, 122, 255, 0.15);
     color: var(--accent-color, #007aff);
     padding: 2px 8px;
-    border-radius: 10px;
+    border-radius: var(--radius-menu);
     font-weight: 600;
-    font-size: 11px;
+    font-size: var(--text-xs);
   }
 }
 
@@ -617,25 +617,25 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   .config-label {
     width: 42%;
     color: var(--text-secondary, #515154);
-    font-size: 11.5px;
+    font-size: var(--text-xs);
   }
 }
 
 .section-subtitle {
   font-weight: 600;
   color: var(--text-primary, #1d1d1f);
-  font-size: 11.5px;
+  font-size: var(--text-xs);
   margin: 10px 0 6px;
 }
 
 .empty-hint {
   background: var(--bg-control, rgba(0, 0, 0, 0.04));
   border: 1px dashed var(--border-color, rgba(0, 0, 0, 0.12));
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   padding: 8px 10px;
   color: var(--text-tertiary, #86868b);
   line-height: 1.4;
-  font-size: 11px;
+  font-size: var(--text-xs);
 }
 
 .pair-list {
@@ -649,8 +649,8 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   align-items: center;
   justify-content: space-between;
   padding: 6px 8px;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
   background: var(--bg-card, #ffffff);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -666,7 +666,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
   margin-right: 6px;
 
   .pair-names {
-    font-size: 11.5px;
+    font-size: var(--text-xs);
     color: var(--text-primary, #1d1d1f);
     white-space: nowrap;
     overflow: hidden;
@@ -682,7 +682,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
     align-items: center;
     gap: 6px;
     margin-top: 3px;
-    font-size: 10.5px;
+    font-size: var(--text-xs);
     color: var(--text-tertiary, #86868b);
 
     .reason-tag {
@@ -690,7 +690,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
       color: var(--accent-color, #007aff);
       padding: 1px 5px;
       border-radius: 4px;
-      font-size: 9.5px;
+      font-size: var(--text-xs);
       font-weight: 500;
     }
   }
@@ -709,7 +709,7 @@ const linkElementToPreviousSlide = (currentElId: string, prevElId: string) => {
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--text-secondary, #515154);
 
     &:hover {

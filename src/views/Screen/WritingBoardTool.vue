@@ -225,7 +225,7 @@ const handleWritingEnd = () => {
 
 <style lang="scss" scoped>
 .writing-board-tool {
-  font-size: 12px;
+  font-size: var(--text-sm);
   z-index: 10;
   @include absolute-0();
 
@@ -298,7 +298,7 @@ const handleWritingEnd = () => {
   display: flex;
   align-items: center;
   user-select: none;
-  font-size: 13px;
+  font-size: var(--text-md);
 
   &.shape {
     width: 280px;

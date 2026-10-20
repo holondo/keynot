@@ -11,7 +11,7 @@ withDefaults(defineProps<{ variant?: 'subtle' | 'regular' | 'elevated'; as?: str
 
 <style scoped lang="scss">
 @import '@/assets/styles/glass-system.scss';
-.glass-surface { color: var(--text-primary); }
+.glass-surface { position: relative; color: var(--text-primary); }
 .glass-subtle { @include glass-surface(subtle); }
 .glass-regular { @include glass-surface(regular); }
 .glass-elevated { @include glass-surface(elevated); }

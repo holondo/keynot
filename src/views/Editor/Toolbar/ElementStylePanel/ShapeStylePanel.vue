@@ -435,7 +435,7 @@ const updateInset = (index: number, value: number) => {
   overflow: auto;
   padding: 5px;
   padding-right: 10px;
-  border: 1px solid $borderColor;
+  border: 1px solid transparent;
   margin-bottom: 20px;
 }
 .shape-list {

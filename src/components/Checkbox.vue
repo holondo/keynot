@@ -103,7 +103,7 @@ const handleChange = (e: Event) => {
 .checkbox-label {
   margin-left: 6px;
   line-height: 20px;
-  font-size: 12.5px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
   user-select: none;
 }

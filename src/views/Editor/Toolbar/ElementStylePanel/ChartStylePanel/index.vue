@@ -209,7 +209,7 @@ const openDataEditor = () => emitter.emit(EmitterEvents.OPEN_CHART_DATA_EDITOR)
   width: 100%;
 }
 .label {
-  font-size: 12px;
+  font-size: var(--text-sm);
   margin-bottom: 4px;
 }
 .preset-themes {

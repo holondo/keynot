@@ -289,7 +289,7 @@ const contextmenus = (): ContextmenuItem[] => {
     }
   }
   .page-number {
-    font-size: 12px;
+    font-size: var(--text-sm);
     padding: 0 12px;
     cursor: pointer;
   }

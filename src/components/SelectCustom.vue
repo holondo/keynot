@@ -70,9 +70,9 @@ onUnmounted(() => {
   width: 100%;
   height: 32px;
   padding-right: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   transition: border-color .2s;
-  font-size: 13px;
+  font-size: var(--text-md);
   user-select: none;
   background-color: var(--bg-card, var(--bg-control, #ffffff));
   color: var(--text-primary, #1d1d1f);
@@ -105,12 +105,12 @@ onUnmounted(() => {
   padding: 5px;
   overflow: auto;
   text-align: left;
-  font-size: 13px;
+  font-size: var(--text-md);
   user-select: none;
   background: var(--popover-bg, #ffffff);
   color: var(--text-primary, #1d1d1f);
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 .icon {
   width: 32px;

@@ -273,13 +273,13 @@ const removeSoundtrack = () => {
 
 <style lang="scss" scoped>
 .document-panel {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
   padding: 4px 0 20px;
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -289,8 +289,8 @@ const removeSoundtrack = () => {
 
 .theme-card {
   background: var(--bg-card, rgba(255, 255, 255, 0.7));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
@@ -303,7 +303,7 @@ const removeSoundtrack = () => {
 
     .font-name {
       font-weight: 600;
-      font-size: 12.5px;
+      font-size: var(--text-sm);
       color: var(--text-primary, #1d1d1f);
     }
 
@@ -324,7 +324,7 @@ const removeSoundtrack = () => {
   .change-theme-btn {
     width: 100%;
     height: 28px;
-    font-size: 11.5px;
+    font-size: var(--text-xs);
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -332,7 +332,7 @@ const removeSoundtrack = () => {
     gap: 6px;
 
     .btn-icon {
-      font-size: 13px;
+      font-size: var(--text-md);
     }
   }
 }
@@ -341,7 +341,7 @@ const removeSoundtrack = () => {
   margin-bottom: 10px;
 
   .label {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--text-secondary, #515154);
     margin-bottom: 4px;
   }
@@ -370,7 +370,7 @@ const removeSoundtrack = () => {
     gap: 4px;
 
     .dim-label {
-      font-size: 10.5px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
       font-weight: 500;
     }
@@ -379,17 +379,17 @@ const removeSoundtrack = () => {
 
 .checkbox-row {
   margin-top: 6px;
-  font-size: 11.5px;
+  font-size: var(--text-xs);
 }
 
 .glass-input {
   width: 100%;
   height: 28px;
   padding: 0 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
   background: var(--bg-input, rgba(255, 255, 255, 0.8));
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
   outline: none;
 
@@ -404,15 +404,15 @@ const removeSoundtrack = () => {
   padding: 2px 8px;
   background: var(--bg-control, rgba(0, 0, 0, 0.05));
   border-radius: 4px;
-  font-size: 11.5px;
+  font-size: var(--text-xs);
   font-weight: 500;
   color: var(--text-primary, #1d1d1f);
 }
 
 .soundtrack-card {
   background: var(--bg-card, rgba(255, 255, 255, 0.7));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -433,19 +433,19 @@ const removeSoundtrack = () => {
 
       .track-name {
         font-weight: 600;
-        font-size: 12px;
+        font-size: var(--text-sm);
         color: var(--text-primary, #1d1d1f);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
       .track-sub {
-        font-size: 10.5px;
+        font-size: var(--text-xs);
         color: var(--text-tertiary, #86868b);
       }
     }
     .track-remove {
-      font-size: 14px;
+      font-size: var(--text-lg);
       color: var(--text-tertiary, #86868b);
       cursor: pointer;
       padding: 4px;
@@ -461,7 +461,7 @@ const removeSoundtrack = () => {
   .native-audio-player {
     width: 100%;
     height: 32px;
-    border-radius: 6px;
+    border-radius: var(--radius-control);
   }
 }
 
@@ -476,7 +476,7 @@ const removeSoundtrack = () => {
     padding: 10px;
     background: var(--bg-control, rgba(0, 0, 0, 0.03));
     border: 1px dashed var(--border-color, rgba(0, 0, 0, 0.12));
-    border-radius: 8px;
+    border-radius: var(--radius-control);
 
     .soundtrack-icon {
       font-size: 20px;
@@ -487,11 +487,11 @@ const removeSoundtrack = () => {
     .soundtrack-title {
       font-weight: 600;
       color: var(--text-primary, #1d1d1f);
-      font-size: 12px;
+      font-size: var(--text-sm);
     }
 
     .soundtrack-desc {
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
     }
   }

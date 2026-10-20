@@ -211,9 +211,9 @@ const handleSelect = (option: SelectOption) => {
   font-size: var(--inspector-control-font-size, 13px);
   font-family: var(--font-ui);
   user-select: none;
-  background-color: var(--bg-card, var(--bg-control, #ffffff));
+  background-color: var(--bg-control);
   color: var(--text-inspector, rgb(50, 50, 50));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  border: 1px solid transparent;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   position: relative;
   cursor: pointer;
@@ -226,7 +226,7 @@ const handleSelect = (option: SelectOption) => {
 
   &.disabled {
     background-color: var(--bg-control, rgba(128, 128, 128, 0.1));
-    border-color: var(--border-color, rgba(0, 0, 0, 0.06));
+    border-color: transparent;
     color: var(--text-tertiary, #a1a1aa);
     opacity: var(--disabled-opacity, 0.3);
     cursor: default;
@@ -253,20 +253,15 @@ const handleSelect = (option: SelectOption) => {
   padding: 4px;
   overflow: auto;
   text-align: left;
-  font-size: 12.5px;
+  font-size: var(--text-md);
   user-select: none;
-  background: var(--popover-bg, rgba(255, 255, 255, 0.95));
   color: var(--text-primary, #1d1d1f);
-  backdrop-filter: blur(20px);
-  border-radius: 8px;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 .option {
   height: 28px;
   line-height: 28px;
   padding: 0 8px;
-  border-radius: 5px;
+  border-radius: var(--radius-menu-item);
   color: var(--text-primary, #1d1d1f);
   @include ellipsis-oneline();
 
@@ -295,6 +290,6 @@ const handleSelect = (option: SelectOption) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 11px;
+  font-size: var(--text-xs);
 }
 </style>

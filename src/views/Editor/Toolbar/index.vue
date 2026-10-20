@@ -16,9 +16,7 @@
         card 
         @update:value="key => handleTabChange(key as string)"
       />
-      <div v-else class="single-tab-header">
-        <span class="single-tab-title">{{ currentTabs[0]?.label || 'Inspector' }}</span>
-      </div>
+      <h2 v-else class="single-tab-header">{{ currentTabs[0]?.label || 'Inspector' }}</h2>
     </div>
 
     <div class="inspector-body">
@@ -281,63 +279,21 @@ const activeComponent = computed(() => {
   flex: 0 0 auto;
   padding: 10px 10px 0;
 
-  :deep(.tabs) {
-    width: 100%;
-    min-height: 34px;
-  }
+  :deep(.tabs) { width: 100%; }
 }
 
 .inspector-tabs-header {
   flex-shrink: 0;
-  padding: 8px 10px;
-  background: transparent;
-  border-bottom: 1px solid var(--border-divider, rgba(0, 0, 0, 0.08));
+  padding: 8px 10px 10px;
+  border-bottom: 0;
 
-  ::v-deep(.tabs.card) {
-    height: var(--inspector-tab-height, 33px);
-    padding: 2px;
-    background: var(--bg-control, rgba(0, 0, 0, 0.04));
-    border-radius: var(--inspector-control-radius, 8px);
-    border: none;
-    gap: 2px;
-
-    .tab {
-      height: calc(var(--inspector-tab-height, 33px) - 4px);
-      line-height: calc(var(--inspector-tab-height, 33px) - 4px);
-      font-size: var(--inspector-tab-font-size, 12px);
-      font-weight: 500;
-      color: var(--text-secondary, rgb(121, 121, 121));
-      border-radius: 6px;
-      transition: all 0.15s ease;
-
-      &.active {
-        background: var(--bg-control-active, #ffffff);
-        color: var(--accent-color, rgb(0, 122, 255));
-        font-weight: 600;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-      }
-
-      &:hover:not(.active) {
-        color: var(--text-primary, rgba(0, 0, 0, 0.88));
-      }
-    }
-  }
-
+  /* One section only: a real panel title (same type ramp as dialog titles), not a fake tab. */
   .single-tab-header {
-    height: var(--inspector-tab-height, 33px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-control, rgba(0, 0, 0, 0.04));
-    border-radius: var(--inspector-control-radius, 8px);
-    padding: 0 12px;
-
-    .single-tab-title {
-      font-size: var(--inspector-tab-font-size, 12px);
-      font-weight: 600;
-      color: var(--text-primary, rgba(0, 0, 0, 0.88));
-      letter-spacing: -0.1px;
-    }
+    margin: 2px 4px 0;
+    font-size: var(--text-lg);
+    font-weight: var(--weight-strong);
+    line-height: 30px;
+    color: var(--text-primary);
   }
 }
 
@@ -345,37 +301,27 @@ const activeComponent = computed(() => {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 14px 16px;
+  padding: 12px 14px;
   box-sizing: border-box;
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(128, 128, 128, 0.25);
-    border-radius: 3px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(128, 128, 128, 0.4);
-  }
 }
 
 .inspector-error-fallback {
   padding: 16px 12px;
   background: rgba(255, 59, 48, 0.08);
   border: 1px solid rgba(255, 59, 48, 0.2);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   text-align: center;
 
   .error-title {
-    font-size: 12.5px;
+    font-size: var(--text-sm);
     font-weight: 600;
     color: #ff3b30;
     margin-bottom: 4px;
   }
 
   .error-msg {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--text-secondary, #666);
     margin-bottom: 12px;
     word-break: break-word;
@@ -383,9 +329,9 @@ const activeComponent = computed(() => {
 
   .retry-btn {
     padding: 4px 12px;
-    font-size: 11.5px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.15));
+    font-size: var(--text-xs);
+    border-radius: var(--radius-control);
+    border: 1px solid transparent;
     background: var(--bg-control, #ffffff);
     color: var(--text-primary, #1d1d1f);
     cursor: pointer;

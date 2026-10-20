@@ -14,6 +14,7 @@ export interface I18nTranslations {
     fileExportPdf: string
     fileExportImages: string
     fileCompatibility: string
+    filePreferences: string
     edit: string
     editUndo: string
     editRedo: string

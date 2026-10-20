@@ -52,12 +52,18 @@
           <Divider :margin="10" />
           <div class="statement">{{ t('header.statement') }}</div>
         </template>
-        <PillButton class="app-menu-btn" variant="quiet" size="compact" v-tooltip="'KeyNot File Menu & Import'">
-          <span class="keynot-podium-icon">
-            <i-icon-park-outline:ppt />
-          </span>
-          <span class="app-name">KeyNot</span>
-          <i-icon-park-outline:down class="caret" />
+        <PillButton
+          class="app-menu-btn"
+          :icon-only="tier !== 'desktop'"
+          :size="tier === 'mobile' ? 'touch' : 'regular'"
+          :aria-label="t('header.appMenu', 'KeyNot')"
+          hint="KeyNot File Menu & Import"
+        >
+          <span class="app-logo"><i-icon-park-outline:ppt /></span>
+          <template v-if="tier === 'desktop'">
+            <span class="app-name">KeyNot</span>
+            <i-icon-park-outline:down class="caret" />
+          </template>
         </PillButton>
       </Popover>
 
@@ -73,85 +79,81 @@
     </FloatingRail>
 
     <FloatingRail class="center-title">
-      <i-icon-park-outline:ppt class="doc-icon" />
-      <Input 
-        class="title-input" 
+      <Input
+        class="title-input"
         ref="titleInputRef"
-        v-model:value="titleValue" 
-        @blur="handleUpdateTitle()" 
+        v-model:value="titleValue"
+        @blur="handleUpdateTitle()"
         @enter="handleUpdateTitle()"
-        v-if="editingTitle" 
+        v-if="editingTitle"
       ></Input>
-      <div 
-        class="title-text"
-        @click="startEditTitle()"
-        :title="title"
-        v-else
-      >{{ title }}<span class="ext">.key</span></div>
+      <button v-else class="title-text" :title="title" @click="startEditTitle()">
+        <span class="name">{{ title }}</span><span class="ext">.key</span>
+      </button>
 
       <PillButton
         class="save-status-pill"
-        variant="quiet"
         size="compact"
         :class="saveStatus"
+        :icon-only="tier !== 'desktop'"
+        :aria-label="saveStatusLabel"
+        :hint="t('header.manageTooltip')"
         @click="projectManagerVisible = true"
-        :title="t('header.manageTooltip')"
       >
         <span class="dot"></span>
-        <span v-if="saveStatus === 'saving'">{{ t('header.saving') }}</span>
-        <span v-else-if="saveStatus === 'backed_up'">{{ t('header.backedUp') }}</span>
-        <span v-else-if="saveStatus === 'unsaved'">{{ t('header.unsaved') }}</span>
-        <span v-else>{{ t('header.saved') }}</span>
+        <span v-if="tier === 'desktop'">{{ saveStatusLabel }}</span>
       </PillButton>
-
-      <div class="offline-pill" v-if="isOffline">
-        Offline
-      </div>
+      <span class="offline-pill" v-if="isOffline">Offline</span>
     </FloatingRail>
 
     <FloatingRail class="right">
-      <PillButton
-        class="header-pill report-pill"
-        variant="quiet"
-        size="compact"
-        v-if="compatibilityReport"
-        :title="t('header.compatibilityReport')"
-        @click="compatibilityModalVisible = true"
-      >
-        <i-icon-park-outline:check-correct class="icon" />
-        <span>Fidelity {{ compatibilityReport.measures.visualFidelity.score }}%</span>
-      </PillButton>
-
-      <FileInput
-        class="header-file-action"
-        accept=".key,application/vnd.apple.keynote,.pptx"
-        @change="files => handleQuickFileOpen(files)"
-      >
-        <PillButton class="header-pill" variant="quiet" size="compact">
-          <i-icon-park-outline:folder-open class="icon" />
-          <span>Open .key</span>
+      <template v-if="tier === 'mobile'">
+        <PillButton class="header-pill play-pill" variant="accent" size="touch" icon-only :aria-label="t('toolbar.playSlideshow')" @click="enterScreening()">
+          <i-icon-park-solid:play-one />
         </PillButton>
-      </FileInput>
+      </template>
+      <template v-else>
+        <PillButton
+          class="header-pill report-pill"
+          v-if="compatibilityReport && tier === 'desktop'"
+          :hint="t('header.compatibilityReport')"
+          @click="compatibilityModalVisible = true"
+        >
+          <i-icon-park-outline:check-correct />
+          <span>{{ compatibilityReport.measures.visualFidelity.score }}%</span>
+        </PillButton>
 
-      <PillButton class="header-pill" variant="quiet" size="compact" @click="setDialogForExport('keynote')">
-        <i-icon-park-outline:share class="icon" />
-        <span>{{ t('header.export') }}</span>
-      </PillButton>
+        <FileInput
+          class="header-file-action"
+          accept=".key,application/vnd.apple.keynote,.pptx"
+          @change="files => handleQuickFileOpen(files)"
+        >
+          <PillButton class="header-pill" :icon-only="tier !== 'desktop'" aria-label="Open .key" hint="Open .key">
+            <i-icon-park-outline:folder-open />
+            <span v-if="tier === 'desktop'">Open</span>
+          </PillButton>
+        </FileInput>
 
-      <!-- Preferences / Settings Button -->
-      <PillButton class="header-pill" variant="quiet" icon-only size="compact" :title="t('header.preferences')" @click="preferencesModalVisible = true">
-        <i-icon-park-outline:setting-two class="icon" />
-      </PillButton>
+        <PillButton class="header-pill" :icon-only="tier !== 'desktop'" :aria-label="t('header.export')" :hint="t('header.export')" @click="setDialogForExport('keynote')">
+          <i-icon-park-outline:export />
+          <span v-if="tier === 'desktop'">{{ t('header.export') }}</span>
+        </PillButton>
 
-      <PillButton
-        class="header-pill primary-pill"
-        size="compact"
-        v-if="deferredInstallPrompt"
-        @click="installPWA()"
-      >
-        <i-icon-park-outline:computer class="icon" />
-        <span>Install KeyNot</span>
-      </PillButton>
+        <PillButton class="header-pill" icon-only :aria-label="t('header.preferences')" :hint="t('header.preferences')" @click="preferencesModalVisible = true">
+          <i-icon-park-outline:setting-two />
+        </PillButton>
+
+        <PillButton
+          class="header-pill primary-pill"
+          v-if="deferredInstallPrompt"
+          :icon-only="tier !== 'desktop'"
+          aria-label="Install KeyNot"
+          @click="installPWA()"
+        >
+          <i-icon-park-outline:computer />
+          <span v-if="tier === 'desktop'">Install</span>
+        </PillButton>
+      </template>
     </FloatingRail>
 
     <Drawer
@@ -239,11 +241,12 @@ import Divider from '@/components/Divider.vue'
 import FloatingRail from '@/components/ui/FloatingRail.vue'
 import PillButton from '@/components/ui/PillButton.vue'
 import KeynoteMenuBar from './KeynoteMenuBar.vue'
+import useBreakpoint from '@/hooks/useBreakpoint'
 
 const emit = defineEmits<{ mobileMenuState: [open: boolean] }>()
 const commandMenu = ref<InstanceType<typeof KeynoteMenuBar> | null>(null)
 defineExpose({
-  openCommandMenu: () => commandMenu.value?.open(),
+  openCommandMenu: (menuId?: string) => commandMenu.value?.open(menuId),
   executeCommand: (id: string) => executeMenuCommand(id),
 })
 
@@ -273,7 +276,7 @@ const {
 
 const supportedMenuCommandIds = new Set([
   'file.new', 'file.open', 'file.workspace', 'file.theme', 'file.versions',
-  'file.export.keynote', 'file.export.powerpoint', 'file.export.pdf', 'file.export.images', 'file.compatibility',
+  'file.export.keynote', 'file.export.powerpoint', 'file.export.pdf', 'file.export.images', 'file.compatibility', 'file.preferences',
   'edit.undo', 'edit.redo', 'edit.cut', 'edit.copy', 'edit.paste', 'edit.duplicate', 'edit.delete', 'edit.select-all', 'edit.find',
   'insert.slide', 'insert.text', 'insert.shape.rectangle', 'insert.shape.circle', 'insert.shape.line', 'insert.table', 'insert.chart',
   'insert.media.image', 'insert.media.video', 'insert.media.audio', 'insert.latex', 'insert.comment',
@@ -318,6 +321,13 @@ const checkedMenuCommandIds = computed(() => [
 ].filter(Boolean))
 
 const { currentLocale, setLocale, t } = useI18n()
+const { tier } = useBreakpoint()
+const saveStatusLabel = computed(() => {
+  if (saveStatus.value === 'saving') return t('header.saving')
+  if (saveStatus.value === 'backed_up') return t('header.backedUp')
+  if (saveStatus.value === 'unsaved') return t('header.unsaved')
+  return t('header.saved')
+})
 const mainMenuVisible = ref(false)
 const preferencesModalVisible = ref(false)
 const hotkeyDrawerVisible = ref(false)
@@ -383,6 +393,7 @@ const executeMenuCommand = (commandId: string) => {
     'file.export.pdf': () => setDialogForExport('pdf'),
     'file.export.images': () => setDialogForExport('image'),
     'file.compatibility': () => { compatibilityModalVisible.value = true },
+    'file.preferences': () => { preferencesModalVisible.value = true },
     'edit.undo': undo,
     'edit.redo': redo,
     'edit.cut': () => elementSelected ? cutElement() : cutSlide(),
@@ -518,425 +529,131 @@ const openThemeChooser = () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/glass-system.scss';
+@import '@/assets/styles/breakpoints.scss';
+
+/*
+ * Flat hierarchy: glass belongs to rails; actions inside them stay quiet.
+ * Side rails keep their natural width; the title rail is centered in the space between.
+ */
 .editor-header {
-  background: transparent;
-  color: var(--text-primary, #1d1d1f);
-  user-select: none;
-  border-bottom: 0;
+  height: 100%;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   gap: 8px;
-  align-items: center;
-  padding: 3px 10px;
-  font-size: 12px;
-  position: relative;
-  z-index: 1000;
-  overflow: visible;
+  color: var(--text-primary);
+  user-select: none;
 }
-.left, .right, .center-title {
-  display: flex;
-  align-items: center;
-  border-radius: var(--radius-pill);
-  padding: 2px 4px;
-}
+.left, .right { flex: 0 0 auto; }
+.center-title { flex: 0 1 auto; min-width: 0; max-width: 420px; margin-inline: auto; }
 .native-file-input { display: none; }
+
 .app-menu-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--text-primary, #1d1d1f);
-  font-weight: 600;
-  transition: background-color 0.15s;
-
-  &:hover {
-    background-color: var(--bg-control, rgba(0, 0, 0, 0.06));
-  }
-
-  .keynot-podium-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
-    background: linear-gradient(180deg, #32ade6 0%, #007aff 100%);
+  font-weight: var(--weight-strong);
+  .app-logo {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-control);
+    background: var(--accent-color);
     color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    box-shadow: 0 1px 3px rgba(0, 122, 255, 0.35);
+    :deep(svg) { width: 13px; height: 13px; }
   }
-
-  .app-name {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: -0.2px;
-  }
-
-  .caret {
-    font-size: 11px;
-    color: #86868b;
-  }
+  .caret { color: var(--text-tertiary); width: 10px; height: 10px; }
 }
-.top-quick-links {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  margin-left: 8px;
 
-  .quick-link {
-    padding: 3px 8px;
-    border-radius: 5px;
-    color: var(--text-secondary, #515154);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-
-    &:hover {
-      color: var(--accent-color, #007aff);
-      background-color: var(--bg-control, rgba(0, 122, 255, 0.08));
-    }
-  }
-}
-.center-title {
-  gap: 6px;
-
-  .doc-icon {
-    color: var(--accent-color, #007aff);
-    font-size: 14px;
-  }
-
-  .title-input {
-    width: 220px;
-    height: 26px;
-    background: var(--bg-input, #ffffff);
-    border-color: var(--accent-color, #007aff);
-
-    ::v-deep(input) {
-      height: 24px;
-      line-height: 24px;
-      color: var(--text-primary, #1d1d1f);
-      font-size: 12px;
-    }
-  }
-
-  .title-text {
-    max-width: 320px;
-    line-height: 24px;
-    padding: 0 6px;
-    border-radius: 5px;
-    font-weight: 600;
-    font-size: 12.5px;
-    color: var(--text-primary, #1d1d1f);
-    cursor: pointer;
-    @include ellipsis-oneline();
-
-    .ext {
-      color: var(--text-tertiary, #86868b);
-      font-weight: 400;
-      margin-left: 1px;
-    }
-
-    &:hover {
-      background-color: var(--bg-control, rgba(0, 0, 0, 0.05));
-    }
-  }
-}
-.save-status-pill {
+.title-text {
+  @include flat-control;
+  min-width: 0;
+  height: var(--control-regular);
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  padding: 2px 8px;
+  font-size: var(--text-md);
+  font-weight: var(--weight-strong);
+  .name { @include ellipsis-oneline(); }
+  .ext { color: var(--text-tertiary); font-weight: var(--weight-regular); }
+}
+.title-input {
+  width: 240px;
+  max-width: 100%;
+  height: var(--control-compact);
   border-radius: var(--radius-pill);
-  background: transparent;
-  color: var(--text-secondary, #515154);
-  cursor: pointer;
+}
 
-  &:hover {
-    background: var(--bg-control-active, rgba(0, 0, 0, 0.08));
-    color: var(--text-primary, #1d1d1f);
-  }
-
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #34c759;
-  }
-  &.saving .dot {
-    background: #ffcc00;
-  }
-  &.backed_up {
-    color: #34c759;
-    .dot {
-      background: #34c759;
-    }
-  }
-  &.unsaved {
-    color: #ff9500;
-    .dot {
-      background: #ff9500;
-    }
-  }
+.save-status-pill {
+  color: var(--text-secondary);
+  font-weight: var(--weight-regular);
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-green); flex: 0 0 auto; }
+  &.saving .dot { background: #ffcc00; }
+  &.unsaved { color: #ff9500; .dot { background: #ff9500; } }
 }
 .offline-pill {
-  font-size: 10px;
-  font-weight: 600;
-  background: rgba(255, 204, 0, 0.2);
+  padding: 0 8px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-strong);
   color: #b25000;
-  padding: 2px 7px;
-  border-radius: 4px;
 }
-.right {
-  gap: 6px;
-  flex: 0 0 auto;
-}
-.header-pill {
-  height: 26px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0 10px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--text-primary, #1d1d1f);
-  background: var(--bg-control, rgba(0, 0, 0, 0.04));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  cursor: pointer;
-  transition: all 0.15s;
+.report-pill { color: var(--accent-color); }
+.header-file-action { display: inline-flex; }
 
-  .icon {
-    font-size: 13px;
-    color: var(--text-secondary, #515154);
-  }
-
-  &:hover {
-    background: var(--bg-control-active, rgba(0, 0, 0, 0.08));
-    color: var(--text-primary, #000);
-  }
-
-  &.report-pill {
-    background: rgba(0, 122, 255, 0.1);
-    border-color: rgba(0, 122, 255, 0.25);
-    color: var(--accent-color, #007aff);
-
-    .icon {
-      color: var(--accent-color, #007aff);
-    }
-  }
-
-  &.primary-pill {
-    background: var(--accent-color, #007aff);
-    border-color: var(--accent-color, #007aff);
-    color: #fff;
-
-    .icon {
-      color: #fff;
-    }
-
-    &:hover {
-      background: #0062cc;
-    }
-  }
-
-  &.icon-only {
-    padding: 0 7px;
-  }
-
-}
-
-/* Flat hierarchy: glass belongs to rails; actions inside them stay quiet. */
-.left, .right, .center-title {
-  .header-pill,
-  .app-menu-btn,
-  .save-status-pill {
-    border-color: transparent;
-    box-shadow: none;
-    border-radius: var(--radius-pill);
-  }
-
-  .header-pill {
-    background: transparent;
-    border-radius: 9px;
-
-    &:hover {
-      background: var(--bg-control, rgba(0, 0, 0, 0.05));
-    }
-  }
-}
-
-@media (min-width: 1200px) {
-  .left { flex: 1 1 auto; min-width: 0; }
-  .center-title { flex: 0 1 280px; justify-content: center; }
-}
-
-.popover-menu-item {
-  display: flex;
-  padding: 8px 10px;
-
-  .icon {
-    font-size: 18px;
-    margin-right: 10px;
-  }
-}
+/* App (project) menu content */
+.main-menu { width: min(310px, calc(100vw - 48px)); }
+.popover-menu-item .icon { font-size: var(--text-lg); }
 .statement {
-  font-size: 11.5px;
-  color: var(--text-tertiary, #86868b);
-  padding: 6px 10px;
-}
-.main-menu {
-  width: 310px;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  padding: 4px 10px 6px;
 }
 .ai-menu {
-  background: linear-gradient(135deg, rgba(10, 132, 255, 0.15), rgba(94, 92, 230, 0.18));
-  color: var(--accent-color, #007aff);
-  border: 1px solid rgba(10, 132, 255, 0.3);
-  border-radius: 8px;
-  padding: 12px 16px;
+  border-radius: var(--radius-menu-item);
+  padding: 10px 12px;
   display: flex;
   align-items: center;
+  gap: 12px;
+  background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+  color: var(--accent-color);
   cursor: pointer;
-
-  .icon {
-    font-size: 22px;
-    margin-right: 16px;
-  }
-  .aippt-content {
-    display: flex;
-    flex-direction: column;
-  }
-  .aippt {
-    font-weight: 700;
-    font-size: 15px;
-
-    span {
-      background: linear-gradient(90deg, #0a84ff, #5e5ce6);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-  }
-  .aippt-subtitle {
-    font-size: 12px;
-    color: var(--text-secondary, #86868b);
-    margin-top: 4px;
-  }
+  &:hover { background: color-mix(in srgb, var(--accent-color) 16%, transparent); }
+  .icon { font-size: 20px; }
+  .aippt-content { display: flex; flex-direction: column; gap: 2px; }
+  .aippt { font-weight: var(--weight-strong); font-size: var(--text-md); }
+  .aippt-subtitle { font-size: var(--text-sm); color: var(--text-secondary); }
 }
-
 .import-section {
-  padding: 5px 0;
-
+  padding: 2px 0;
   .import-label {
-    font-size: 12px;
-    color: var(--text-tertiary, #86868b);
-    margin-bottom: 6px;
-    font-weight: 600;
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin: 0 4px 6px;
+    font-weight: var(--weight-strong);
+    text-transform: uppercase;
+    letter-spacing: .04em;
   }
-  .import-grid {
-    display: flex;
-    gap: 8px;
-    justify-content: space-between;
-  }
+  .import-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
   .import-block {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 10px 6px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
-    background: var(--bg-control, rgba(128, 128, 128, 0.08));
-    color: var(--text-primary, #1d1d1f);
-    transition: background-color .2s;
+    gap: 2px;
+    padding: 10px 4px;
+    border-radius: var(--radius-menu-item);
+    background: var(--bg-control);
+    color: var(--text-primary);
     cursor: pointer;
-  
-    &:hover {
-      background-color: var(--bg-hover, rgba(128, 128, 128, 0.15));
-    }
-    &.keynote-block {
-      border-color: var(--accent-color, #0a84ff);
-      background: rgba(10, 132, 255, 0.1);
-    }
-    .icon {
-      font-size: 22px;
-      margin-bottom: 3px;
-      color: var(--accent-color, #0a84ff);
-    }
-    .label {
-      font-size: 12px;
-      font-weight: 700;
-      text-align: center;
-      color: var(--text-primary, #1d1d1f);
-    }
-    .sub-label {
-      font-size: 10px;
-      color: var(--text-tertiary, #86868b);
-    }
+    &:hover { background: var(--bg-hover); }
+    .icon { font-size: 20px; color: var(--accent-color); }
+    .label { font-size: var(--text-sm); font-weight: var(--weight-strong); }
+    .sub-label { font-size: var(--text-xs); color: var(--text-tertiary); text-align: center; }
   }
 }
-@media (max-width: 1024px) {
-  .report-pill, .offline-pill {
-    display: none;
-  }
+
+@include bp(mobile) {
+  .editor-header { gap: 6px; }
+  .center-title { flex: 1 1 auto; max-width: none; justify-content: center; }
+  .title-text { flex: 1 1 auto; justify-content: center; height: var(--control-touch); }
 }
-@media (min-width: 769px) and (max-width: 1199px) {
-  .center-title { flex: 1 1 auto; justify-content: center; min-width: 0; }
-  .right { max-width: 230px; }
-  .right .header-pill span { display: none; }
-}
-@media (max-width: 768px) {
-  .editor-header {
-    padding: 0 6px;
-  }
-  .top-quick-links {
-    display: none;
-  }
-  .header-pill span {
-    display: none;
-  }
-  .right {
-    display: flex;
-    gap: 0;
-    padding: 2px;
-  }
-  .right .report-pill,
-  .right .primary-pill,
-  .right .header-pill.icon-only { display: none; }
-  .right .header-pill { min-width: 40px; height: 40px; padding: 0; }
-  .left {
-    flex: 0 0 auto;
-  }
-  .center-title {
-    flex: 1 1 auto;
-    width: 0;
-    justify-content: center;
-    min-width: 0;
-  }
-  .app-menu-btn .app-name,
-  .app-menu-btn .caret,
-  .center-title .doc-icon,
-  .center-title .ext {
-    display: none;
-  }
-  .header-pill {
-    padding: 0 6px;
-  }
-  .center-title .title-text {
-    max-width: 100%;
-    min-width: 0;
-  }
-  .center-title { gap: 0; padding-inline: 4px; }
-  .center-title .save-status-pill { min-width: 18px; padding: 0 4px; }
-  .editor-header { gap: 5px; padding: 0; }
-  .left { gap: 0; padding: 2px; }
-  .app-menu-btn { padding-inline: 4px; min-width: 32px; height: 40px; }
-  .save-status-pill span:not(.dot) {
-    display: none;
-  }
-}
-</style>
+</style>

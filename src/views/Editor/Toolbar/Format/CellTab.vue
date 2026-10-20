@@ -144,12 +144,12 @@ const updateCellFill = (color: string) => {
 
 <style lang="scss" scoped>
 .cell-tab {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -166,13 +166,13 @@ const updateCellFill = (color: string) => {
 .label {
   width: 90px;
   color: var(--text-secondary, #515154);
-  font-size: 12px;
+  font-size: var(--text-sm);
 }
 
 .radio-cluster {
   display: flex;
   background: var(--bg-control, rgba(0, 0, 0, 0.05));
   padding: 2px;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 </style>

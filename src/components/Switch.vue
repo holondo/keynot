@@ -64,7 +64,7 @@ const handleChange = () => {
   height: 20px;
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   outline: none;
-  border-radius: 10px;
+  border-radius: var(--radius-menu);
   box-sizing: border-box;
   background: var(--bg-control, #d9d9d9);
   transition: border-color .2s, background-color .2s;

@@ -120,6 +120,7 @@ const commandIdToI18nKeyMap: Record<string, string> = {
   'file.export.pdf': 'menu.fileExportPdf',
   'file.export.images': 'menu.fileExportImages',
   'file.compatibility': 'menu.fileCompatibility',
+  'file.preferences': 'menu.filePreferences',
 
   // Edit
   'edit.undo': 'menu.editUndo',

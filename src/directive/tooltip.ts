@@ -18,7 +18,7 @@ interface BindingValue {
 }
 
 const TooltipDirective: Directive = {
-  mounted(el: CustomHTMLElement, binding: DirectiveBinding<BindingValue | string>) {
+  mounted(el: CustomHTMLElement, binding: DirectiveBinding<BindingValue | string | undefined>) {
     let content = ''
     let placement: Placement = 'top'
     let delay: Delay = [300, 0]
@@ -26,7 +26,7 @@ const TooltipDirective: Directive = {
     if (typeof binding.value === 'string') {
       content = binding.value
     }
-    else {
+    else if (binding.value) {
       content = binding.value.content
       if (binding.value.placement !== undefined) placement = binding.value.placement
       if (binding.value.delay !== undefined) delay = binding.value.delay
@@ -41,17 +41,22 @@ const TooltipDirective: Directive = {
       placement,
       delay,
     })
+    if (!content) el[TOOLTIP_INSTANCE].disable()
   },
 
-  updated(el: CustomHTMLElement, binding: DirectiveBinding<BindingValue | string>) {
+  updated(el: CustomHTMLElement, binding: DirectiveBinding<BindingValue | string | undefined>) {
     let content = ''
     if (typeof binding.value === 'string') {
       content = binding.value
     }
-    else {
+    else if (binding.value) {
       content = binding.value.content
     }
-    if (el[TOOLTIP_INSTANCE]) el[TOOLTIP_INSTANCE].setContent(content)
+    const instance = el[TOOLTIP_INSTANCE]
+    if (!instance) return
+    instance.setContent(content)
+    if (content) instance.enable()
+    else instance.disable()
   },
   
   unmounted(el: CustomHTMLElement) {

@@ -551,7 +551,7 @@ const applyListStyle = (style: string) => {
 <style lang="scss" scoped>
 .keynote-text-tab {
   user-select: none;
-  font-size: 12.5px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
 }
 
@@ -562,8 +562,8 @@ const applyListStyle = (style: string) => {
     width: 100%;
     height: 48px;
     background: var(--bg-card, var(--bg-control, #ffffff));
-    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
-    border-radius: 10px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-menu);
     padding: 0 14px;
     display: flex;
     align-items: center;
@@ -586,7 +586,7 @@ const applyListStyle = (style: string) => {
 
     .chevron {
       color: var(--text-tertiary, #86868b);
-      font-size: 14px;
+      font-size: var(--text-lg);
     }
   }
 }
@@ -602,7 +602,7 @@ const applyListStyle = (style: string) => {
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     cursor: pointer;
     color: var(--text-primary, #1d1d1f);
     transition: background-color 0.1s;
@@ -616,7 +616,7 @@ const applyListStyle = (style: string) => {
     }
 
     .check-icon {
-      font-size: 14px;
+      font-size: var(--text-lg);
       color: var(--accent-color, #007aff);
     }
   }
@@ -627,7 +627,7 @@ const applyListStyle = (style: string) => {
 }
 
 .section-title {
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-primary, #1d1d1f);
   margin-bottom: 6px;
@@ -650,7 +650,7 @@ const applyListStyle = (style: string) => {
     height: 32px;
 
     .row-label {
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: var(--text-primary, #1d1d1f);
       font-weight: 500;
     }
@@ -667,7 +667,7 @@ const applyListStyle = (style: string) => {
     flex: 1;
     display: flex;
     background-color: var(--bg-control, #e9e9eb);
-    border-radius: 7px;
+    border-radius: var(--radius-control);
     padding: 2px;
     gap: 2px;
     height: 28px;
@@ -676,8 +676,8 @@ const applyListStyle = (style: string) => {
       flex: 1;
       border: 0;
       background: transparent;
-      border-radius: 5px;
-      font-size: 12.5px;
+      border-radius: var(--radius-control);
+      font-size: var(--text-sm);
       color: var(--text-primary, #1d1d1f);
       cursor: pointer;
       display: flex;
@@ -703,21 +703,21 @@ const applyListStyle = (style: string) => {
     height: 28px;
     background: var(--bg-control, #e9e9eb);
     border: 0;
-    border-radius: 7px;
+    border-radius: var(--radius-control);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 2px;
     color: var(--text-primary, #1d1d1f);
     cursor: pointer;
-    font-size: 13px;
+    font-size: var(--text-md);
 
     &:hover {
       background-color: var(--bg-control-active, #dfdfe2);
     }
 
     .micro-chevron {
-      font-size: 9px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
     }
   }
@@ -731,7 +731,7 @@ const applyListStyle = (style: string) => {
 
   .gear-title {
     font-weight: 600;
-    font-size: 12px;
+    font-size: var(--text-sm);
     margin-bottom: 8px;
   }
   .gear-row {
@@ -739,7 +739,7 @@ const applyListStyle = (style: string) => {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 8px;
-    font-size: 12px;
+    font-size: var(--text-sm);
   }
   .script-pills {
     display: flex;
@@ -748,9 +748,9 @@ const applyListStyle = (style: string) => {
     .small-pill {
       padding: 3px 8px;
       border-radius: 4px;
-      border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+      border: 1px solid transparent;
       background: var(--bg-control, #f5f5f7);
-      font-size: 11px;
+      font-size: var(--text-xs);
       cursor: pointer;
 
       &.active {
@@ -768,7 +768,7 @@ const applyListStyle = (style: string) => {
   gap: 4px;
   background-color: var(--bg-control, #e9e9eb);
   padding: 2px;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   height: 30px;
 
   .align-group {
@@ -794,12 +794,12 @@ const applyListStyle = (style: string) => {
     height: 26px;
     border: 0;
     background: transparent;
-    border-radius: 5px;
+    border-radius: var(--radius-control);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-primary, #1d1d1f);
-    font-size: 12.5px;
+    font-size: var(--text-sm);
     cursor: pointer;
     transition: all 0.1s;
 
@@ -827,12 +827,12 @@ const applyListStyle = (style: string) => {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 12px;
+      font-size: var(--text-sm);
       font-weight: 600;
       color: var(--text-primary, #1d1d1f);
 
       .disclosure-arrow {
-        font-size: 10px;
+        font-size: var(--text-xs);
         color: var(--text-tertiary, #86868b);
         transition: transform 0.15s ease;
 
@@ -853,7 +853,7 @@ const applyListStyle = (style: string) => {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: var(--text-sm);
 
       .sub-label {
         color: var(--text-secondary, #6e6e73);
@@ -873,7 +873,7 @@ const applyListStyle = (style: string) => {
     gap: 4px;
 
     .cell-label {
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
     }
   }

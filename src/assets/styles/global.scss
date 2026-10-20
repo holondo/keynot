@@ -76,21 +76,18 @@ section {
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
-  --radius-pill: 9999px;
   --text-color: var(--text-primary);
   --text-color-sub: var(--text-secondary);
   --fill-color: var(--bg-control);
   --surface-card: var(--bg-card);
   --surface-card-hover: var(--bg-hover);
 
-  /* Keynote for iCloud Design Tokens Contract */
-  --font-ui: SFNSText, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif;
   --toolbar-control-height: 28px;
-  --toolbar-radius: 8px;
+  --toolbar-radius: var(--radius-control);
   --inspector-width: 280px;
   --inspector-tab-height: 33px;
   --inspector-control-height: 28px;
-  --inspector-control-radius: 8px;
+  --inspector-control-radius: var(--radius-control);
   --inspector-tab-font-size: 12px;
   --inspector-control-font-size: 13px;
   --disabled-opacity: 0.3;
@@ -134,20 +131,18 @@ section {
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
-  --radius-pill: 9999px;
   --text-color: var(--text-primary);
   --text-color-sub: var(--text-secondary);
   --fill-color: var(--bg-control);
   --surface-card: var(--bg-card);
   --surface-card-hover: var(--bg-hover);
 
-  --font-ui: SFNSText, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, Arial, sans-serif;
   --toolbar-control-height: 28px;
-  --toolbar-radius: 8px;
+  --toolbar-radius: var(--radius-control);
   --inspector-width: 280px;
   --inspector-tab-height: 33px;
   --inspector-control-height: 28px;
-  --inspector-control-radius: 8px;
+  --inspector-control-radius: var(--radius-control);
   --inspector-tab-font-size: 12px;
   --inspector-control-font-size: 13px;
   --disabled-opacity: 0.3;
@@ -163,7 +158,28 @@ body {
 }
 
 body {
-  font-family: var(--font-ui, SFNSText, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Inter, Arial, sans-serif);
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Form controls do not inherit typography by default; that mismatch made the UI look crooked. */
+button,
+input,
+select,
+optgroup,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
+
+code, kbd, pre, samp {
+  font-family: var(--font-mono);
 }
 
 ol,
@@ -297,4 +313,41 @@ button,
   > * {
     min-width: 0;
   }
+}
+/* A sheet dismissed by a drag is already off-screen; its leave animation must not replay. */
+[data-sheet-dismissed] {
+  animation: none !important;
+  visibility: hidden;
+}
+
+/* Native touch feel: no grey tap flash, no pull-to-refresh or rubber-band of the whole app,
+   no long-press callout on controls. Scroll areas opt into their own contained overscroll. */
+html,
+body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* The document itself never scrolls (mobile browsers otherwise pan the whole layout when a
+   nested list hits its end or an input gets focus, sliding panels under the dock). */
+body {
+  position: fixed;
+  inset: 0;
+}
+/* Scroll areas keep their momentum to themselves: no chaining into panels or the page. */
+.inspector-body,
+.thumbnail-list,
+.sheet-body,
+.modal-content,
+.popover-content,
+.tippy-content,
+.content {
+  overscroll-behavior: contain;
+}
+button,
+[role='button'],
+[role='menuitem'],
+.pill-button {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }

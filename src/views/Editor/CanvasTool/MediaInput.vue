@@ -1,5 +1,6 @@
 <template>
   <div class="media-input">
+    <DialogHeader title="Insert Web Video or Audio" @close="emit('close')" />
     <Tabs 
       :tabs="tabs" 
       v-model:value="type" 
@@ -35,6 +36,7 @@
 </template>
 
 <script lang="ts" setup>
+import DialogHeader from '@/components/ui/DialogHeader.vue'
 import { ref } from 'vue'
 import message from '@/utils/message'
 import { MIME_MAP } from '@/configs/mime'
@@ -92,7 +94,7 @@ const uploadAudio = (files: FileList) => {
 
 <style lang="scss" scoped>
 .media-input {
-  width: 480px;
+  width: min(480px, calc(100vw - 48px));
 }
 .btns {
   margin-top: 10px;

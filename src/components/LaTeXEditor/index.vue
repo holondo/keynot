@@ -1,5 +1,6 @@
 <template>
   <div class="latex-editor">
+    <DialogHeader title="Equation (LaTeX)" @close="emit('close')" />
     <div class="container">
       <div class="left">
         <div class="input-area">
@@ -59,6 +60,7 @@
 </template>
 
 <script lang="ts" setup>
+import DialogHeader from '@/components/ui/DialogHeader.vue'
 import { computed, onMounted, ref, useTemplateRef } from 'vue'
 import { hfmath } from './hfmath'
 import { FORMULA_LIST, SYMBOL_LIST } from '@/configs/latex'
@@ -146,7 +148,7 @@ const insertSymbol = (latex: string) => {
 
 <style lang="scss" scoped>
 .latex-editor {
-  height: 560px;
+  height: min(560px, calc(100dvh - 120px));
 }
 .container {
   height: calc(100% - 50px);
@@ -154,6 +156,7 @@ const insertSymbol = (latex: string) => {
 }
 .left {
   width: 540px;
+  min-width: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -166,7 +169,7 @@ const insertSymbol = (latex: string) => {
     height: 100% !important;
     border-color: $borderColor !important;
     padding: 10px !important;
-    font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-family: var(--font-mono);
 
     &:focus {
       box-shadow: none !important;
@@ -186,7 +189,7 @@ const insertSymbol = (latex: string) => {
 }
 .placeholder {
   color: #888;
-  font-size: 13px;
+  font-size: var(--text-md);
 }
 .preview-content {
   width: 100%;
@@ -200,18 +203,23 @@ const insertSymbol = (latex: string) => {
   width: 280px;
   height: 100%;
   margin-left: 20px;
-  border: solid 1px var(--border-color, rgba(0, 0, 0, 0.1));
-  background-color: var(--bg-card, #fff);
+  background-color: var(--bg-control);
   color: var(--text-primary, #1d1d1f);
   display: flex;
   flex-direction: column;
   user-select: none;
-  border-radius: $borderRadius;
+  border-radius: var(--radius-control);
   overflow: hidden;
+}
+/* Narrow screens: formula on top, symbol palette below. */
+@media (max-width: 899px) {
+  .latex-editor { flex-direction: column; height: auto; }
+  .left { width: 100%; height: auto; flex-shrink: 1; }
+  .right { width: 100%; height: 280px; margin: 16px 0 0; }
 }
 .content {
   height: calc(100% - 40px);
-  font-size: 13px;
+  font-size: var(--text-md);
 }
 .formula {
   height: 100%;

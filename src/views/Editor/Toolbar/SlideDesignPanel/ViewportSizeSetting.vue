@@ -82,11 +82,11 @@ const applyCustomViewportSize = () => {
 }
 .label {
   width: 50px;
-  font-size: 13px;
+  font-size: var(--text-md);
 }
 .tip {
   margin-bottom: 18px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: #888;
 }
 .btns {

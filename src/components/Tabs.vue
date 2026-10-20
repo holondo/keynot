@@ -63,7 +63,7 @@ const emit = defineEmits<{
   line-height: 1;
 
   &:not(.card):not(.segmented) {
-    font-size: 13px;
+    font-size: var(--text-md);
     align-items: center;
     justify-content: flex-start;
     border-bottom: 1px solid var(--border-divider, rgba(0, 0, 0, 0.08));
@@ -108,16 +108,21 @@ const emit = defineEmits<{
     align-items: center;
     gap: 2px;
     flex-shrink: 0;
+    max-width: 100%;
+    /* Too many tabs for a narrow screen: scroll the segment instead of overflowing. */
+    overflow-x: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
 
     .tab {
-      flex: 1;
+      flex: 1 0 auto;
       height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       border-radius: 9999px;
-      font-size: 11.5px;
-      font-weight: 500;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
       color: var(--text-secondary, #1d1d1f);
       background-color: transparent;
       cursor: pointer;
@@ -132,8 +137,7 @@ const emit = defineEmits<{
       &.active {
         background-color: var(--accent-color, #007aff);
         color: #ffffff;
-        font-weight: 600;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+        font-weight: var(--weight-strong);
       }
 
       &.disabled {
@@ -142,13 +146,14 @@ const emit = defineEmits<{
       }
     }
 
-    &.secondary {
+    /* Card tabs are the secondary level under a segmented switch: neutral active state. */
+    &.card, &.secondary {
       background-color: var(--bg-control, #e4e4e7);
 
       .tab.active {
         background-color: var(--bg-control-active, #ffffff);
         color: var(--text-primary, #1d1d1f);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        box-shadow: var(--glass-shadow-sm);
       }
     }
   }

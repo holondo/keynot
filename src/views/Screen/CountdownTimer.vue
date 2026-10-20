@@ -138,7 +138,7 @@ const changeTime = (e: FocusEvent | KeyboardEvent, type: 'minute' | 'second') =>
 }
 .header {
   height: 16px;
-  font-size: 13px;
+  font-size: var(--text-md);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -191,7 +191,7 @@ const changeTime = (e: FocusEvent | KeyboardEvent, type: 'minute' | 'second') =>
   font-size: 17px;
 }
 .reset {
-  font-size: 12px;
+  font-size: var(--text-sm);
 }
 .close-btn {
   position: absolute;

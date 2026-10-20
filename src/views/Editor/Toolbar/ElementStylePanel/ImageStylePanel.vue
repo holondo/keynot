@@ -287,7 +287,7 @@ const setBackgroundImage = () => {
 
 .clip {
   width: 250px;
-  font-size: 12px;
+  font-size: var(--text-sm);
 
   .title {
     margin-bottom: 5px;

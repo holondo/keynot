@@ -129,13 +129,7 @@ const handleDrawPen = () => {
 
 <style lang="scss" scoped>
 .keynote-shape-picker {
-  width: 320px;
-  background: var(--popover-bg, rgba(255, 255, 255, 0.95));
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-radius: 12px;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.08);
+  width: min(320px, calc(100vw - 48px));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -151,7 +145,7 @@ const handleDrawPen = () => {
     align-items: center;
     background: var(--bg-control, rgba(0, 0, 0, 0.05));
     border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     height: 30px;
     padding: 0 8px;
     transition: all 0.15s ease;
@@ -163,7 +157,7 @@ const handleDrawPen = () => {
     }
 
     .search-icon {
-      font-size: 14px;
+      font-size: var(--text-lg);
       color: var(--text-tertiary, #86868b);
       margin-right: 6px;
     }
@@ -173,7 +167,7 @@ const handleDrawPen = () => {
       border: none;
       background: transparent;
       outline: none;
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: var(--text-primary, #1d1d1f);
 
       &::placeholder {
@@ -182,7 +176,7 @@ const handleDrawPen = () => {
     }
 
     .clear-icon {
-      font-size: 14px;
+      font-size: var(--text-lg);
       color: var(--text-tertiary, #86868b);
       cursor: pointer;
       &:hover {
@@ -205,11 +199,11 @@ const handleDrawPen = () => {
 
   .cat-pill {
     padding: 3px 9px;
-    font-size: 11px;
+    font-size: var(--text-xs);
     font-weight: 500;
     color: var(--text-secondary, #515154);
     background: var(--bg-control, rgba(0, 0, 0, 0.04));
-    border-radius: 12px;
+    border-radius: var(--radius-menu);
     white-space: nowrap;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -251,7 +245,7 @@ const handleDrawPen = () => {
   height: 58px;
   background: var(--bg-control, rgba(0, 0, 0, 0.03));
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -287,14 +281,14 @@ const handleDrawPen = () => {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 11.5px;
+    font-size: var(--text-xs);
     font-weight: 500;
     color: var(--accent-color, #007aff);
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 4px 10px;
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     transition: background 0.15s ease;
 
     &:hover {
@@ -302,7 +296,7 @@ const handleDrawPen = () => {
     }
 
     .btn-icon {
-      font-size: 13px;
+      font-size: var(--text-md);
     }
   }
 }

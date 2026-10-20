@@ -243,7 +243,7 @@ const updateBroken2Direction = (value: string | number) => {
 .line-pool-wrapper {
   width: 235px;
   padding: 5px;
-  border: 1px solid $borderColor;
+  border: 1px solid transparent;
   margin-bottom: 20px;
 }
 .line-type-list {

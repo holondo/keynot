@@ -351,13 +351,13 @@ const toggleFlip = (type: 'h' | 'v') => {
 
 <style lang="scss" scoped>
 .arrange-tab {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
   user-select: none;
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -375,8 +375,8 @@ const toggleFlip = (type: 'h' | 'v') => {
 .arrange-action-btn {
   height: 28px;
   width: 100%;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: var(--radius-control);
+  font-size: var(--text-sm);
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -387,7 +387,7 @@ const toggleFlip = (type: 'h' | 'v') => {
   box-sizing: border-box;
 
   .btn-icon {
-    font-size: 14px;
+    font-size: var(--text-lg);
     flex-shrink: 0;
   }
 }
@@ -402,12 +402,12 @@ const toggleFlip = (type: 'h' | 'v') => {
 .align-icon-btn {
   height: 28px;
   width: 100%;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: var(--text-lg);
 }
 
 .checkbox-row {
@@ -433,8 +433,8 @@ const toggleFlip = (type: 'h' | 'v') => {
   height: 28px;
   min-width: 42px;
   padding: 0 6px;
-  border-radius: 6px;
-  font-size: 11.5px;
+  border-radius: var(--radius-control);
+  font-size: var(--text-xs);
   font-weight: 500;
 }
 
@@ -445,8 +445,8 @@ const toggleFlip = (type: 'h' | 'v') => {
 .full-width-btn {
   width: 100%;
   height: 28px;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: var(--radius-control);
+  font-size: var(--text-sm);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -454,7 +454,7 @@ const toggleFlip = (type: 'h' | 'v') => {
   gap: 6px;
 
   .btn-icon {
-    font-size: 14px;
+    font-size: var(--text-lg);
   }
 
   &.active {

@@ -1,11 +1,12 @@
 <template>
   <div class="aippt-dialog">
-    <div class="header">
-      <span class="title">AI Deck Generator</span>
-      <span class="subtite" v-if="step === 'template'">Choose a theme below to generate your presentation, or <span class="local" v-tooltip="'Upload a local template file'" @click="uploadLocalTemplate()">use a local template</span></span>
-      <span class="subtite" v-else-if="step === 'outline'">Review the outline below (click to edit, right-click to add/delete items), then choose a template</span>
-      <span class="subtite" v-else>Enter your presentation topic below, along with context such as industry, role, or purpose</span>
-    </div>
+    <DialogHeader class="header" title="AI Deck Generator" @close="mainStore.setAIPPTDialogState(false)">
+      <template #subtitle>
+        <template v-if="step === 'template'">Choose a theme below to generate your presentation, or <span class="local" v-tooltip="'Upload a local template file'" @click="uploadLocalTemplate()">use a local template</span></template>
+        <template v-else-if="step === 'outline'">Review the outline below (click to edit, right-click to add/delete items), then choose a template</template>
+        <template v-else>Enter your presentation topic below, along with context such as industry, role, or purpose</template>
+      </template>
+    </DialogHeader>
     
     <template v-if="step === 'setup'">
       <Input class="input" 
@@ -124,6 +125,7 @@
 </template>
 
 <script lang="ts" setup>
+import DialogHeader from '@/components/ui/DialogHeader.vue'
 import { ref, onMounted, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { jsonrepair } from 'jsonrepair'
@@ -375,7 +377,7 @@ const uploadLocalTemplate = () => {
 
 <style lang="scss" scoped>
 .aippt-dialog {
-  margin: -20px;
+  margin: calc(var(--modal-pad, 20px) * -1);
   padding: 30px;
   color: var(--text-primary, #1d1d1f);
 }
@@ -395,7 +397,7 @@ const uploadLocalTemplate = () => {
   }
   .subtite {
     color: var(--text-secondary, #86868b);
-    font-size: 12px;
+    font-size: var(--text-sm);
 
     .local {
       color: var(--accent-color, #007aff);
@@ -411,7 +413,7 @@ const uploadLocalTemplate = () => {
     margin-bottom: 15px;
     background-color: var(--bg-control, rgba(128, 128, 128, 0.08));
     border: 1px solid var(--border-color, rgba(128, 128, 128, 0.15));
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     color: var(--text-primary, #1d1d1f);
     overflow: auto;
   }
@@ -421,7 +423,7 @@ const uploadLocalTemplate = () => {
     margin-bottom: 15px;
     background-color: var(--bg-control, rgba(128, 128, 128, 0.08));
     border: 1px solid var(--border-color, rgba(128, 128, 128, 0.15));
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     color: var(--text-primary, #1d1d1f);
     overflow: auto;
   }
@@ -448,7 +450,7 @@ const uploadLocalTemplate = () => {
   
     .template {
       border: 2px solid var(--border-color, rgba(0, 0, 0, 0.1));
-      border-radius: 8px;
+      border-radius: var(--radius-control);
       @include flex-grid-layout-children(2, 49%);
 
       &.selected {
@@ -458,7 +460,7 @@ const uploadLocalTemplate = () => {
       img {
         width: 100%;
         min-height: 175px;
-        border-radius: 6px;
+        border-radius: var(--radius-control);
       }
     }
   }
@@ -480,11 +482,11 @@ const uploadLocalTemplate = () => {
   margin-top: 10px;
 
   .recommend {
-    font-size: 12px;
+    font-size: var(--text-sm);
     background-color: var(--bg-control, rgba(128, 128, 128, 0.1));
     border: 1px solid var(--border-color, rgba(128, 128, 128, 0.12));
     color: var(--text-primary, #1d1d1f);
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     padding: 3px 8px;
     margin-right: 6px;
     margin-top: 6px;
@@ -503,19 +505,19 @@ const uploadLocalTemplate = () => {
   justify-content: space-between;
 
   .config-item {
-    font-size: 13px;
+    font-size: var(--text-md);
     display: flex;
     align-items: center;
   }
 }
 .count {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: #999;
   margin-right: 10px;
 }
 .submit {
   height: 20px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   background-color: $themeColor;
   color: #fff;
   display: flex;
@@ -529,7 +531,7 @@ const uploadLocalTemplate = () => {
   }
 
   .icon {
-    font-size: 15px;
+    font-size: var(--text-lg);
     margin-right: 3px;
   }
 }

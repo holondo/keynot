@@ -1,14 +1,10 @@
 <template>
   <div class="version-history-modal">
-    <div class="header-row">
-      <div class="header-titles">
-        <div class="modal-title">{{ t('versions.title') }}</div>
-        <div class="modal-subtitle">{{ t('versions.savedVersions') }}</div>
-      </div>
+    <DialogHeader :title="t('versions.title')" :subtitle="t('versions.savedVersions')" @close="emit('close')">
       <Button type="primary" class="create-checkpoint-btn" @click="handleCreateCheckpoint">
         <i-icon-park-outline:plus /> <span>{{ t('common.save') }}</span>
       </Button>
-    </div>
+    </DialogHeader>
 
     <div class="checkpoint-creator-bar" v-if="showCustomNameInput">
       <Input
@@ -68,6 +64,7 @@
 </template>
 
 <script lang="ts" setup>
+import DialogHeader from '@/components/ui/DialogHeader.vue'
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSlidesStore } from '@/store'
@@ -160,31 +157,9 @@ const handleDelete = async (versionId: string) => {
   padding: 8px 4px;
 }
 
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  gap: 16px;
-}
 
-.header-titles {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
 
-.modal-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary, #1d1d1f);
-}
 
-.modal-subtitle {
-  font-size: 12px;
-  color: var(--text-secondary, #86868b);
-  line-height: 1.4;
-}
 
 .checkpoint-creator-bar {
   display: flex;
@@ -193,7 +168,7 @@ const handleDelete = async (versionId: string) => {
   padding: 10px 12px;
   background: var(--bg-control, rgba(0, 0, 0, 0.03));
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   margin-bottom: 14px;
 }
 
@@ -213,7 +188,7 @@ const handleDelete = async (versionId: string) => {
   padding: 12px 14px;
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   cursor: pointer;
   transition: all 0.15s ease;
 
@@ -238,27 +213,27 @@ const handleDelete = async (versionId: string) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--text-md);
   font-weight: 600;
   color: var(--text-primary, #1d1d1f);
 
   .time-icon {
-    font-size: 14px;
+    font-size: var(--text-lg);
     color: #007aff;
   }
 }
 
 .active-badge {
-  font-size: 10px;
+  font-size: var(--text-xs);
   background: rgba(0, 122, 255, 0.1);
   color: #007aff;
   padding: 1px 6px;
-  border-radius: 10px;
+  border-radius: var(--radius-menu);
   font-weight: 500;
 }
 
 .version-meta {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--text-secondary, #86868b);
   display: flex;
   gap: 6px;
@@ -285,14 +260,14 @@ const handleDelete = async (versionId: string) => {
   }
 
   .empty-title {
-    font-size: 14px;
+    font-size: var(--text-lg);
     font-weight: 600;
     color: var(--text-primary, #1d1d1f);
     margin-bottom: 4px;
   }
 
   .empty-desc {
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: var(--text-secondary, #86868b);
     max-width: 320px;
   }
@@ -306,7 +281,7 @@ const handleDelete = async (versionId: string) => {
   border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
 
   .checkpoint-count {
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: var(--text-secondary, #86868b);
   }
 }

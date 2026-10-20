@@ -298,16 +298,16 @@ const contextmenusTable = (): ContextmenuItem[] => {
     gap: 8px;
 
     .view-icon {
-      font-size: 16px;
+      font-size: var(--text-lg);
       color: var(--accent-color, #007aff);
     }
     .title {
-      font-size: 13px;
+      font-size: var(--text-md);
       font-weight: 600;
       color: var(--text-primary, #1d1d1f);
     }
     .slide-count-badge {
-      font-size: 11px;
+      font-size: var(--text-xs);
       padding: 2px 7px;
       border-radius: 999px;
       background: var(--bg-control, rgba(0, 0, 0, 0.06));
@@ -324,7 +324,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
     .search-icon {
       position: absolute;
       left: 8px;
-      font-size: 13px;
+      font-size: var(--text-md);
       color: var(--text-tertiary, #86868b);
       pointer-events: none;
     }
@@ -333,10 +333,10 @@ const contextmenusTable = (): ContextmenuItem[] => {
       width: 170px;
       height: 26px;
       padding: 0 24px 0 26px;
-      border-radius: 6px;
+      border-radius: var(--radius-control);
       border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
       background: var(--bg-input, #fff);
-      font-size: 11.5px;
+      font-size: var(--text-xs);
       color: var(--text-primary, #1d1d1f);
       outline: none;
       transition: all 0.15s ease;
@@ -350,7 +350,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
     .clear-btn {
       position: absolute;
       right: 7px;
-      font-size: 10px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
       cursor: pointer;
       &:hover {
@@ -370,16 +370,16 @@ const contextmenusTable = (): ContextmenuItem[] => {
     gap: 8px;
     background: var(--bg-control, rgba(0, 0, 0, 0.04));
     padding: 3px 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     border: 1px solid var(--border-color, rgba(0, 0, 0, 0.05));
 
     .zoom-label {
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
       font-weight: 500;
     }
     .mini-icon {
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: var(--text-secondary, #515154);
     }
     .size-range {
@@ -388,7 +388,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
       cursor: pointer;
     }
     .zoom-value {
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--text-secondary, #515154);
       min-width: 36px;
       font-variant-numeric: tabular-nums;
@@ -407,8 +407,8 @@ const contextmenusTable = (): ContextmenuItem[] => {
     gap: 5px;
     height: 28px;
     padding: 0 12px;
-    border-radius: 6px;
-    font-size: 12px;
+    border-radius: var(--radius-control);
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
     background: var(--bg-pill, rgba(255, 255, 255, 0.9));
@@ -430,7 +430,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
     }
 
     .btn-icon {
-      font-size: 13px;
+      font-size: var(--text-md);
     }
   }
 }
@@ -451,7 +451,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
 .light-table-card {
   display: flex;
   flex-direction: column;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   cursor: pointer;
   transition: transform 0.15s ease, opacity 0.15s ease;
   user-select: none;
@@ -465,7 +465,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
 
   .card-viewport {
     position: relative;
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     overflow: hidden;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -487,7 +487,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
         background: rgba(255, 255, 255, 0.95);
         color: #1d1d1f;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: var(--text-sm);
         font-weight: 600;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         display: inline-flex;
@@ -522,7 +522,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
       gap: 6px;
 
       .slide-number {
-        font-size: 11px;
+        font-size: var(--text-xs);
         font-weight: 600;
         color: var(--text-tertiary, #86868b);
       }
@@ -535,7 +535,7 @@ const contextmenusTable = (): ContextmenuItem[] => {
     }
 
     .badge {
-      font-size: 10px;
+      font-size: var(--text-xs);
       padding: 1px 5px;
       border-radius: 4px;
       font-weight: 500;
@@ -565,6 +565,6 @@ const contextmenusTable = (): ContextmenuItem[] => {
   padding: 60px 0;
   text-align: center;
   color: var(--text-tertiary, #86868b);
-  font-size: 13px;
+  font-size: var(--text-md);
 }
 </style>

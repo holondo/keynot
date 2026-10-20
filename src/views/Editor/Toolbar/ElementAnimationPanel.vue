@@ -530,7 +530,7 @@ $outColor: #ef4444;
   height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
-  font-size: 12px;
+  font-size: var(--text-sm);
   margin-right: -10px;
   padding-right: 5px;
   position: relative;
@@ -561,7 +561,7 @@ $outColor: #ef4444;
 }
 .type-title {
   width: 100%;
-  font-size: 13px;
+  font-size: var(--text-md);
   margin-bottom: 10px;
   border-left: 4px solid #aaa;
   background-color: #eee;
@@ -636,7 +636,7 @@ $outColor: #ef4444;
     }
     .handler {
       flex: 2;
-      font-size: 15px;
+      font-size: var(--text-lg);
       text-align: right;
     }
     .handler-btn {

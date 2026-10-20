@@ -44,7 +44,7 @@ const handleInput = (e: Event) => {
   position: relative;
   overflow: hidden;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--text-lg);
 
   &::after {
     content: '#';

@@ -268,7 +268,7 @@ const handleMousedown = (e: MouseEvent | TouchEvent) => {
     color: #fff;
     border-radius: $borderRadius;
     padding: 6px 5px;
-    font-size: 12px;
+    font-size: var(--text-sm);
   }
   &::after {
     content: '';

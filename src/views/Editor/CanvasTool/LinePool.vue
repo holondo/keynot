@@ -66,15 +66,13 @@ const selectLine = (line: LinePoolItem) => {
 
 <style lang="scss" scoped>
 .line-pool {
-  width: 220px;
+  width: min(220px, calc(100vw - 48px));
   overflow: auto;
-  margin-bottom: -12px;
-  margin-right: -12px;
-  padding-right: 12px;
+  max-height: min(420px, calc(100dvh - 160px));
 }
 .category-name {
   width: 100%;
-  font-size: 11.5px;
+  font-size: var(--text-xs);
   font-weight: 600;
   margin-bottom: 10px;
   border-left: 3px solid var(--accent-color, #007aff);

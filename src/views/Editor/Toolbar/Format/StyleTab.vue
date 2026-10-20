@@ -327,12 +327,12 @@ const updateOpacity = (val: number) => {
 <style lang="scss" scoped>
 .keynote-style-tab {
   user-select: none;
-  font-size: 12.5px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
 }
 
 .section-title {
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-primary, #1d1d1f);
   margin-bottom: 8px;
@@ -345,7 +345,7 @@ const updateOpacity = (val: number) => {
 
   .preset-card {
     height: 38px;
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
 
@@ -390,12 +390,12 @@ const updateOpacity = (val: number) => {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 12px;
+      font-size: var(--text-sm);
       font-weight: 600;
       color: var(--text-primary, #1d1d1f);
 
       .disclosure-arrow {
-        font-size: 10px;
+        font-size: var(--text-xs);
         color: var(--text-tertiary, #86868b);
         transition: transform 0.15s ease;
 
@@ -416,7 +416,7 @@ const updateOpacity = (val: number) => {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: var(--text-sm);
 
       .sub-label {
         color: var(--text-secondary, #6e6e73);

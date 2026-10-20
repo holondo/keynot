@@ -62,15 +62,15 @@ const handleClick = () => {
   max-width: 100%;
   box-sizing: border-box;
   outline: 0;
-  font-size: 12px;
+  font-size: var(--text-sm);
   line-height: 1.35;
   padding: 4px 10px;
   text-align: center;
   color: var(--text-primary, #1d1d1f);
-  border-radius: var(--radius-sm, 6px);
+  border-radius: var(--radius-control);
   user-select: none;
   cursor: pointer;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  border: 1px solid transparent;
   background-color: var(--bg-control, #ffffff);
   transition: all 0.15s ease;
   font-weight: 500;
@@ -97,7 +97,7 @@ const handleClick = () => {
 
   &.small {
     min-height: 24px;
-    font-size: 11.5px;
+    font-size: var(--text-xs);
     padding: 2px 8px;
 
     &.nowrap {
@@ -108,7 +108,7 @@ const handleClick = () => {
 
   &.large {
     min-height: 32px;
-    font-size: 13px;
+    font-size: var(--text-md);
     padding: 6px 14px;
 
     &.nowrap {
@@ -119,13 +119,13 @@ const handleClick = () => {
 
   &.default {
     background-color: var(--bg-control, #f5f5f7);
-    border-color: var(--border-color, rgba(0, 0, 0, 0.12));
+    border-color: transparent;
     color: var(--text-primary, #1d1d1f);
 
     &:hover:not(.disabled) {
       background-color: var(--bg-control-active, #ebebee);
       color: var(--text-primary, #1d1d1f);
-      border-color: var(--border-color, rgba(0, 0, 0, 0.2));
+      border-color: transparent;
     }
   }
 
@@ -143,7 +143,7 @@ const handleClick = () => {
 
   &.checkbox, &.radio {
     background-color: var(--bg-control, #f5f5f7);
-    border-color: var(--border-color, rgba(0, 0, 0, 0.12));
+    border-color: transparent;
     color: var(--text-primary, #1d1d1f);
 
     &:not(.checked):hover:not(.disabled) {
@@ -165,7 +165,7 @@ const handleClick = () => {
 
   &.disabled {
     background-color: var(--bg-control, rgba(128, 128, 128, 0.1));
-    border-color: var(--border-color, rgba(0, 0, 0, 0.06));
+    border-color: transparent;
     color: var(--text-tertiary, #a1a1aa);
     cursor: default;
     box-shadow: none;

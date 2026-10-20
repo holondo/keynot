@@ -221,12 +221,12 @@ const updateFormatOption = (patch: Partial<CellDataFormat>) => {
 <style lang="scss" scoped>
 .keynote-data-tab {
   user-select: none;
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -251,7 +251,7 @@ const updateFormatOption = (patch: Partial<CellDataFormat>) => {
 }
 
 .selection-status {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--text-tertiary, #86868b);
   text-align: center;
   margin-top: 8px;

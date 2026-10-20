@@ -263,7 +263,7 @@ const updateViewportRatio = (ratio: number) => {
 <style lang="scss" scoped>
 .slide-layout-tab {
   padding: 12px 14px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
 }
 
@@ -272,8 +272,8 @@ const updateViewportRatio = (ratio: number) => {
   align-items: center;
   padding: 10px 12px;
   background: var(--bg-inspector-card, rgba(255, 255, 255, 0.7));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-menu);
   margin-bottom: 8px;
 }
 
@@ -286,25 +286,25 @@ const updateViewportRatio = (ratio: number) => {
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: var(--text-lg);
   margin-right: 10px;
   flex-shrink: 0;
 }
 
 .card-hero-name {
-  font-size: 13px;
+  font-size: var(--text-md);
   font-weight: 600;
   color: var(--text-primary, #1d1d1f);
 }
 
 .card-hero-sub {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--text-tertiary, #86868b);
   margin-top: 1px;
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -322,7 +322,7 @@ const updateViewportRatio = (ratio: number) => {
 }
 
 .sublabel {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-secondary, #515154);
   width: 70px;
   flex-shrink: 0;
@@ -334,14 +334,14 @@ const updateViewportRatio = (ratio: number) => {
   .upload-area {
     height: 70px;
     border: 1px dashed rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     display: flex;
     align-items: center;
     justify-content: center;
     background-size: cover;
     background-position: center;
     cursor: pointer;
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: #007aff;
 
     &:hover {
@@ -354,7 +354,7 @@ const updateViewportRatio = (ratio: number) => {
     color: #fff;
     padding: 3px 8px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: var(--text-xs);
   }
 }
 </style>

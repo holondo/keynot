@@ -456,12 +456,12 @@ const setTableCaptionText = (text: string) => {
 <style lang="scss" scoped>
 .keynote-table-tab {
   user-select: none;
-  font-size: 12.5px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -476,8 +476,8 @@ const setTableCaptionText = (text: string) => {
 
   .style-preset-card {
     height: 48px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+    border-radius: var(--radius-control);
+    border: 1px solid transparent;
     background: var(--bg-card, #ffffff);
     padding: 3px;
     cursor: pointer;
@@ -554,7 +554,7 @@ const setTableCaptionText = (text: string) => {
     height: 30px;
 
     .row-label {
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: var(--text-primary, #1d1d1f);
       font-weight: 500;
     }
@@ -570,7 +570,7 @@ const setTableCaptionText = (text: string) => {
     display: flex;
     align-items: center;
     gap: 3px;
-    font-size: 13px;
+    font-size: var(--text-md);
     color: var(--text-secondary, #6e6e73);
   }
 }
@@ -583,11 +583,11 @@ const setTableCaptionText = (text: string) => {
     width: 32px;
     height: 26px;
     font-weight: 600;
-    font-size: 11px;
+    font-size: var(--text-xs);
     padding: 0;
 
     &.large {
-      font-size: 15px;
+      font-size: var(--text-lg);
     }
   }
 }
@@ -614,7 +614,7 @@ const setTableCaptionText = (text: string) => {
   align-items: center;
   background-color: var(--bg-control, #e9e9eb);
   padding: 2px;
-  border-radius: 7px;
+  border-radius: var(--radius-control);
   gap: 1px;
 
   .grid-btn {
@@ -622,12 +622,12 @@ const setTableCaptionText = (text: string) => {
     height: 24px;
     border: 0;
     background: transparent;
-    border-radius: 5px;
+    border-radius: var(--radius-control);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-primary, #1d1d1f);
-    font-size: 12px;
+    font-size: var(--text-sm);
     cursor: pointer;
 
     &:hover:not(.active) {
@@ -649,7 +649,7 @@ const setTableCaptionText = (text: string) => {
   .fit-btn {
     height: 26px;
     padding: 0 10px;
-    font-size: 11.5px;
+    font-size: var(--text-xs);
   }
 }
 </style>

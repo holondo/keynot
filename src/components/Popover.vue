@@ -1,9 +1,13 @@
 <template>
-  <div class="popover" :class="{ 'center': center }" ref="triggerRef">
+  <div class="popover" :class="{ 'center': center }" ref="triggerRef" @click="isPhone && toggleSheet()">
     <div class="popover-content" :style="contentStyle" ref="contentRef">
-      <slot name="content" v-if="contentVisible"></slot>
+      <slot name="content" v-if="contentVisible && !isPhone"></slot>
     </div>
     <slot></slot>
+    <!-- Phones: every popover becomes a bottom sheet with the same content (native pattern). -->
+    <ResponsiveSheet v-if="isPhone" :visible="sheetOpen" :title="title || ''" :return-focus="triggerRef" @close="setSheet(false)">
+      <div class="popover-sheet-content" @click.stop><slot name="content" v-if="sheetOpen"></slot></div>
+    </ResponsiveSheet>
   </div>
 </template>
 
@@ -12,6 +16,9 @@ import { type CSSProperties, onMounted, onUnmounted, ref, watch, computed, useTe
 import tippy, { type Instance, type Placement } from 'tippy.js'
 
 import 'tippy.js/animations/scale.css'
+import { useBackHandler } from '@/hooks/useBackStack'
+import useBreakpoint from '@/hooks/useBreakpoint'
+import ResponsiveSheet from './ui/ResponsiveSheet.vue'
 
 const props = withDefaults(defineProps<{
   value?: boolean
@@ -21,6 +28,8 @@ const props = withDefaults(defineProps<{
   contentStyle?: CSSProperties
   center?: boolean
   offset?: number
+  /** Sheet title on phones. */
+  title?: string
 }>(), {
   value: false,
   trigger: 'click',
@@ -40,11 +49,31 @@ const contentVisible = ref(false)
 const triggerRef = useTemplateRef<HTMLElement>('triggerRef')
 const contentRef = useTemplateRef<HTMLElement>('contentRef')
 
+// Desktop/tablet popovers get a back entry here; phone sheets register their own.
+useBackHandler(() => contentVisible.value && !isPhone.value, () => instance.value?.hide())
+
 const contentStyle = computed(() => {
   return props.contentStyle || {}
 })
 
+const { tier } = useBreakpoint()
+const isPhone = computed(() => tier.value === 'mobile')
+const sheetOpen = ref(false)
+const setSheet = (open: boolean) => {
+  if (sheetOpen.value === open) return
+  sheetOpen.value = open
+  emit('update:value', open)
+  if (open) emit('show')
+  else emit('hide')
+}
+const toggleSheet = () => setSheet(!sheetOpen.value)
+watch(isPhone, phone => {
+  if (phone) instance.value?.disable()
+  else { instance.value?.enable(); setSheet(false) }
+})
+
 watch(() => props.value, () => {
+  if (isPhone.value) return setSheet(props.value)
   if (!instance.value) return
   if (props.value) instance.value.show()
   else instance.value.hide()
@@ -67,6 +96,8 @@ onMounted(() => {
     duration: 200,
     animation: 'scale',
     theme: 'popover',
+    // Keep the popover inside the screen with a margin, whatever the trigger position.
+    popperOptions: { modifiers: [{ name: 'preventOverflow', options: { padding: 8 } }, { name: 'flip', options: { padding: 8 } }] },
     onShow() {
       contentVisible.value = true
     },
@@ -84,10 +115,13 @@ onMounted(() => {
       contentVisible.value = false
     },
   })
+  if (isPhone.value) instance.value.disable()
 })
 </script>
 
 <style lang="scss" scoped>
+.popover-sheet-content > :deep(*) { width: 100% !important; max-width: 100%; }
+@import '@/assets/styles/glass-system.scss';
 .popover {
   min-width: 0;
   max-width: 100%;
@@ -99,15 +133,8 @@ onMounted(() => {
   align-items: center;
 }
 .popover-content {
-  background: var(--popover-bg, rgba(255, 255, 255, 0.95));
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  padding: 8px;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  font-size: 12.5px;
-  color: var(--text-primary, #1d1d1f);
+  @include menu-surface;
+  padding: 6px;
 }
 </style>
 

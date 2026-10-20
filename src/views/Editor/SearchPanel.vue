@@ -91,7 +91,7 @@ watch(type, () => {
 
 <style lang="scss" scoped>
 .search-panel {
-  font-size: 13px;
+  font-size: var(--text-md);
 }
 .content {
   display: flex;
@@ -102,12 +102,12 @@ watch(type, () => {
   margin-top: 10px;
 }
 .count {
-  font-size: 12px;
+  font-size: var(--text-sm);
   margin-right: 8px;
   user-select: none;
 }
 .ignore-case {
-  font-size: 12px;
+  font-size: var(--text-sm);
   user-select: none;
   cursor: pointer;
 
@@ -145,7 +145,7 @@ watch(type, () => {
   justify-content: center;
   align-items: center;
   color: #666;
-  font-size: 13px;
+  font-size: var(--text-md);
   cursor: pointer;
 
   &:hover {

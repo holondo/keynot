@@ -447,7 +447,7 @@ const execAI = async (command: string) => {
   width: 24px;
   height: 12px;
   position: relative;
-  font-size: 10px;
+  font-size: var(--text-xs);
   top: -2px;
 
   span {

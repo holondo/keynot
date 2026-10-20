@@ -218,7 +218,7 @@ const contextmenus = (): ContextmenuItem[] => {
   height: 100%;
   background-color: #fff;
   border-right: solid 1px #eee;
-  font-size: 12px;
+  font-size: var(--text-sm);
   margin: 20px 0;
 
   .tool-btn {

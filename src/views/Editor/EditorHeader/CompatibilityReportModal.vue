@@ -1,15 +1,12 @@
 <template>
   <div class="compatibility-report-modal" v-if="report">
-    <div class="report-header">
-      <div>
-        <div class="report-title">Compatibility &amp; Fidelity Report</div>
-        <div class="report-subtitle">
-          Source: <strong>{{ report.fileName }}</strong> ({{ report.sourceFormat.toUpperCase() }}) • {{ report.slideCount }} Slides
-          <span v-if="report.iwaFileCount"> • {{ report.iwaFileCount }} IWA Streams ({{ report.messageCount }} Objects)</span>
-        </div>
-      </div>
-      <div class="format-badge">{{ report.sourceFormat.toUpperCase() }}</div>
-    </div>
+    <DialogHeader title="Compatibility &amp; Fidelity Report" @close="emit('close')">
+      <template #subtitle>
+        Source: <strong>{{ report.fileName }}</strong> ({{ report.sourceFormat.toUpperCase() }}) · {{ report.slideCount }} Slides
+        <span v-if="report.iwaFileCount"> · {{ report.iwaFileCount }} IWA Streams ({{ report.messageCount }} Objects)</span>
+      </template>
+      <span class="format-badge">{{ report.sourceFormat.toUpperCase() }}</span>
+    </DialogHeader>
 
     <div class="measures-grid">
       <div class="measure-card">
@@ -80,6 +77,7 @@
 </template>
 
 <script lang="ts" setup>
+import DialogHeader from '@/components/ui/DialogHeader.vue'
 import { storeToRefs } from 'pinia'
 import { saveAs } from 'file-saver'
 import { useSlidesStore } from '@/store'
@@ -108,33 +106,8 @@ const exportReportJson = () => {
 
 <style lang="scss" scoped>
 .compatibility-report-modal {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-primary, #1d1d1f);
-}
-.report-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-
-  .report-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-primary, #1d1d1f);
-  }
-  .report-subtitle {
-    font-size: 12px;
-    color: var(--text-secondary, #86868b);
-    margin-top: 4px;
-  }
-  .format-badge {
-    background: rgba(79, 70, 229, 0.12);
-    color: var(--accent-color, #4f46e5);
-    font-weight: 700;
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 12px;
-  }
 }
 .measures-grid {
   display: grid;
@@ -144,12 +117,12 @@ const exportReportJson = () => {
 }
 .measure-card {
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   padding: 10px 12px;
   background: var(--bg-control, rgba(128, 128, 128, 0.08));
 
   .measure-label {
-    font-size: 12px;
+    font-size: var(--text-sm);
     font-weight: 600;
     color: var(--text-secondary, #86868b);
   }
@@ -165,7 +138,7 @@ const exportReportJson = () => {
       color: var(--text-primary, #1d1d1f);
     }
     .status {
-      font-size: 11px;
+      font-size: var(--text-xs);
       font-weight: 600;
       padding: 1px 6px;
       border-radius: 4px;
@@ -185,7 +158,7 @@ const exportReportJson = () => {
     }
   }
   .measure-desc {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--text-secondary, #86868b);
     line-height: 1.4;
   }
@@ -193,7 +166,7 @@ const exportReportJson = () => {
 .findings-section {
   .findings-title {
     font-weight: 700;
-    font-size: 13px;
+    font-size: var(--text-md);
     color: var(--text-primary, #1d1d1f);
     margin-bottom: 8px;
   }
@@ -201,7 +174,7 @@ const exportReportJson = () => {
     max-height: 210px;
     overflow-y: auto;
     border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     padding: 6px;
     background: var(--bg-control, rgba(128, 128, 128, 0.04));
   }
@@ -211,7 +184,7 @@ const exportReportJson = () => {
     gap: 6px;
     padding: 6px 8px;
     border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
-    font-size: 12px;
+    font-size: var(--text-sm);
     cursor: pointer;
 
     &:last-child {
@@ -222,7 +195,7 @@ const exportReportJson = () => {
     }
   }
   .severity-pill {
-    font-size: 10px;
+    font-size: var(--text-xs);
     font-weight: 700;
     text-transform: uppercase;
     padding: 2px 6px;
@@ -250,7 +223,7 @@ const exportReportJson = () => {
     color: var(--text-primary, #1d1d1f);
     padding: 2px 6px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: var(--text-xs);
     font-weight: 600;
   }
   .feature-name {
@@ -268,7 +241,7 @@ const exportReportJson = () => {
   margin-top: 16px;
 }
 .empty-report {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-secondary, #86868b);
   line-height: 1.6;
 }

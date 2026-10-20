@@ -291,13 +291,7 @@ const selectChart = (type: ChartType) => {
 
 <style lang="scss" scoped>
 .keynote-chart-picker {
-  width: 410px;
-  background: var(--popover-bg, rgba(255, 255, 255, 0.96));
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-radius: 12px;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.06);
+  width: min(410px, calc(100vw - 48px));
   padding: 10px 12px 10px;
   display: flex;
   flex-direction: column;
@@ -309,7 +303,7 @@ const selectChart = (type: ChartType) => {
   display: flex;
   background: var(--bg-control, rgba(0, 0, 0, 0.05));
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   padding: 2px;
   margin-bottom: 10px;
   gap: 2px;
@@ -320,10 +314,10 @@ const selectChart = (type: ChartType) => {
     align-items: center;
     justify-content: center;
     height: 24px;
-    font-size: 11px;
+    font-size: var(--text-xs);
     font-weight: 500;
     color: var(--text-secondary, #515154);
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     cursor: pointer;
     transition: all 0.15s ease;
     user-select: none;
@@ -372,7 +366,7 @@ const selectChart = (type: ChartType) => {
   height: 68px;
   background: var(--bg-control, rgba(0, 0, 0, 0.03));
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -411,7 +405,7 @@ const selectChart = (type: ChartType) => {
 }
 
 .chart-label {
-  font-size: 10.5px;
+  font-size: var(--text-xs);
   color: var(--text-primary, #1d1d1f);
   text-align: center;
   white-space: nowrap;
@@ -431,7 +425,7 @@ const selectChart = (type: ChartType) => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: var(--text-xs);
     padding: 0 2px;
 
     .palette-label {
@@ -439,7 +433,7 @@ const selectChart = (type: ChartType) => {
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-weight: 600;
-      font-size: 9.5px;
+      font-size: var(--text-xs);
     }
 
     .palette-name {
@@ -469,7 +463,7 @@ const selectChart = (type: ChartType) => {
       align-items: center;
       justify-content: center;
       padding: 2px 3px;
-      border-radius: 6px;
+      border-radius: var(--radius-control);
       border: 1.5px solid transparent;
       cursor: pointer;
       background: var(--bg-control, rgba(0, 0, 0, 0.04));

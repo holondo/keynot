@@ -150,18 +150,18 @@ const resize = (e: MouseEvent) => {
     gap: 6px;
 
     .notes-icon {
-      font-size: 13px;
+      font-size: var(--text-md);
       color: var(--accent-color, #007aff);
     }
     .notes-title {
-      font-size: 11px;
+      font-size: var(--text-xs);
       font-weight: 600;
       color: var(--text-secondary, #515154);
       text-transform: uppercase;
       letter-spacing: 0.3px;
     }
     .slide-badge {
-      font-size: 10.5px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
       margin-left: 4px;
     }
@@ -173,7 +173,7 @@ const resize = (e: MouseEvent) => {
     gap: 8px;
 
     .header-btn {
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
       cursor: pointer;
       display: inline-flex;
@@ -189,7 +189,7 @@ const resize = (e: MouseEvent) => {
       }
 
       &.close-btn {
-        font-size: 12px;
+        font-size: var(--text-sm);
         width: 18px;
         height: 18px;
         padding: 0;

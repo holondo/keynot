@@ -63,7 +63,7 @@ const colors = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-tertiary, #86868b);
   flex-shrink: 0;
 }

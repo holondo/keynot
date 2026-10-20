@@ -232,17 +232,15 @@ const startResize = (e: MouseEvent) => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/glass-system.scss';
 .moveable-panel {
   position: fixed;
-  background-color: var(--bg-panel, #ffffff);
-  color: var(--text-primary, #1d1d1f);
-  box-shadow: var(--shadow-lg, $boxShadow);
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
-  border-radius: var(--radius-md, 10px);
+  @include glass-surface(elevated);
+  box-shadow: var(--glass-shadow-lg);
+  color: var(--text-primary);
+  border-radius: var(--radius-panel);
   display: flex;
   flex-direction: column;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 }
 .resizer {
   width: 10px;
@@ -277,7 +275,7 @@ const startResize = (e: MouseEvent) => {
 }
 .title {
   flex: 1;
-  font-size: 13px;
+  font-size: var(--text-md);
   padding-left: 10px;
 }
 .close-btn {
@@ -287,7 +285,7 @@ const startResize = (e: MouseEvent) => {
   justify-content: center;
   align-items: center;
   color: var(--text-tertiary, #86868b);
-  font-size: 13px;
+  font-size: var(--text-md);
   cursor: pointer;
 
   &:hover {

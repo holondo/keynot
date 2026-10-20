@@ -1,14 +1,10 @@
 <template>
   <div class="project-manager-modal">
-    <div class="header-row">
-      <div class="header-titles">
-        <div class="modal-title">Local Presentations (IndexedDB Workspace)</div>
-        <div class="modal-subtitle">Decks are automatically saved in your browser for instant offline access and recovery.</div>
-      </div>
+    <DialogHeader title="Local Presentations" subtitle="Decks are saved in your browser for instant offline access and recovery." @close="emit('close')">
       <Button type="primary" class="new-project-btn" @click="createNewProject()">
         <i-icon-park-outline:plus /> <span>New Presentation</span>
       </Button>
-    </div>
+    </DialogHeader>
 
     <div class="project-list" v-if="projects.length">
       <div
@@ -48,6 +44,7 @@
 </template>
 
 <script lang="ts" setup>
+import DialogHeader from '@/components/ui/DialogHeader.vue'
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { nanoid } from 'nanoid'
@@ -170,39 +167,8 @@ const removeProject = async (id: string) => {
 
 <style lang="scss" scoped>
 .project-manager-modal {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-primary, #1e293b);
-}
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-
-  .header-titles {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .modal-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-primary, #0f172a);
-    letter-spacing: -0.2px;
-  }
-  .modal-subtitle {
-    font-size: 12px;
-    color: var(--text-tertiary, #64748b);
-    margin-top: 3px;
-  }
-
-  .new-project-btn {
-    height: 32px;
-    padding: 0 14px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
 }
 .project-list {
   max-height: 300px;
@@ -218,7 +184,7 @@ const removeProject = async (id: string) => {
   align-items: center;
   padding: 10px 14px;
   border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: var(--bg-control, #f8fafc);
   color: var(--text-primary, #0f172a);
   cursor: pointer;
@@ -244,14 +210,14 @@ const removeProject = async (id: string) => {
     .active-badge {
       background: var(--accent-color, #007aff);
       color: #fff;
-      font-size: 10px;
+      font-size: var(--text-xs);
       padding: 1px 6px;
-      border-radius: 10px;
+      border-radius: var(--radius-menu);
       font-weight: 600;
     }
   }
   .project-meta {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--text-tertiary, #64748b);
     margin-top: 4px;
     display: flex;

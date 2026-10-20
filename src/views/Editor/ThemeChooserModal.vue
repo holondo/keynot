@@ -1,33 +1,14 @@
 <template>
   <div class="theme-chooser-dialog">
     <!-- Header -->
-    <div class="dialog-header">
-      <div class="header-left">
-        <span class="dialog-title">Choose a Theme</span>
-      </div>
-      <div class="header-right">
-        <!-- Wide (16:9) / Standard (4:3) Aspect Ratio Segmented Control (Image 5) -->
-        <div class="ratio-selector">
-          <div 
-            class="ratio-pill" 
-            :class="{ active: selectedRatio === 'wide' }" 
-            @click="selectedRatio = 'wide'"
-          >
-            Wide (16:9)
-          </div>
-          <div 
-            class="ratio-pill" 
-            :class="{ active: selectedRatio === 'standard' }" 
-            @click="selectedRatio = 'standard'"
-          >
-            Standard (4:3)
-          </div>
-        </div>
-        <button class="close-x-btn" @click="closeModal" title="Close">
-          <i-icon-park-outline:close />
-        </button>
-      </div>
-    </div>
+    <DialogHeader class="theme-header" title="Choose a Theme" @close="closeModal">
+      <Tabs
+        :tabs="[{ key: 'wide', label: 'Wide (16:9)' }, { key: 'standard', label: 'Standard (4:3)' }]"
+        :value="selectedRatio"
+        segmented
+        @update:value="key => selectedRatio = key as typeof selectedRatio"
+      />
+    </DialogHeader>
 
     <!-- Body Layout: Sidebar + Main Content (Image 5) -->
     <div class="dialog-body">
@@ -145,6 +126,8 @@
 </template>
 
 <script lang="ts" setup>
+import Tabs from '@/components/Tabs.vue'
+import DialogHeader from '@/components/ui/DialogHeader.vue'
 import { computed, ref, h } from 'vue'
 import { useMainStore, useSlidesStore } from '@/store'
 import type { SlideTheme } from '@/types/slides'
@@ -448,84 +431,21 @@ const applyThemeAndClose = () => {
 </script>
 
 <style lang="scss" scoped>
+/* .theme-header sits in the bleed area, so it carries the modal padding itself. */
+.theme-header { padding: 16px 16px 0 20px; margin-bottom: 8px; }
+/* Bleeds to the modal edges: the modal owns the surface, radius and shadow. */
 .theme-chooser-dialog {
-  width: 860px;
-  height: 600px;
+  margin: calc(var(--modal-pad, 20px) * -1);
+  height: min(600px, calc(100dvh - 48px));
   display: flex;
   flex-direction: column;
-  background: var(--bg-app, #f5f5f7);
-  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 2px 10px rgba(0, 0, 0, 0.1);
   color: var(--text-primary, #1d1d1f);
 }
 
 /* Window Header */
-.dialog-header {
-  height: 52px;
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-divider, rgba(0, 0, 0, 0.08));
-  background: var(--bg-header, rgba(245, 245, 247, 0.95));
 
-  .dialog-title {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: -0.2px;
-  }
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-}
-
-.ratio-selector {
-  display: flex;
-  background: var(--bg-control, rgba(0, 0, 0, 0.06));
-  padding: 2px;
-  border-radius: 8px;
-
-  .ratio-pill {
-    padding: 4px 10px;
-    font-size: 11.5px;
-    font-weight: 500;
-    color: var(--text-secondary, #515154);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-
-    &.active {
-      background: var(--bg-control-active, #ffffff);
-      color: var(--accent-color, #007aff);
-      font-weight: 600;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-    }
-  }
-}
-
-.close-x-btn {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: var(--text-tertiary, #86868b);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover {
-    background: var(--bg-control, rgba(0, 0, 0, 0.08));
-    color: var(--text-primary, #1d1d1f);
-  }
-}
 
 /* Window Body */
 .dialog-body {
@@ -551,13 +471,13 @@ const applyThemeAndClose = () => {
     align-items: center;
     background: var(--bg-control, rgba(0, 0, 0, 0.05));
     border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     height: 30px;
     padding: 0 8px;
     gap: 6px;
 
     .search-icon {
-      font-size: 13px;
+      font-size: var(--text-md);
       color: var(--text-tertiary, #86868b);
     }
 
@@ -566,7 +486,7 @@ const applyThemeAndClose = () => {
       border: none;
       background: transparent;
       outline: none;
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: var(--text-primary, #1d1d1f);
       &::placeholder {
         color: var(--text-tertiary, #86868b);
@@ -574,7 +494,7 @@ const applyThemeAndClose = () => {
     }
 
     .clear-icon {
-      font-size: 12px;
+      font-size: var(--text-sm);
       cursor: pointer;
       color: var(--text-tertiary, #86868b);
     }
@@ -591,8 +511,8 @@ const applyThemeAndClose = () => {
     align-items: center;
     gap: 8px;
     padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 12.5px;
+    border-radius: var(--radius-control);
+    font-size: var(--text-sm);
     font-weight: 500;
     color: var(--text-secondary, #515154);
     cursor: pointer;
@@ -608,7 +528,7 @@ const applyThemeAndClose = () => {
     }
 
     .cat-badge {
-      font-size: 9.5px;
+      font-size: var(--text-xs);
       font-weight: 700;
       background: linear-gradient(135deg, #af52de, #5856d6);
       color: #fff;
@@ -665,7 +585,7 @@ const applyThemeAndClose = () => {
   gap: 12px;
 
   .section-title {
-    font-size: 13.5px;
+    font-size: var(--text-md);
     font-weight: 700;
     color: var(--text-primary, #1d1d1f);
     letter-spacing: -0.1px;
@@ -691,7 +611,7 @@ const applyThemeAndClose = () => {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -709,20 +629,20 @@ const applyThemeAndClose = () => {
       user-select: none;
 
       .mockup-kicker {
-        font-size: 7.5px;
+        font-size: var(--text-xs);
         font-weight: 700;
         letter-spacing: 0.8px;
         opacity: 0.6;
       }
 
       .mockup-title {
-        font-size: 13px;
+        font-size: var(--text-md);
         font-weight: 800;
         line-height: 1.1;
       }
 
       .mockup-subtitle {
-        font-size: 8.5px;
+        font-size: var(--text-xs);
         line-height: 1.2;
       }
 
@@ -749,7 +669,7 @@ const applyThemeAndClose = () => {
       box-shadow: 0 2px 6px rgba(0, 122, 255, 0.4);
 
       .check-icon {
-        font-size: 12px;
+        font-size: var(--text-sm);
       }
     }
   }
@@ -775,7 +695,7 @@ const applyThemeAndClose = () => {
     padding: 0 2px;
 
     .theme-name {
-      font-size: 12px;
+      font-size: var(--text-sm);
       font-weight: 600;
       color: var(--text-primary, #1d1d1f);
     }
@@ -812,7 +732,7 @@ const applyThemeAndClose = () => {
     max-width: 100%;
     padding: 7px 14px;
     border-radius: var(--radius-sm, 6px);
-    font-size: 12.5px;
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
     border: none;
@@ -820,8 +740,8 @@ const applyThemeAndClose = () => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    border-radius: 8px;
-    font-size: 12.5px;
+    border-radius: var(--radius-control);
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
     border: none;

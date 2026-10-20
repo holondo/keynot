@@ -45,7 +45,7 @@
             >
             <div v-else class="name">{{groupItem.name || ELEMENT_TYPE_ZH[groupItem.type]}}</div>
             <div class="icons">
-              <i-icon-park-outline:lock class="icon" style="font-size: 14px;" @click="unlockElement(groupItem)" v-if="groupItem.lock" />
+              <i-icon-park-outline:lock class="icon" style="font-size: var(--text-lg);" @click="unlockElement(groupItem)" v-if="groupItem.lock" />
               <div class="icon" style="width: 14px;" v-else />
               <i-icon-park-outline:preview-close class="icon" style="font-size: 17px;" @click.stop="toggleHideElement(groupItem.id)" v-if="hiddenElementIdList.includes(groupItem.id)" />
               <i-icon-park-outline:preview-open class="icon" style="font-size: 17px;" @click.stop="toggleHideElement(groupItem.id)" v-else />
@@ -76,7 +76,7 @@
           </div>
           <div class="icons">
             <span class="continuity-tag" v-if="item.continuityId" v-tooltip="`Continuity ID: ${item.continuityId}`">✦</span>
-            <i-icon-park-outline:lock class="icon" style="font-size: 14px;" @click="unlockElement(item)" v-if="item.lock" />
+            <i-icon-park-outline:lock class="icon" style="font-size: var(--text-lg);" @click="unlockElement(item)" v-if="item.lock" />
             <div class="icon" style="width: 14px;" v-else />
             <i-icon-park-outline:preview-close class="icon" style="font-size: 17px;" @click.stop="toggleHideElement(item.id)" v-if="hiddenElementIdList.includes(item.id)" />
             <i-icon-park-outline:preview-open class="icon" style="font-size: 17px;" @click.stop="toggleHideElement(item.id)" v-else />
@@ -175,7 +175,7 @@ const close = () => {
 <style lang="scss" scoped>
 .select-panel {
   height: 100%;
-  font-size: 12px;
+  font-size: var(--text-sm);
   user-select: none;
 }
 .handler {
@@ -222,7 +222,7 @@ const close = () => {
 }
 .item {
   padding: 5px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   border-radius: $borderRadius;
   display: flex;
   align-items: center;
@@ -256,7 +256,7 @@ const close = () => {
 
     .continuity-tag {
       color: #4f46e5;
-      font-size: 11px;
+      font-size: var(--text-xs);
       margin-right: 2px;
     }
     .icon {
@@ -288,7 +288,7 @@ const close = () => {
   padding-left: 0;
   padding-right: 0;
   flex: 1;
-  font-size: 12px;
+  font-size: var(--text-sm);
   background-color: transparent;
 }
 </style>

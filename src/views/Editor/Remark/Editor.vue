@@ -207,7 +207,7 @@ onUnmounted(() => {
 
   ::v-deep(.ProseMirror) {
     height: 100%;
-    font-size: 12px;
+    font-size: var(--text-sm);
     overflow: auto;
     padding: 8px 14px;
     line-height: 1.5;
@@ -217,7 +217,7 @@ onUnmounted(() => {
       content: attr(data-placeholder);
       pointer-events: none;
       position: absolute;
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: #86868b;
     }
   }
@@ -229,7 +229,7 @@ onUnmounted(() => {
   padding: 5px 4px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 
   button {
     outline: 0;
@@ -238,7 +238,7 @@ onUnmounted(() => {
     color: #1d1d1f;
     padding: 3px;
     border-radius: $borderRadius;
-    font-size: 16px;
+    font-size: var(--text-lg);
     margin: 0 3px;
     display: flex;
     align-items: center;

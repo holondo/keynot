@@ -191,7 +191,7 @@ const getHexColor = (color: string) => {
 .config-item {
   padding: 12px 0 10px;
   border-bottom: 1px dashed #f5f5f5;
-  font-size: 13px;
+  font-size: var(--text-md);
 }
 .label {
   margin-bottom: 5px;
@@ -199,7 +199,7 @@ const getHexColor = (color: string) => {
   align-items: center;
 
   .tip {
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: #999;
   }
 }
@@ -258,12 +258,12 @@ const getHexColor = (color: string) => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 12px;
+    font-size: var(--text-sm);
     margin-left: 10px;
 
     .state {
       opacity: 0;
-      font-size: 15px;
+      font-size: var(--text-lg);
 
       &.active {
         opacity: 1;
@@ -283,8 +283,8 @@ const getHexColor = (color: string) => {
     height: 25px;
     line-height: 25px;
     text-align: center;
-    border: 1px solid $borderColor;
-    font-size: 12px;
+    border: 1px solid transparent;
+    font-size: var(--text-sm);
     padding: 0 5px;
     border-radius: $borderRadius;
     @include ellipsis-oneline();

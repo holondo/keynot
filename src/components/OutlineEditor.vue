@@ -278,10 +278,10 @@ const contextmenus = (el: HTMLElement): ContextmenuItem[] => {
       font-size: 17px;
     }
     &.lv-3 {
-      font-size: 15px;
+      font-size: var(--text-lg);
     }
     &.lv-4 {
-      font-size: 13px;
+      font-size: var(--text-md);
       padding-left: 20px;
     }
   }
@@ -330,7 +330,7 @@ const contextmenus = (el: HTMLElement): ContextmenuItem[] => {
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 11px;
+      font-size: var(--text-xs);
       font-weight: 600;
     }
   }

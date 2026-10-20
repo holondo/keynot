@@ -17,6 +17,7 @@ import { LOCALSTORAGE_KEY_DISCARDED_DB, LOCALSTORAGE_KEY_ACTIVE_PROJECT } from '
 import { deleteDiscardedDB, getLocalProject, listLocalProjects, saveLocalProject } from '@/utils/database'
 import { STARTER_SLIDES } from '@/configs/starterSlides'
 import api from '@/services'
+import useSystemBars from '@/hooks/useSystemBars'
 
 import Editor from './views/Editor/index.vue'
 import Screen from './views/Screen/index.vue'
@@ -41,6 +42,7 @@ const {
   keynoteSourceBase64,
 } = storeToRefs(slidesStore)
 const { screening } = storeToRefs(screenStore)
+useSystemBars({ screening, colorMode: () => mainStore.colorMode })
 
 const isAudienceMode = new URLSearchParams(window.location.search).get('mode') === 'audience'
 

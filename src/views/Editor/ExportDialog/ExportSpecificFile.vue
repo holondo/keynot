@@ -77,7 +77,7 @@ const selectedSlides = computed(() => {
   overflow: hidden;
 }
 .configs {
-  width: 360px;
+  width: min(360px, calc(100vw - 48px));
   height: calc(100% - 80px);
   display: flex;
   flex-direction: column;
@@ -92,7 +92,7 @@ const selectedSlides = computed(() => {
 
   .title {
     width: 100px;
-    font-size: 13px;
+    font-size: var(--text-md);
     font-weight: 500;
     color: var(--text-primary, #1d1d1f);
     position: relative;
@@ -103,7 +103,7 @@ const selectedSlides = computed(() => {
       top: 20px;
       left: 0;
       color: var(--text-secondary, #86868b);
-      font-size: 11px;
+      font-size: var(--text-xs);
     }
   }
   .config-item {
@@ -111,7 +111,7 @@ const selectedSlides = computed(() => {
   }
 
   .tip {
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: var(--text-tertiary, #86868b);
     line-height: 1.6;
     margin-top: 20px;

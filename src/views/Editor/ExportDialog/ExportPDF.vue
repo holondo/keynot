@@ -124,7 +124,7 @@ const expPDF = () => {
   }
 }
 .configs {
-  width: 320px;
+  width: min(320px, calc(100vw - 48px));
   height: calc(100% - 80px);
   display: flex;
   flex-direction: column;
@@ -140,7 +140,7 @@ const expPDF = () => {
 
   .title {
     width: 110px;
-    font-size: 13px;
+    font-size: var(--text-md);
     font-weight: 500;
     color: var(--text-primary, #1d1d1f);
   }
@@ -149,7 +149,7 @@ const expPDF = () => {
   }
 
   .tip {
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: var(--text-tertiary, #86868b);
     line-height: 1.8;
     margin-top: 25px;

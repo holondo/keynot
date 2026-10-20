@@ -465,7 +465,7 @@ table {
     border: 0;
     outline: 0;
     padding: 0;
-    font-size: 13px;
+    font-size: var(--text-md);
     text-align: center;
     background-color: transparent;
     color: var(--text-primary, #1d1d1f);
@@ -483,7 +483,7 @@ table {
   .left {
     display: flex;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: var(--text-secondary, #86868b);
 
     .change {
@@ -519,7 +519,7 @@ table {
   border-right: 1px solid var(--border-color, #ccc);
 }
 .col-key {
-  font-size: 10px;
+  font-size: var(--text-xs);
   text-align: center;
   line-height: 20px;
 }
@@ -542,7 +542,7 @@ table {
 }
 .row-key {
   height: 100%;
-  font-size: 10px;
+  font-size: var(--text-xs);
   display: flex;
   justify-content: center;
   align-items: center;

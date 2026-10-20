@@ -1,5 +1,6 @@
 <template>
-  <div 
+  <div
+    ref="rootRef"
     class="thumbnails"
     @mousedown="() => setThumbnailsFocus(true)"
     v-click-outside="() => setThumbnailsFocus(false)"
@@ -60,7 +61,7 @@
                 v-tooltip="`${element.animations.length} Build(s)`"
               >●</div>
             </div>
-            <ThumbnailSlide class="thumbnail" :slide="element" :size="124" :visible="index < slidesLoadLimit" />
+            <ThumbnailSlide class="thumbnail" :slide="element" :size="thumbSize" :visible="index < slidesLoadLimit" />
   
             <div class="note-flag" v-if="element.notes && element.notes.length" @click="openNotesPanel()">{{ element.notes.length }}</div>
           </div>
@@ -69,24 +70,22 @@
     </Draggable>
 
     <div class="navigator-footer">
-      <div class="add-slide">
-        <div class="btn" @click="createSlide()"><i-icon-park-outline:plus class="icon" />{{ t('thumbnails.addSlide') }}</div>
-        <Popover trigger="click" placement="top-start" v-model:value="presetLayoutPopoverVisible" center>
-          <template #content>
-            <Templates 
-              @select="slide => { createSlideByTemplate(slide); presetLayoutPopoverVisible = false }"
-              @selectAll="({ slides, theme }) => { insertAllTemplates({ slides, theme }); presetLayoutPopoverVisible = false }"
-            />
-          </template>
-          <div class="select-btn" :title="t('toolbar.chooseTheme')"><i-icon-park-outline:up /></div>
-        </Popover>
-      </div>
+      <PillButton class="add-slide-btn" size="compact" @click="createSlide()"><i-icon-park-outline:plus />{{ t('thumbnails.addSlide') }}</PillButton>
+      <Popover trigger="click" placement="top-start" v-model:value="presetLayoutPopoverVisible" center :title="t('toolbar.addSlide')">
+        <template #content>
+          <Templates
+            @select="slide => { createSlideByTemplate(slide); presetLayoutPopoverVisible = false }"
+            @selectAll="({ slides, theme }) => { insertAllTemplates({ slides, theme }); presetLayoutPopoverVisible = false }"
+          />
+        </template>
+        <PillButton caret size="compact" :aria-expanded="presetLayoutPopoverVisible" :hint="t('toolbar.chooseTheme')"><i-icon-park-outline:up /></PillButton>
+      </Popover>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, ref, watch, useTemplateRef } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore, useKeyboardStore } from '@/store'
 import { t } from '@/i18n'
@@ -102,6 +101,7 @@ import useAddSlidesOrElements from '@/hooks/useAddSlidesOrElements'
 import ThumbnailSlide from '@/views/components/ThumbnailSlide/index.vue'
 import Templates from './Templates.vue'
 import Popover from '@/components/Popover.vue'
+import PillButton from '@/components/ui/PillButton.vue'
 import Draggable from 'vuedraggable'
 
 const mainStore = useMainStore()
@@ -116,6 +116,25 @@ const { slidesLoadLimit } = useLoadSlides()
 const selectedSlidesIndex = computed(() => [..._selectedSlidesIndex.value, slideIndex.value])
 
 const presetLayoutPopoverVisible = ref(false)
+
+// Thumbnails fill the panel: width minus the shared gutter (--thumb-gutter) and number column.
+const rootRef = useTemplateRef<HTMLElement>('rootRef')
+const thumbSize = ref(140)
+let thumbResizeObserver: ResizeObserver | null = null
+onMounted(() => {
+  if (!rootRef.value) return
+  const measure = () => {
+    const el = rootRef.value!
+    const style = getComputedStyle(el)
+    const gutter = parseFloat(style.getPropertyValue('--thumb-gutter')) || 10
+    const number = parseFloat(style.getPropertyValue('--thumb-number')) || 18
+    thumbSize.value = Math.max(60, Math.floor(el.clientWidth - gutter * 2 - number))
+  }
+  thumbResizeObserver = new ResizeObserver(measure)
+  thumbResizeObserver.observe(rootRef.value)
+  measure()
+})
+onBeforeUnmount(() => thumbResizeObserver?.disconnect())
 
 const hasSection = computed(() => {
   return slides.value.some(item => item.sectionTag)
@@ -363,16 +382,20 @@ const contextmenusThumbnailItem = (): ContextmenuItem[] => {
 </script>
 
 <style lang="scss" scoped>
+/*
+ * Symmetric geometry: equal gutter left/right, a narrow number column, and a
+ * thumbnail radius concentric with the panel (panel radius - gutter).
+ */
 .thumbnails {
-  border-right: solid 1px var(--border-color, rgba(0, 0, 0, 0.08));
-  background-color: var(--bg-inspector, rgba(245, 245, 247, 0.88));
-  backdrop-filter: blur(25px);
+  --thumb-gutter: 10px;
+  --thumb-number: 18px;
+  --thumb-radius: calc(var(--radius-panel) - var(--thumb-gutter));
   display: flex;
   flex-direction: column;
   user-select: none;
 }
 .thumbnail-list {
-  padding: 10px 0;
+  padding: var(--thumb-gutter) 0;
   flex: 1;
   overflow: auto;
 
@@ -382,14 +405,15 @@ const contextmenusThumbnailItem = (): ContextmenuItem[] => {
 }
 .thumbnail-item {
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding: 7px 10px 7px 6px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 5px var(--thumb-gutter) 5px 0;
   position: relative;
-  gap: 6px;
+  gap: 0;
 
   .thumbnail {
-    border-radius: 6px;
+    border-radius: var(--thumb-radius);
+    overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
     outline: 2px solid transparent;
     transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
@@ -427,9 +451,9 @@ const contextmenusThumbnailItem = (): ContextmenuItem[] => {
     height: 12px;
     border-radius: 2px;
     position: absolute;
-    left: 34px;
+    left: calc(var(--thumb-gutter) + var(--thumb-number) + 6px);
     top: 12px;
-    font-size: 9px;
+    font-size: var(--text-xs);
     background-color: #ffd60a;
     color: #1c1c1e;
     font-weight: 700;
@@ -450,24 +474,27 @@ const contextmenusThumbnailItem = (): ContextmenuItem[] => {
   }
 }
 .label {
-  font-size: 11px;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
   color: var(--text-tertiary, #86868b);
-  width: 22px;
+  width: calc(var(--thumb-gutter) + var(--thumb-number));
+  padding-right: 6px;
+  padding-top: 2px;
   cursor: grab;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  padding-bottom: 2px;
+
 
   .magic-move-dot {
     color: #ff9f0a;
-    font-size: 10px;
+    font-size: var(--text-xs);
     margin-top: 2px;
   }
 
   .build-dot {
     color: var(--accent-color, #007aff);
-    font-size: 7px;
+    font-size: var(--text-xs);
     margin-top: 3px;
   }
 
@@ -481,59 +508,18 @@ const contextmenusThumbnailItem = (): ContextmenuItem[] => {
   }
 }
 .navigator-footer {
-  padding: 8px 10px;
-  border-top: 1px solid var(--border-divider, rgba(0, 0, 0, 0.08));
-  background-color: var(--bg-header, rgba(245, 245, 247, 0.95));
-}
-.add-slide {
-  height: 30px;
-  font-size: 12px;
+  padding: 6px;
+  border-top: 0;
   display: flex;
-  flex-shrink: 0;
-  background-color: var(--bg-control-active, #fff);
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
-  border-radius: 6px;
-  color: var(--text-primary, #1d1d1f);
-  cursor: pointer;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-
-  .btn {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 500;
-
-    &:hover {
-      background-color: var(--bg-control, #f5f5f7);
-      color: var(--accent-color, #007aff);
-    }
-  }
-  .select-btn {
-    width: 26px;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-left: 1px solid var(--border-divider, rgba(0, 0, 0, 0.08));
-    color: var(--text-tertiary, #86868b);
-
-    &:hover {
-      background-color: var(--bg-control, #f5f5f7);
-      color: var(--text-primary, #1d1d1f);
-    }
-  }
-
-  .icon {
-    margin-right: 4px;
-    font-size: 13px;
-  }
+  align-items: center;
+  justify-content: center;
+  gap: var(--rail-gap);
 }
+.add-slide-btn { flex: 1 1 auto; }
 .section-title {
   height: 26px;
-  font-size: 11px;
-  padding: 6px 8px 2px 14px;
+  font-size: var(--text-xs);
+  padding: 6px var(--thumb-gutter) 2px calc(var(--thumb-gutter) + var(--thumb-number));
   color: var(--text-tertiary, #86868b);
   font-weight: 600;
 
@@ -573,10 +559,10 @@ const contextmenusThumbnailItem = (): ContextmenuItem[] => {
     background: var(--bg-input, #2c2c2e);
     color: var(--text-primary, #fff);
     border: 1px solid var(--accent-color, #0a84ff);
-    border-radius: 3px;
+    border-radius: var(--radius-control);
     outline: 0;
     padding: 1px 4px;
-    font-size: 11px;
+    font-size: var(--text-xs);
   }
 }
-</style>
+</style>

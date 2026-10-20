@@ -117,7 +117,7 @@ const close = () => {
   flex-direction: column;
 
   .emoji-types {
-    font-size: 12px;
+    font-size: var(--text-sm);
     display: flex;
     align-items: center;
     margin-bottom: 3px;
@@ -194,7 +194,7 @@ const close = () => {
   justify-content: center;
   align-items: center;
   color: #666;
-  font-size: 13px;
+  font-size: var(--text-md);
   cursor: pointer;
 
   &:hover {

@@ -95,7 +95,7 @@ defineExpose({
   display: flex;
   align-items: center;
   padding: 10px;
-  font-size: 13px;
+  font-size: var(--text-md);
   overflow: hidden;
   border-radius: $borderRadius;
   box-shadow: 0 1px 8px rgba(0, 0, 0, .15);
@@ -113,7 +113,7 @@ defineExpose({
     }
   }
   .title {
-    font-size: 14px;
+    font-size: var(--text-lg);
     font-weight: 700;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -135,7 +135,7 @@ defineExpose({
     margin-left: 10px;
   }
   .close-btn {
-    font-size: 15px;
+    font-size: var(--text-lg);
     color: #666;
     display: flex;
     align-items: center;

@@ -4,7 +4,7 @@
       @afterLeave="contentVisible = false"
       @before-enter="contentVisible = true"
     >
-      <div :class="['drawer', placement]" v-show="visible" :style="{ width: props.width + 'px' }">
+      <div :class="['drawer', placement]" v-show="visible" :style="{ width: `min(${props.width}px, 100vw)` }">
         <div class="header">
           <slot name="title"></slot>
           <span class="close-btn" @click="emit('update:visible', false)"><i-icon-park-outline:close /></span>
@@ -19,6 +19,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, type CSSProperties } from 'vue'
+import { useBackHandler } from '@/hooks/useBackStack'
 
 const props = withDefaults(defineProps<{
   visible: boolean
@@ -35,25 +36,27 @@ const emit = defineEmits<{
 }>()
 
 const contentVisible = ref(false)
+useBackHandler(() => props.visible, () => emit('update:visible', false))
 
 const contentStyle = computed(() => {
   return {
-    width: props.width + 'px',
+    width: '100%',
     ...(props.contentStyle || {})
   }
 })
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/glass-system.scss';
 .drawer {
   height: 100%;
   position: fixed;
   top: 0;
   bottom: 0;
   z-index: 5000;
-  background: var(--bg-app, #ffffff);
-  color: var(--text-primary, #1d1d1f);
-  border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  @include glass-surface(elevated);
+  box-shadow: var(--glass-shadow-lg);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
 
@@ -73,8 +76,7 @@ const contentStyle = computed(() => {
   position: relative;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid var(--border-divider, rgba(0, 0, 0, 0.06));
-  font-weight: 600;
+  font-weight: var(--weight-strong);
   color: var(--text-primary, #1d1d1f);
 
   .close-btn {

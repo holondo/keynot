@@ -160,7 +160,7 @@ const close = () => {
 <style lang="scss" scoped>
 .notes-panel {
   height: 100%;
-  font-size: 12px;
+  font-size: var(--text-sm);
   user-select: none;
 }
 .container {

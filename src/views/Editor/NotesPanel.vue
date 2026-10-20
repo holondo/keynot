@@ -207,7 +207,7 @@ const close = () => {
 <style lang="scss" scoped>
 .notes-panel {
   height: 100%;
-  font-size: 12px;
+  font-size: var(--text-sm);
   user-select: none;
 }
 .container {
@@ -272,10 +272,10 @@ const close = () => {
     }
 
     .username {
-      font-size: 14px;
+      font-size: var(--text-lg);
     }
     .time {
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: #aaa;
     }
   }

@@ -1,5 +1,6 @@
 <template>
   <div class="export-dialog">
+    <DialogHeader class="export-header" :title="t('header.export')" @close="setDialogForExport('')" />
     <Tabs 
       :tabs="tabs" 
       :value="dialogForExport" 
@@ -13,6 +14,8 @@
 </template>
 
 <script lang="ts" setup>
+import DialogHeader from '@/components/ui/DialogHeader.vue'
+import { t } from '@/i18n'
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore } from '@/store'
@@ -61,13 +64,16 @@ const currentDialogComponent = computed<unknown>(() => {
 
 <style lang="scss" scoped>
 .export-dialog {
-  margin: -20px;
+  margin: calc(var(--modal-pad, 20px) * -1);
+  padding-top: var(--modal-pad, 20px);
+  .export-header { padding: 0 var(--modal-pad, 20px); margin-bottom: 12px; }
+  :deep(.tabs) { margin: 0 var(--modal-pad, 20px); }
 }
 .content {
-  height: 460px;
+  height: min(460px, calc(100dvh - 180px));
   padding: 12px;
-  font-size: 13px;
+  font-size: var(--text-md);
 
   @include overflow-overlay();
 }
-</style>
+</style>

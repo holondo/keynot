@@ -503,7 +503,7 @@ const updateViewportRatio = (value: string | number) => {
     cursor: pointer;
 
     .text {
-      font-size: 12px;
+      font-size: var(--text-sm);
       margin-right: 3px;
     }
   }
@@ -539,7 +539,7 @@ const updateViewportRatio = (value: string | number) => {
 .canvas-size {
   width: 100%;
   color: #888;
-  font-size: 12px;
+  font-size: var(--text-sm);
   text-align: center;
 }
 
@@ -561,12 +561,12 @@ const updateViewportRatio = (value: string | number) => {
     flex-direction: column;
     justify-content: center;
     padding: 8px;
-    border: 1px solid $borderColor;
+    border: 1px solid transparent;
     border-radius: $borderRadius;
   }
 
   .text {
-    font-size: 15px;
+    font-size: var(--text-lg);
   }
   .colors {
     display: flex;

@@ -1,23 +1,47 @@
+/*
+ * KeyNot UI system: one source for surfaces, radii, type and sizing.
+ * Radii are concentric: an inner radius is always outer radius minus padding,
+ * so nested shapes never fight each other (pill inside pill, 14px menu with
+ * 4px padding holds 10px items, 20px panel with 10px padding holds 10px controls).
+ */
 :root,
 [data-theme="light"] {
-  --glass-surface-subtle: rgba(255, 255, 255, 0.52);
-  --glass-surface-regular: rgba(255, 255, 255, 0.72);
-  --glass-surface-elevated: rgba(255, 255, 255, 0.9);
+  --glass-surface-subtle: rgba(255, 255, 255, 0.42);
+  --glass-surface-regular: rgba(255, 255, 255, 0.62);
+  --glass-surface-elevated: rgba(255, 255, 255, 0.82);
   --glass-surface-solid: #ffffff;
-  --glass-border: rgba(255, 255, 255, 0.72);
-  --glass-border-outer: rgba(30, 30, 40, 0.1);
-  --glass-blur-subtle: 14px;
-  --glass-blur-regular: 24px;
-  --glass-blur-elevated: 36px;
-  --glass-shadow-sm: 0 2px 10px rgba(25, 28, 38, 0.08);
-  --glass-shadow-md: 0 10px 30px rgba(25, 28, 38, 0.14);
-  --glass-shadow-lg: 0 24px 64px rgba(25, 28, 38, 0.22);
-  --control-compact: 30px;
-  --control-regular: 36px;
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-border-outer: rgba(20, 22, 30, 0.08);
+  --glass-blur-subtle: 16px;
+  --glass-blur-regular: 28px;
+  --glass-blur-elevated: 40px;
+  --glass-shadow-sm: 0 1px 4px rgba(20, 22, 30, 0.06);
+  --glass-shadow-md: 0 6px 24px rgba(20, 22, 30, 0.1);
+  --glass-shadow-lg: 0 18px 48px rgba(20, 22, 30, 0.18);
+  --scrim: rgba(10, 12, 18, 0.28);
+
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, Menlo, monospace;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-strong: 600;
+
+  --control-compact: 28px;
+  --control-regular: 34px;
   --control-touch: 44px;
-  --radius-panel: 18px;
+  --rail-padding: 4px;
+  --rail-gap: 2px;
+  --radius-pill: 9999px;
+  --radius-control: 10px;
+  --radius-menu: 14px;
+  --radius-menu-item: 10px;
+  --radius-panel: 20px;
   --radius-sheet: 24px;
-  --focus-ring: 0 0 0 3px rgba(0, 122, 255, 0.28);
+  --focus-ring: 0 0 0 3px rgba(0, 122, 255, 0.3);
   --motion-fast: 140ms;
   --motion-regular: 220ms;
   --ease-out: cubic-bezier(.2, .8, .2, 1);
@@ -27,25 +51,111 @@
   --z-sheet: 1400;
 }
 
-[data-theme="dark"],
-.dark {
-  --glass-surface-subtle: rgba(34, 34, 40, 0.58);
-  --glass-surface-regular: rgba(38, 38, 46, 0.76);
-  --glass-surface-elevated: rgba(42, 42, 50, 0.92);
-  --glass-surface-solid: #2a2a30;
-  --glass-border: rgba(255, 255, 255, 0.16);
-  --glass-border-outer: rgba(0, 0, 0, 0.4);
-  --glass-shadow-sm: 0 3px 14px rgba(0, 0, 0, 0.3);
-  --glass-shadow-md: 0 14px 36px rgba(0, 0, 0, 0.44);
-  --glass-shadow-lg: 0 28px 72px rgba(0, 0, 0, 0.58);
+/* Phones use Apple's larger text ramp (17pt titles, 15pt body) for legibility at arm's length. */
+@media (max-width: 767px) {
+  :root {
+    --text-sm: 13px;
+    --text-md: 15px;
+    --text-lg: 17px;
+  }
 }
 
+/* Hairlines are a physical pixel on retina screens, like UIKit separators. */
+:root { --hairline: 1px; }
+@media (min-resolution: 2dppx) { :root { --hairline: 0.5px; } }
+
+[data-theme="dark"],
+.dark {
+  --glass-surface-subtle: rgba(30, 30, 36, 0.48);
+  --glass-surface-regular: rgba(36, 36, 44, 0.66);
+  --glass-surface-elevated: rgba(40, 40, 48, 0.86);
+  --glass-surface-solid: #2a2a30;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-outer: rgba(255, 255, 255, 0.08);
+  --glass-shadow-sm: 0 1px 6px rgba(0, 0, 0, 0.3);
+  --glass-shadow-md: 0 8px 28px rgba(0, 0, 0, 0.4);
+  --glass-shadow-lg: 0 22px 56px rgba(0, 0, 0, 0.55);
+  --scrim: rgba(0, 0, 0, 0.42);
+}
+
+/*
+ * Glass = translucent fill + blur + one soft shadow. Borderless and flat.
+ * The blur lives on ::before, never on the element itself: an element with
+ * backdrop-filter becomes a "backdrop root", which silently kills the blur of
+ * every nested menu/submenu/popover inside it. Callers must be positioned.
+ */
 @mixin glass-surface($strength: regular) {
+  background: transparent;
+  border: 0;
+  box-shadow: var(--glass-shadow-md);
+  isolation: isolate;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: var(--glass-surface-#{$strength}, var(--glass-surface-solid));
+    backdrop-filter: saturate(180%) blur(var(--glass-blur-#{$strength}, 28px));
+    -webkit-backdrop-filter: saturate(180%) blur(var(--glass-blur-#{$strength}, 28px));
+  }
+}
+
+/*
+ * Variant for scroll containers (dialogs, long dropdowns): a ::before layer would
+ * scroll away with the content, so the blur sits on the element. Only use it on
+ * surfaces that hold no nested glass of their own.
+ */
+@mixin glass-scroll-surface($strength: elevated) {
   background: var(--glass-surface-#{$strength}, var(--glass-surface-solid));
-  border: 1px solid var(--glass-border-outer);
-  box-shadow: inset 0 1px 0 var(--glass-border), var(--glass-shadow-md);
-  backdrop-filter: saturate(150%) blur(var(--glass-blur-#{$strength}, 24px));
-  -webkit-backdrop-filter: saturate(150%) blur(var(--glass-blur-#{$strength}, 24px));
+  border: 0;
+  box-shadow: var(--glass-shadow-lg);
+  backdrop-filter: saturate(180%) blur(var(--glass-blur-#{$strength}, 40px));
+  -webkit-backdrop-filter: saturate(180%) blur(var(--glass-blur-#{$strength}, 40px));
+}
+
+/* Shared surface for every dropdown, menu panel, submenu and popover. */
+@mixin menu-surface {
+  @include glass-surface(elevated);
+  position: relative;
+  border-radius: var(--radius-menu);
+  padding: 4px;
+  box-shadow: var(--glass-shadow-lg);
+  color: var(--text-primary);
+  font-size: var(--text-md);
+}
+
+/* Shared row for menu items: radius is concentric with menu-surface. */
+@mixin menu-item {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-menu-item);
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  &:not(:disabled):hover { background: var(--accent-color); color: #fff; }
+  &:focus { outline: none; }
+  &:focus-visible:not(:hover) { background: var(--bg-control); }
+  @media (pointer: coarse) {
+    &:not(:disabled):hover { background: transparent; color: inherit; }
+    &:not(:disabled):active { background: var(--bg-control); }
+  }
+}
+
+@mixin flat-control {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  &:hover:not(:disabled) { background: var(--bg-control); }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -69,7 +69,7 @@ onUnmounted(() => {
   min-height: 160px;
   background: var(--popover-bg, rgba(255, 255, 255, 0.95));
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
-  border-radius: 14px;
+  border-radius: var(--radius-menu);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
@@ -89,7 +89,7 @@ onUnmounted(() => {
 .text {
   margin-top: 14px;
   color: var(--text-primary, #1d1d1f);
-  font-size: 13px;
+  font-size: var(--text-md);
   font-weight: 500;
   text-align: center;
   line-height: 1.4;
@@ -100,7 +100,7 @@ onUnmounted(() => {
   background: var(--bg-control, rgba(0, 0, 0, 0.06));
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   border-radius: 9999px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--text-primary, #1d1d1f);
   cursor: pointer;

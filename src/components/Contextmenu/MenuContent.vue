@@ -16,7 +16,7 @@
           v-if="!menu.divider"
         >
           <span class="text">{{menu.text}}</span>
-          <span class="sub-text" v-if="menu.subText && !menu.children">{{menu.subText}}</span>
+          <span class="sub-text" v-if="menu.subText && !menu.children">{{ formatShortcut(menu.subText.replace(/\s*\+\s*/g, '+')) }}</span>
 
           <menu-content 
             class="sub-menu"
@@ -31,6 +31,7 @@
 </template>
 
 <script lang="ts" setup>
+import { formatShortcut } from '@/utils/shortcut'
 import type { ContextmenuItem } from './types'
 
 defineProps<{
@@ -40,32 +41,28 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/glass-system.scss';
 $menuWidth: 188px;
 $menuHeight: 28px;
 $subMenuWidth: 132px;
 
 .menu-content {
-  width: $menuWidth;
-  padding: 5px;
-  background: var(--popover-bg, rgba(255, 255, 255, 0.95));
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
+  @include menu-surface;
+  min-width: $menuWidth;
+  width: max-content;
   list-style: none;
   margin: 0;
 }
 .menu-item {
   padding: 0 12px;
   color: var(--text-primary, #1d1d1f);
-  font-size: 12.5px;
+  font-size: var(--text-md);
   transition: background-color 0.08s ease;
   white-space: nowrap;
   height: $menuHeight;
   line-height: $menuHeight;
   background-color: transparent;
-  border-radius: 5px;
+  border-radius: var(--radius-menu-item);
   cursor: pointer;
 
   &:not(.disable):hover > .menu-item-content > .sub-menu {
@@ -136,14 +133,15 @@ $subMenuWidth: 132px;
 
   .sub-text {
     color: var(--text-tertiary, #98989d);
-    font-size: 11.5px;
+    font-size: var(--text-sm);
+    margin-left: 24px;
   }
   .sub-menu {
     width: $subMenuWidth;
     position: absolute;
     display: none;
-    left: 104%;
-    top: -5px;
+    left: 100%;
+    top: -4px;
   }
 }
 </style>

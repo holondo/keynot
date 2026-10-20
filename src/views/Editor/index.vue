@@ -1,59 +1,49 @@
 <template>
-  <div class="keynot-editor" :class="`tier-${tier}`" :data-tier="tier">
+  <div class="keynot-editor" :class="[`tier-${tier}`, `view-${editorViewMode}`]" :data-tier="tier">
+    <!-- Canvas-first floating shell: the canvas fills the free area, chrome floats above it. -->
     <div class="layout-header">
       <EditorHeader ref="editorHeader" @mobile-menu-state="handleMobileMenuState" />
     </div>
     <div class="layout-toolbar">
-      <CanvasTool @open-tools="editorHeader?.openCommandMenu()" />
+      <CanvasTool @open-tools="editorHeader?.openCommandMenu('insert')" />
     </div>
     <div class="layout-content">
-      <!-- Light Table View Mode -->
       <LightTable v-if="editorViewMode === 'lightTable'" class="layout-light-table" />
 
-      <!-- Standard Navigator & Slide-Only Modes -->
       <template v-else>
         <Thumbnails
           v-if="editorViewMode === 'navigator' && (tier !== 'mobile' || overlayState === 'thumbnails')"
-          class="layout-content-left"
+          ref="thumbnailsPanel"
+          class="layout-panel layout-content-left"
           :class="{ overlay: tier === 'mobile' }"
         />
-        <div class="layout-content-center" :class="{ 'full-canvas': editorViewMode === 'slideOnly' }">
+        <div class="layout-content-center">
           <Canvas
-            class="center-body" 
-            :style="{ height: showPresenterNotes ? `calc(100% - ${remarkHeight}px)` : '100%' }" 
+            class="center-body"
+            :style="{ height: showPresenterNotes ? `calc(100% - ${remarkHeight}px)` : '100%' }"
           />
           <Remark
             v-if="showPresenterNotes"
-            class="center-bottom" 
-            v-model:height="remarkHeight" 
+            class="center-bottom"
+            v-model:height="remarkHeight"
             :style="{ height: `${remarkHeight}px` }"
           />
         </div>
-        <Toolbar
+        <div
           v-show="tier === 'desktop' || overlayState === 'inspector'"
-          class="layout-content-right"
+          ref="inspectorPanel"
+          class="layout-panel layout-content-right"
           :class="{ overlay: tier !== 'desktop' }"
-        />
+        >
+          <!-- Phone: the inspector is a resizable sheet; drag the grabber to resize or dismiss. -->
+          <div v-if="tier === 'mobile'" ref="inspectorHandle" class="panel-handle" aria-hidden="true"><span class="panel-grabber"></span></div>
+          <Toolbar class="inspector-body-host" />
+        </div>
         <div
           v-if="tier !== 'desktop' && (overlayState === 'inspector' || overlayState === 'thumbnails')"
           class="layout-scrim"
           @click="closeOverlay"
         ></div>
-        <div class="layout-fabs" v-if="tier !== 'desktop'">
-          <PillButton
-            v-if="tier === 'mobile' && editorViewMode === 'navigator'"
-            class="layout-fab toggle-thumbnails"
-            :aria-expanded="overlayState === 'thumbnails'"
-            aria-label="Slides"
-            @click="toggleOverlay('thumbnails')"
-          ><i-icon-park-outline:layout-four /></PillButton>
-          <PillButton
-            class="layout-fab toggle-inspector"
-            :aria-expanded="overlayState === 'inspector'"
-            aria-label="Inspector"
-            @click="toggleOverlay('inspector')"
-          ><i-icon-park-outline:setting-config /></PillButton>
-        </div>
       </template>
     </div>
   </div>
@@ -80,7 +70,6 @@
     :width="720"
     :closeOnClickMask="false"
     :closeOnEsc="false"
-    closeButton
     :wrapStyle="{ opacity: showAIPPTDialog === 'running' ? 0 : 1 }"
     @closed="closeAIPPTDialog()"
   >
@@ -88,7 +77,7 @@
   </Modal>
 
   <Modal
-    :visible="themeChooserVisible" 
+    :visible="themeChooserVisible"
     :width="880"
     @closed="mainStore.setThemeChooserVisible(false)"
   >
@@ -97,8 +86,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import useBreakpoint from '@/hooks/useBreakpoint'
+import useEditorOverlay from '@/hooks/useEditorOverlay'
+import { useBackHandler } from '@/hooks/useBackStack'
+import useSheetDrag from '@/hooks/useSheetDrag'
 import { storeToRefs } from 'pinia'
 import { useMainStore } from '@/store'
 import useGlobalHotkey from '@/hooks/useGlobalHotkey'
@@ -123,7 +115,6 @@ import ImageLibPanel from './ImageLibPanel.vue'
 import AIPPTDialog from './AIPPTDialog.vue'
 import ThemeChooserModal from './ThemeChooserModal.vue'
 import Modal from '@/components/Modal.vue'
-import PillButton from '@/components/ui/PillButton.vue'
 
 const mainStore = useMainStore()
 const editorHeader = ref<InstanceType<typeof EditorHeader> | null>(null)
@@ -147,13 +138,9 @@ const closeAIPPTDialog = () => mainStore.setAIPPTDialogState(false)
 const remarkHeight = ref(120)
 
 const { tier } = useBreakpoint()
-type EditorOverlay = 'none' | 'menu' | 'thumbnails' | 'inspector'
-const overlayState = ref<EditorOverlay>('none')
-const openOverlay = (type: Exclude<EditorOverlay, 'none'>) => { overlayState.value = type }
-const closeOverlay = () => { overlayState.value = 'none' }
-const toggleOverlay = (type: Exclude<EditorOverlay, 'none' | 'menu'>) => {
-  overlayState.value = overlayState.value === type ? 'none' : type
-}
+const { overlayState, openOverlay, closeOverlay } = useEditorOverlay()
+// The menu overlay has its own sheet entry; drawers get one here.
+useBackHandler(() => overlayState.value === 'thumbnails' || overlayState.value === 'inspector', closeOverlay)
 const handleMobileMenuState = (open: boolean) => {
   if (open) openOverlay('menu')
   else if (overlayState.value === 'menu') closeOverlay()
@@ -162,186 +149,174 @@ watch(tier, () => {
   closeOverlay()
 })
 
+// Touch gestures for the compact drawers (same physics as every other sheet).
+const thumbnailsPanel = ref<InstanceType<typeof Thumbnails> | null>(null)
+const inspectorPanel = ref<HTMLElement | null>(null)
+const inspectorHandle = ref<HTMLElement | null>(null)
+const thumbnailsDrawer = computed(() => tier.value === 'mobile' && overlayState.value === 'thumbnails' ? thumbnailsPanel.value?.$el as HTMLElement ?? null : null)
+useSheetDrag({ surface: thumbnailsDrawer, handle: thumbnailsDrawer, axis: 'x', dismissDirection: -1, touchAction: 'pan-y', onDismiss: closeOverlay })
+const inspectorSheet = useSheetDrag({
+  surface: computed(() => tier.value === 'mobile' ? inspectorPanel.value : null),
+  handle: inspectorHandle,
+  detents: [0.42, 0.8],
+  onDismiss: closeOverlay,
+})
+watch(overlayState, state => {
+  if (state !== 'inspector') return
+  inspectorSheet.reset()
+  inspectorSheet.applyDetent()
+}, { flush: 'post' })
+
 useGlobalHotkey()
 usePasteEvent()
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/breakpoints.scss';
+@import '@/assets/styles/glass-system.scss';
 
+/*
+ * Geometry tokens for the floating shell. Every floating element and the
+ * canvas free area derive from these, so chrome never covers the slide.
+ */
 .keynot-editor {
-  --thumbs-w: 176px;
-  --header-h: 38px;
-  --toolbar-h: 46px;
+  --edge: 12px;
+  --row-h: 44px;
+  --header-top: calc(var(--edge) + env(safe-area-inset-top));
+  --toolbar-top: calc(var(--header-top) + var(--row-h) + 8px);
+  --panel-top: calc(var(--toolbar-top) + var(--row-h) + var(--edge));
+  --panel-bottom: var(--edge);
+  --thumbs-w: 184px;
+  --inspector-w: var(--inspector-width, 280px);
+  --canvas-left: calc(var(--thumbs-w) + var(--edge) * 2);
+  --canvas-right: calc(var(--inspector-w) + var(--edge) * 2);
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg-app, #f5f5f7);
-  color: var(--text-primary, #1d1d1f);
   position: relative;
   overflow: hidden;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
 
-  @include bp(tablet) {
-    --thumbs-w: 128px;
+  &.tier-tablet {
+    --thumbs-w: 140px;
+    --canvas-right: var(--edge);
   }
-
   &.tier-mobile {
-    --header-h: 54px;
-    --toolbar-h: 50px;
+    --edge: 8px;
+    --dock-h: 52px;
+    --toolbar-top: auto;
+    --panel-top: calc(var(--header-top) + var(--row-h) + var(--edge));
+    --panel-bottom: calc(var(--dock-h) + var(--edge) * 3 + env(safe-area-inset-bottom));
+    --canvas-left: 0px;
+    --canvas-right: 0px;
   }
+  &.view-slideOnly { --canvas-left: var(--edge); }
 }
+
 .layout-header {
-  /* Canvas-first floating shell: chrome is detached from document flow. */
-  height: 44px;
   position: absolute;
-  top: calc(10px + env(safe-area-inset-top));
-  left: 10px;
-  right: 10px;
+  top: var(--header-top);
+  left: var(--edge);
+  right: var(--edge);
+  height: var(--row-h);
   z-index: 1000;
-  overflow: visible;
 }
 .layout-toolbar {
-  height: 44px;
   position: absolute;
-  top: calc(62px + env(safe-area-inset-top));
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(980px, calc(100% - 24px));
+  top: var(--toolbar-top);
+  left: var(--edge);
+  right: var(--edge);
+  height: var(--row-h);
   z-index: 90;
-  overflow: visible;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  > * { pointer-events: auto; }
 }
 .layout-content {
-  flex: 1;
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  position: relative;
-}
-.layout-content-left {
-  width: var(--thumbs-w);
   position: absolute;
-  left: 12px;
-  top: calc(118px + env(safe-area-inset-top));
-  bottom: 12px;
-  height: auto;
-  z-index: 40;
-  border-radius: 24px;
-  overflow: hidden;
-  background: var(--glass-surface-regular);
-  border: 1px solid var(--glass-border-outer);
-  box-shadow: var(--glass-shadow-md);
-  backdrop-filter: blur(var(--glass-blur-regular));
-
-  &.overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 60;
-    width: min(220px, 70vw);
-    background: var(--glass-surface-elevated);
-    border-right: 1px solid var(--glass-border-outer);
-    box-shadow: var(--glass-shadow-lg);
-    backdrop-filter: blur(var(--glass-blur-elevated));
-  }
+  inset: 0;
 }
+/* The canvas is the whole screen; chrome floats on it. The slide fits the free area via --fit-*. */
 .layout-content-center {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
+  position: absolute;
+  inset: 0;
+  --fit-top: var(--panel-top);
+  --fit-bottom: var(--panel-bottom);
+  --fit-left: var(--canvas-left);
+  --fit-right: var(--canvas-right);
 }
 .layout-light-table {
-  width: 100%;
-  height: 100%;
-}
-.layout-content-right {
-  width: var(--inspector-width, 270px);
   position: absolute;
-  right: 12px;
-  top: calc(118px + env(safe-area-inset-top));
-  bottom: 12px;
+  inset: var(--panel-top) var(--edge) var(--panel-bottom);
+  width: auto;
   height: auto;
+}
+
+/* Docked glass panels (navigator and inspector) share one surface. */
+.layout-panel {
+  @include glass-surface(regular);
+  position: absolute;
+  top: var(--panel-top);
+  bottom: var(--panel-bottom);
   z-index: 40;
-  border-radius: 24px;
+  height: auto;
+  border-radius: var(--radius-panel);
+  /* clip, not hidden: hidden boxes can still be scrolled by focus/scrollIntoView. */
   overflow: hidden;
-  background: var(--glass-surface-regular);
-  border: 1px solid var(--glass-border-outer);
-  box-shadow: var(--glass-shadow-md);
-  backdrop-filter: blur(var(--glass-blur-regular));
+  overflow: clip;
 
   &.overlay {
-    position: absolute;
-    right: 0;
-    top: 0;
+    @include glass-surface(elevated);
     z-index: 60;
-    width: min(var(--inspector-width, 270px), 90vw);
-    background: var(--glass-surface-elevated);
-    border-left: 1px solid var(--glass-border-outer);
     box-shadow: var(--glass-shadow-lg);
-    backdrop-filter: blur(var(--glass-blur-elevated));
-    animation: inspector-in 0.2s ease;
+    animation: panel-in var(--motion-regular) var(--ease-out);
   }
+}
+.layout-content-left {
+  left: var(--edge);
+  width: var(--thumbs-w);
+  &.overlay { width: min(220px, 64vw); }
+}
+.layout-content-right {
+  display: flex;
+  flex-direction: column;
+  right: var(--edge);
+  width: min(var(--inspector-w), calc(100vw - var(--edge) * 2));
+}
+.inspector-body-host { flex: 1 1 auto; min-height: 0; }
+.tier-mobile .layout-content-right.overlay {
+  left: var(--edge);
+  width: auto;
+  top: auto;
+  height: min(42dvh, calc(100% - var(--panel-top) - var(--panel-bottom)));
+  max-height: calc(100% - var(--panel-top) - var(--panel-bottom));
+}
+.panel-handle {
+  flex: 0 0 auto;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+.panel-grabber {
+  width: 36px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--text-tertiary);
+  opacity: .45;
 }
 .layout-scrim {
   position: absolute;
   inset: 0;
   z-index: 50;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--scrim);
 }
-.layout-fabs {
-  position: absolute;
-  right: calc(16px + env(safe-area-inset-right));
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  z-index: 70;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.tier-mobile .layout-toolbar {
+  top: auto;
+  bottom: calc(var(--edge) * 1.5 + env(safe-area-inset-bottom));
+  height: var(--dock-h);
 }
-.layout-fab {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  background: var(--glass-surface-elevated);
-  color: var(--text-primary, #1d1d1f);
-  backdrop-filter: blur(var(--glass-blur-regular));
-  box-shadow: var(--glass-shadow-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  cursor: pointer;
-
-  &[aria-expanded="true"] {
-    background: var(--accent-color, #007aff);
-    color: #fff;
-  }
-}
-@keyframes inspector-in {
-  from { transform: translateX(24px); opacity: 0; }
-}
-
-.tier-mobile,
-.tier-tablet {
-  .layout-content-left,
-  .layout-content-right {
-    top: calc(112px + env(safe-area-inset-top));
-    bottom: 10px;
-  }
-}
-.tier-mobile {
-  .layout-toolbar { width: calc(100% - 16px); top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); height: 52px; }
-  .layout-content-left.overlay,
-  .layout-content-right.overlay {
-    top: calc(70px + env(safe-area-inset-top));
-    bottom: calc(132px + env(safe-area-inset-bottom));
-    left: 8px;
-    right: 8px;
-    width: auto;
-    max-width: 380px;
-    margin-left: auto;
-    border-radius: var(--radius-sheet);
-  }
-  .layout-content-left.overlay { margin-left: 0; max-width: 220px; }
-  .layout-fabs { flex-direction: row; gap: 8px; bottom: calc(76px + env(safe-area-inset-bottom)); }
+@keyframes panel-in {
+  from { transform: translateY(12px); opacity: 0; }
 }
 </style>

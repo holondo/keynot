@@ -101,13 +101,12 @@ const close = () => {
   line-height: 28px;
   background-color: var(--bg-control, rgba(128, 128, 128, 0.12));
   color: var(--text-primary, #1d1d1f);
-  margin: 0 -10px 10px -10px;
-  padding: 0 14px;
-  font-size: 12px;
+  margin: 0 0 8px;
+  padding: 0 10px;
+  font-size: var(--text-sm);
   display: flex;
   justify-content: space-between;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-radius: var(--radius-menu-item);
   user-select: none;
 
   .right {
@@ -140,7 +139,7 @@ td {
 }
 
 .custom {
-  width: 230px;
+  width: min(230px, calc(100vw - 48px));
   color: var(--text-primary, #1d1d1f);
 
   .row {
@@ -148,7 +147,7 @@ td {
     align-items: center;
 
     .label {
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: var(--text-primary, #1d1d1f);
     }
 

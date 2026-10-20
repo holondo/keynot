@@ -17,32 +17,13 @@ const emit = defineEmits<{
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/glass-system.scss';
 .popover-menu-item {
+  @include menu-item;
   min-width: 80px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12.5px;
-  color: var(--text-primary, #1d1d1f);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: all 0.12s ease;
 
-  &.center {
-    justify-content: center;
-    text-align: center;
-  }
-
-  &:hover {
-    background-color: var(--accent-color, #007aff);
-    color: #ffffff !important;
-
-    ::v-deep(.icon) {
-      color: #ffffff !important;
-    }
-  }
-  & + .popover-menu-item {
-    margin-top: 2px;
-  }
+  &.center { justify-content: center; text-align: center; }
+  &:hover :deep(.icon) { color: #fff; }
+  :deep(.icon) { font-size: var(--text-lg); color: var(--text-secondary); }
 }
 </style>

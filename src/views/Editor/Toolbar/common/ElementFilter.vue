@@ -156,7 +156,7 @@ const applyPresetFilters = (filters: ImageElementFilters) => {
   text-align: right;
 }
 .filter {
-  font-size: 12px;
+  font-size: var(--text-sm);
 }
 .filter-item {
   padding: 6px 0;
@@ -189,7 +189,7 @@ const applyPresetFilters = (filters: ImageElementFilters) => {
     max-height: 120px;
   }
   .preset-label {
-    font-size: 12px;
+    font-size: var(--text-sm);
     color: #888;
   }
 }

@@ -451,7 +451,7 @@ const isPureWhiteColor = (color?: string) => {
 }
 
 .recent-colors-title {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--text-secondary, #86868b);
   margin-bottom: 4px;
 }

@@ -10,31 +10,49 @@ export default (canvasRef: ShallowRef<HTMLElement | null>) => {
   const { canvasPercentage, canvasDragged } = storeToRefs(mainStore)
   const { viewportRatio, viewportSize } = storeToRefs(useSlidesStore())
 
+  // Floating chrome sits above an edge-to-edge canvas; --fit-* insets mark the free area the slide fits into.
+  const getFitArea = () => {
+    const el = canvasRef.value!
+    // Custom properties hold unresolved calc()/env(); a probe lets the browser resolve them.
+    const probe = document.createElement('div')
+    probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;inset:var(--fit-top,0px) var(--fit-right,0px) var(--fit-bottom,0px) var(--fit-left,0px)'
+    el.appendChild(probe)
+    const outer = el.getBoundingClientRect()
+    const inner = probe.getBoundingClientRect()
+    el.removeChild(probe)
+    return {
+      left: inner.left - outer.left,
+      top: inner.top - outer.top,
+      width: Math.max(1, inner.width),
+      height: Math.max(1, inner.height),
+    }
+  }
+
   // 初始化画布可视区域的位置
   const initViewportPosition = () => {
     if (!canvasRef.value) return
-    const canvasWidth = canvasRef.value.clientWidth
-    const canvasHeight = canvasRef.value.clientHeight
+    const fit = getFitArea()
+    const canvasWidth = fit.width
+    const canvasHeight = fit.height
 
     if (canvasHeight / canvasWidth > viewportRatio.value) {
       const viewportActualWidth = canvasWidth * (canvasPercentage.value / 100)
       mainStore.setCanvasScale(viewportActualWidth / viewportSize.value)
-      viewportLeft.value = (canvasWidth - viewportActualWidth) / 2
-      viewportTop.value = (canvasHeight - viewportActualWidth * viewportRatio.value) / 2
+      viewportLeft.value = fit.left + (canvasWidth - viewportActualWidth) / 2
+      viewportTop.value = fit.top + (canvasHeight - viewportActualWidth * viewportRatio.value) / 2
     }
     else {
       const viewportActualHeight = canvasHeight * (canvasPercentage.value / 100)
       mainStore.setCanvasScale(viewportActualHeight / (viewportSize.value * viewportRatio.value))
-      viewportLeft.value = (canvasWidth - viewportActualHeight / viewportRatio.value) / 2
-      viewportTop.value = (canvasHeight - viewportActualHeight) / 2
+      viewportLeft.value = fit.left + (canvasWidth - viewportActualHeight / viewportRatio.value) / 2
+      viewportTop.value = fit.top + (canvasHeight - viewportActualHeight) / 2
     }
   }
 
   // 更新画布可视区域的位置
   const setViewportPosition = (newValue: number, oldValue: number) => {
     if (!canvasRef.value) return
-    const canvasWidth = canvasRef.value.clientWidth
-    const canvasHeight = canvasRef.value.clientHeight
+    const { width: canvasWidth, height: canvasHeight } = getFitArea()
 
     if (canvasHeight / canvasWidth > viewportRatio.value) {      
       const newViewportActualWidth = canvasWidth * (newValue / 100)

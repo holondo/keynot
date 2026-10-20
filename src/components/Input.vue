@@ -81,8 +81,8 @@ defineExpose({
 
 <style lang="scss" scoped>
 .input {
-  background-color: var(--bg-card, var(--bg-control, #ffffff));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  background-color: var(--bg-control);
+  border: 1px solid transparent;
   padding: 0 5px;
   border-radius: var(--inspector-control-radius, 8px);
   transition: border-color .2s;
@@ -115,7 +115,7 @@ defineExpose({
 
   &.disabled {
     background-color: var(--bg-control, rgba(128, 128, 128, 0.1));
-    border-color: var(--border-color, rgba(0, 0, 0, 0.06));
+    border-color: transparent;
     color: var(--text-tertiary, #b7b7b7);
     opacity: var(--disabled-opacity, 0.3);
 

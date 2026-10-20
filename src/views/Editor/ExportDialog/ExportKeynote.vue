@@ -88,7 +88,7 @@ const selectedSlides = computed(() => {
   overflow: hidden;
 }
 .configs {
-  width: 400px;
+  width: min(400px, calc(100vw - 48px));
   height: calc(100% - 80px);
   display: flex;
   flex-direction: column;
@@ -97,7 +97,7 @@ const selectedSlides = computed(() => {
   .status-banner {
     background: var(--bg-control, rgba(128, 128, 128, 0.08));
     border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     padding: 12px 14px;
     margin-bottom: 24px;
 
@@ -107,12 +107,12 @@ const selectedSlides = computed(() => {
     }
 
     .status-title {
-      font-size: 13px;
+      font-size: var(--text-md);
       color: var(--text-primary, #1d1d1f);
       margin-bottom: 6px;
     }
     .status-desc {
-      font-size: 12px;
+      font-size: var(--text-sm);
       color: var(--text-secondary, #86868b);
       line-height: 1.5;
     }

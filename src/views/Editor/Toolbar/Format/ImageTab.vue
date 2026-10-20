@@ -385,12 +385,12 @@ const updateAlt = (alt: string) => {
 <style lang="scss" scoped>
 .keynote-image-tab {
   user-select: none;
-  font-size: 12.5px;
+  font-size: var(--text-sm);
   color: var(--text-primary, #1d1d1f);
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -413,13 +413,13 @@ const updateAlt = (alt: string) => {
     flex: 1;
 
     .doc-icon {
-      font-size: 15px;
+      font-size: var(--text-lg);
       color: var(--accent-color, #007aff);
       flex-shrink: 0;
     }
 
     .file-name {
-      font-size: 12px;
+      font-size: var(--text-sm);
       font-weight: 500;
       color: var(--text-primary, #1d1d1f);
       white-space: nowrap;
@@ -431,9 +431,9 @@ const updateAlt = (alt: string) => {
   .replace-btn {
     height: 26px;
     padding: 0 10px;
-    font-size: 11.5px;
+    font-size: var(--text-xs);
     font-weight: 500;
-    border-radius: 6px;
+    border-radius: var(--radius-control);
   }
 }
 
@@ -446,8 +446,8 @@ const updateAlt = (alt: string) => {
   .keynote-full-btn {
     width: 100%;
     height: 28px;
-    border-radius: 6px;
-    font-size: 12px;
+    border-radius: var(--radius-control);
+    font-size: var(--text-sm);
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -455,7 +455,7 @@ const updateAlt = (alt: string) => {
     gap: 6px;
     background: var(--bg-control, rgba(0, 0, 0, 0.05));
     color: var(--text-primary, #1d1d1f);
-    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    border: 1px solid transparent;
     transition: all 0.15s ease;
 
     &:hover {
@@ -465,7 +465,7 @@ const updateAlt = (alt: string) => {
     }
 
     .btn-icon {
-      font-size: 14px;
+      font-size: var(--text-lg);
     }
   }
 }
@@ -475,7 +475,7 @@ const updateAlt = (alt: string) => {
   padding: 10px;
 
   .popover-heading {
-    font-size: 11px;
+    font-size: var(--text-xs);
     font-weight: 600;
     text-transform: uppercase;
     color: var(--text-tertiary, #86868b);
@@ -494,7 +494,7 @@ const updateAlt = (alt: string) => {
       gap: 4px;
       cursor: pointer;
       padding: 6px 2px;
-      border-radius: 6px;
+      border-radius: var(--radius-control);
       transition: background-color 0.12s;
 
       &:hover {
@@ -508,7 +508,7 @@ const updateAlt = (alt: string) => {
       }
 
       .shape-label {
-        font-size: 9.5px;
+        font-size: var(--text-xs);
         color: var(--text-secondary, #515154);
         text-align: center;
         white-space: nowrap;
@@ -527,7 +527,7 @@ const updateAlt = (alt: string) => {
   gap: 4px;
 
   .adj-label {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--text-secondary, #515154);
     font-weight: 500;
   }
@@ -547,8 +547,8 @@ const updateAlt = (alt: string) => {
   .adj-action-btn {
     flex: 1;
     height: 26px;
-    border-radius: 6px;
-    font-size: 11px;
+    border-radius: var(--radius-control);
+    font-size: var(--text-xs);
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -556,7 +556,7 @@ const updateAlt = (alt: string) => {
     gap: 4px;
     padding: 0 4px;
     background: var(--bg-control, rgba(0, 0, 0, 0.04));
-    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    border: 1px solid transparent;
 
     &:hover {
       background: var(--bg-control-active, rgba(0, 0, 0, 0.08));
@@ -570,7 +570,7 @@ const updateAlt = (alt: string) => {
   padding: 12px;
 
   .popover-title {
-    font-size: 11px;
+    font-size: var(--text-xs);
     font-weight: 600;
     text-transform: uppercase;
     color: var(--text-tertiary, #86868b);
@@ -585,13 +585,13 @@ const updateAlt = (alt: string) => {
 
     .slider-title {
       width: 52px;
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--text-secondary, #515154);
     }
 
     .slider-val {
       width: 38px;
-      font-size: 10.5px;
+      font-size: var(--text-xs);
       color: var(--text-tertiary, #86868b);
       text-align: right;
       font-variant-numeric: tabular-nums;
@@ -606,10 +606,10 @@ const updateAlt = (alt: string) => {
     width: 100%;
     height: 60px;
     padding: 6px 8px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+    border-radius: var(--radius-control);
+    border: 1px solid transparent;
     background: var(--bg-input, rgba(255, 255, 255, 0.8));
-    font-size: 11.5px;
+    font-size: var(--text-xs);
     color: var(--text-primary, #1d1d1f);
     resize: none;
     outline: none;
