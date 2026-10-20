@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import { KEYNOTE_MENUS, type KeynoteCommand } from '@/commands/keynoteCommands'
 import { t } from '@/i18n'
 import MenuBranch from './MenuBranch.vue'
@@ -36,12 +36,16 @@ const props = withDefaults(defineProps<{
   disabledCommandIds: () => [],
   checkedCommandIds: () => [],
 })
-const emit = defineEmits<{ (event: 'execute', commandId: string): void }>()
+const emit = defineEmits<{
+  (event: 'execute', commandId: string): void
+  (event: 'mobileOpenChange', open: boolean): void
+}>()
 const menuBar = useTemplateRef<HTMLElement>('menuBar')
 const openMenu = ref('')
 const mobileMenuOpen = ref(false)
 const mobileTrigger = ref<any>(null)
 const { tier } = useBreakpoint()
+watch(mobileMenuOpen, open => emit('mobileOpenChange', open))
 const resolvedMenus = computed(() => {
   const disabled = new Set(props.disabledCommandIds)
   const checked = new Set(props.checkedCommandIds)

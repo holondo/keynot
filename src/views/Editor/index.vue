@@ -1,6 +1,6 @@
 <template>
   <div class="keynot-editor" :class="`tier-${tier}`" :data-tier="tier">
-    <EditorHeader class="layout-header" />
+    <EditorHeader class="layout-header" @mobile-menu-state="handleMobileMenuState" />
     <CanvasTool class="layout-toolbar" />
     <div class="layout-content">
       <!-- Light Table View Mode -->
@@ -9,7 +9,7 @@
       <!-- Standard Navigator & Slide-Only Modes -->
       <template v-else>
         <Thumbnails
-          v-if="editorViewMode === 'navigator' && (tier !== 'mobile' || thumbnailsOpen)"
+          v-if="editorViewMode === 'navigator' && (tier !== 'mobile' || overlayState === 'thumbnails')"
           class="layout-content-left"
           :class="{ overlay: tier === 'mobile' }"
         />
@@ -26,29 +26,29 @@
           />
         </div>
         <Toolbar
-          v-show="tier === 'desktop' || inspectorOpen"
+          v-show="tier === 'desktop' || overlayState === 'inspector'"
           class="layout-content-right"
           :class="{ overlay: tier !== 'desktop' }"
         />
         <div
-          v-if="tier !== 'desktop' && (inspectorOpen || thumbnailsOpen)"
+          v-if="tier !== 'desktop' && (overlayState === 'inspector' || overlayState === 'thumbnails')"
           class="layout-scrim"
-          @click="inspectorOpen = false; thumbnailsOpen = false"
+          @click="closeOverlay"
         ></div>
         <div class="layout-fabs" v-if="tier !== 'desktop'">
-          <button
+          <PillButton
             v-if="tier === 'mobile' && editorViewMode === 'navigator'"
             class="layout-fab toggle-thumbnails"
-            :aria-expanded="thumbnailsOpen"
+            :aria-expanded="overlayState === 'thumbnails'"
             aria-label="Slides"
-            @click="thumbnailsOpen = !thumbnailsOpen; inspectorOpen = false"
-          ><i-icon-park-outline:layout-four /></button>
-          <button
+            @click="toggleOverlay('thumbnails')"
+          ><i-icon-park-outline:layout-four /></PillButton>
+          <PillButton
             class="layout-fab toggle-inspector"
-            :aria-expanded="inspectorOpen"
+            :aria-expanded="overlayState === 'inspector'"
             aria-label="Inspector"
-            @click="inspectorOpen = !inspectorOpen; thumbnailsOpen = false"
-          ><i-icon-park-outline:setting-config /></button>
+            @click="toggleOverlay('inspector')"
+          ><i-icon-park-outline:setting-config /></PillButton>
         </div>
       </template>
     </div>
@@ -119,6 +119,7 @@ import ImageLibPanel from './ImageLibPanel.vue'
 import AIPPTDialog from './AIPPTDialog.vue'
 import ThemeChooserModal from './ThemeChooserModal.vue'
 import Modal from '@/components/Modal.vue'
+import PillButton from '@/components/ui/PillButton.vue'
 
 const mainStore = useMainStore()
 const {
@@ -141,11 +142,19 @@ const closeAIPPTDialog = () => mainStore.setAIPPTDialogState(false)
 const remarkHeight = ref(120)
 
 const { tier } = useBreakpoint()
-const inspectorOpen = ref(false)
-const thumbnailsOpen = ref(false)
+type EditorOverlay = 'none' | 'menu' | 'thumbnails' | 'inspector'
+const overlayState = ref<EditorOverlay>('none')
+const openOverlay = (type: Exclude<EditorOverlay, 'none'>) => { overlayState.value = type }
+const closeOverlay = () => { overlayState.value = 'none' }
+const toggleOverlay = (type: Exclude<EditorOverlay, 'none' | 'menu'>) => {
+  overlayState.value = overlayState.value === type ? 'none' : type
+}
+const handleMobileMenuState = (open: boolean) => {
+  if (open) openOverlay('menu')
+  else if (overlayState.value === 'menu') closeOverlay()
+}
 watch(tier, () => {
-  inspectorOpen.value = false
-  thumbnailsOpen.value = false
+  closeOverlay()
 })
 
 useGlobalHotkey()
@@ -202,7 +211,10 @@ usePasteEvent()
     top: 0;
     z-index: 60;
     width: min(220px, 70vw);
-    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.18);
+    background: var(--glass-surface-elevated);
+    border-right: 1px solid var(--glass-border-outer);
+    box-shadow: var(--glass-shadow-lg);
+    backdrop-filter: blur(var(--glass-blur-elevated));
   }
 }
 .layout-content-center {
@@ -225,7 +237,10 @@ usePasteEvent()
     top: 0;
     z-index: 60;
     width: min(var(--inspector-width, 270px), 90vw);
-    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18);
+    background: var(--glass-surface-elevated);
+    border-left: 1px solid var(--glass-border-outer);
+    box-shadow: var(--glass-shadow-lg);
+    backdrop-filter: blur(var(--glass-blur-elevated));
     animation: inspector-in 0.2s ease;
   }
 }
@@ -249,10 +264,10 @@ usePasteEvent()
   height: 44px;
   border-radius: 50%;
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
-  background: var(--bg-elevated, rgba(255, 255, 255, 0.9));
+  background: var(--glass-surface-elevated);
   color: var(--text-primary, #1d1d1f);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(var(--glass-blur-regular));
+  box-shadow: var(--glass-shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,7 +275,7 @@ usePasteEvent()
   cursor: pointer;
 
   &[aria-expanded="true"] {
-    background: var(--accent, #007aff);
+    background: var(--accent-color, #007aff);
     color: #fff;
   }
 }

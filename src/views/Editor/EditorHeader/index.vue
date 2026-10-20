@@ -65,6 +65,7 @@
         :disabled-command-ids="disabledMenuCommandIds"
         :checked-command-ids="checkedMenuCommandIds"
         @execute="executeMenuCommand"
+        @mobile-open-change="open => emit('mobileMenuState', open)"
       />
       <input ref="openFileInput" class="native-file-input" type="file" accept=".key,.pptx,.pptist,.keynot,.slate,.json" @change="handleNativeFileOpen" />
       <input ref="imageFileInput" class="native-file-input" type="file" accept="image/*" @change="handleNativeImageOpen" />
@@ -229,6 +230,8 @@ import PopoverMenuItem from '@/components/PopoverMenuItem.vue'
 import Divider from '@/components/Divider.vue'
 import FloatingRail from '@/components/ui/FloatingRail.vue'
 import KeynoteMenuBar from './KeynoteMenuBar.vue'
+
+const emit = defineEmits<{ mobileMenuState: [open: boolean] }>()
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
