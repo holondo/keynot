@@ -37,16 +37,16 @@
     <Divider :margin="10" />
 
     <!-- Table Options (Screenshot 4: Title, Caption checkboxes) -->
-    <div class="section-title">Table Options</div>
+    <div class="section-title">{{ t('inspector.table.options') }}</div>
     <div class="control-row checkboxes-row">
-      <Checkbox :value="showTitle" @update:value="v => toggleTableTitle(v)">Title</Checkbox>
-      <Checkbox :value="showCaption" @update:value="v => toggleTableCaption(v)">Caption</Checkbox>
+      <Checkbox :value="showTitle" @update:value="v => toggleTableTitle(v)">{{ t('inspector.table.title') }}</Checkbox>
+      <Checkbox :value="showCaption" @update:value="v => toggleTableCaption(v)">{{ t('inspector.table.caption') }}</Checkbox>
     </div>
     <div class="control-row" v-if="showTitle" style="margin-top: 6px;">
-      <Input :value="tableTitleText" @update:value="val => setTableTitleText(val)" placeholder="Table Title" />
+      <Input :value="tableTitleText" @update:value="val => setTableTitleText(val)" :placeholder="t('inspector.table.title')" />
     </div>
     <div class="control-row" v-if="showCaption" style="margin-top: 6px;">
-      <Input :value="tableCaptionText" @update:value="val => setTableCaptionText(val)" placeholder="Table Caption" />
+      <Input :value="tableCaptionText" @update:value="val => setTableCaptionText(val)" :placeholder="t('inspector.table.caption')" />
     </div>
 
     <!-- Headers & Footer Steppers (Screenshot 4) -->
@@ -149,21 +149,21 @@
 
     <!-- Gridlines Icons -->
     <div class="control-row label-value-row" style="margin-top: 10px;">
-      <span class="row-label">Gridlines</span>
+      <span class="row-label">{{ t('inspector.table.gridLines') }}</span>
       <div class="gridlines-group">
-        <button class="grid-btn" :class="{ active: gridlinesType === 'all' }" @click="setGridlines('all')" v-tooltip="'All Gridlines'">
+        <button class="grid-btn" :class="{ active: gridlinesType === 'all' }" @click="setGridlines('all')" :title="t('inspector.table.gridLines')">
           <i-icon-park-outline:all-application />
         </button>
-        <button class="grid-btn" :class="{ active: gridlinesType === 'horizontal' }" @click="setGridlines('horizontal')" v-tooltip="'Horizontal Gridlines'">
+        <button class="grid-btn" :class="{ active: gridlinesType === 'horizontal' }" @click="setGridlines('horizontal')" :title="t('inspector.table.gridLines')">
           <i-icon-park-outline:hamburger-button />
         </button>
-        <button class="grid-btn" :class="{ active: gridlinesType === 'vertical' }" @click="setGridlines('vertical')" v-tooltip="'Vertical Gridlines'">
+        <button class="grid-btn" :class="{ active: gridlinesType === 'vertical' }" @click="setGridlines('vertical')" :title="t('inspector.table.gridLines')">
           <i-icon-park-outline:more-three />
         </button>
-        <button class="grid-btn" :class="{ active: gridlinesType === 'outer' }" @click="setGridlines('outer')" v-tooltip="'Outer Borders'">
+        <button class="grid-btn" :class="{ active: gridlinesType === 'outer' }" @click="setGridlines('outer')" :title="t('inspector.table.gridLines')">
           <i-icon-park-outline:square />
         </button>
-        <button class="grid-btn" :class="{ active: gridlinesType === 'none' }" @click="setGridlines('none')" v-tooltip="'No Gridlines'">
+        <button class="grid-btn" :class="{ active: gridlinesType === 'none' }" @click="setGridlines('none')" :title="t('inspector.table.gridLines')">
           <i-icon-park-outline:close-small />
         </button>
       </div>
@@ -171,7 +171,7 @@
 
     <!-- Alternating Row Color Switch (Screenshot 4) -->
     <div class="control-row label-value-row" style="margin-top: 10px;">
-      <span class="row-label">Alternating Row Color</span>
+      <span class="row-label">{{ t('inspector.table.alternatingRows') }}</span>
       <Switch :value="alternatingRowColor" @update:value="val => toggleAlternatingRows(val)" />
     </div>
 
@@ -180,7 +180,7 @@
     <!-- Row & Column Size (Screenshot 4: Height pt + Fit, Width pt + Fit) -->
     <div class="section-title">Row &amp; Column Size</div>
     <div class="control-row label-value-row">
-      <span class="row-label">Height</span>
+      <span class="row-label">{{ t('inspector.arrange.height') }}</span>
       <div class="size-fit-row">
         <NumberInput
           style="width: 90px;"
@@ -197,7 +197,7 @@
     </div>
 
     <div class="control-row label-value-row">
-      <span class="row-label">Width</span>
+      <span class="row-label">{{ t('inspector.arrange.width') }}</span>
       <div class="size-fit-row">
         <NumberInput
           style="width: 90px;"
@@ -231,6 +231,7 @@ import ColorPicker from '@/components/ColorPicker/index.vue'
 import useHistorySnapshot from '@/hooks/useHistorySnapshot'
 import emitter, { EmitterEvents } from '@/utils/emitter'
 import message from '@/utils/message'
+import { t } from '@/i18n'
 import type { PPTTableElement, TableCell, TableTheme } from '@/types/slides'
 
 const mainStore = useMainStore()

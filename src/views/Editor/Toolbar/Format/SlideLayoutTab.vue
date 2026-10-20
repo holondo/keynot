@@ -6,24 +6,24 @@
         <i-icon-park-outline:slide-two />
       </div>
       <div class="card-hero-meta">
-        <div class="card-hero-name">Default Slide Layout</div>
-        <div class="card-hero-sub">Slide {{ slideIndex + 1 }} of {{ slides.length }}</div>
+        <div class="card-hero-name">{{ t('inspector.slideLayout.defaultLayout') }}</div>
+        <div class="card-hero-sub">{{ t('inspector.slideLayout.slideOf', undefined, { current: slideIndex + 1, total: slides.length }) }}</div>
       </div>
     </div>
 
     <Divider />
 
     <!-- Slide Background -->
-    <div class="section-title">Background</div>
+    <div class="section-title">{{ t('inspector.slideLayout.background') }}</div>
     <div class="row">
       <Select 
         style="flex: 1;" 
         :value="background.type" 
         @update:value="v => updateBackgroundType(v as 'gradient' | 'image' | 'solid')"
         :options="[
-          { label: 'Color Fill', value: 'solid' },
-          { label: 'Image Fill', value: 'image' },
-          { label: 'Gradient Fill', value: 'gradient' },
+          { label: t('inspector.slideLayout.colorFill'), value: 'solid' },
+          { label: t('inspector.slideLayout.imageFill'), value: 'image' },
+          { label: t('inspector.slideLayout.gradientFill'), value: 'gradient' },
         ]"
       />
       <div style="width: 8px;"></div>
@@ -44,9 +44,9 @@
         @update:value="v => updateImageBackground({ size: v as SlideBackgroundImageSize })"
         v-else-if="background.type === 'image'"
         :options="[
-          { label: 'Scale to Fill', value: 'cover' },
-          { label: 'Scale to Fit', value: 'contain' },
-          { label: 'Tile', value: 'repeat' },
+          { label: t('inspector.slideLayout.scaleToFill'), value: 'cover' },
+          { label: t('inspector.slideLayout.scaleToFit'), value: 'contain' },
+          { label: t('inspector.slideLayout.tile'), value: 'repeat' },
         ]"
       />
 
@@ -97,14 +97,14 @@
 
     <div class="row" style="margin-top: 10px;">
       <Button style="width: 100%;" @click="applyBackgroundAllSlide">
-        Apply Background to All Slides
+        {{ t('inspector.slideLayout.applyAll') }}
       </Button>
     </div>
 
     <Divider />
 
     <!-- Slide Size / Aspect Ratio -->
-    <div class="section-title">Slide Size</div>
+    <div class="section-title">{{ t('inspector.slideLayout.slideSize') }}</div>
     <div class="row">
       <Select 
         style="width: 100%;" 
@@ -123,9 +123,9 @@
     <Divider />
 
     <!-- Presentation Theme -->
-    <div class="section-title">Presentation Theme</div>
+    <div class="section-title">{{ t('inspector.slideLayout.presentationTheme') }}</div>
     <div class="row">
-      <span class="sublabel">Font:</span>
+      <span class="sublabel">{{ t('inspector.slideLayout.font') }}</span>
       <Select
         style="flex: 1; margin-left: 10px;"
         :value="theme.fontName"
@@ -136,7 +136,7 @@
       />
     </div>
     <div class="row">
-      <span class="sublabel">Text Color:</span>
+      <span class="sublabel">{{ t('inspector.slideLayout.textColor') }}</span>
       <Popover trigger="click" style="flex: 1; margin-left: 10px;">
         <template #content>
           <ColorPicker
@@ -148,7 +148,7 @@
       </Popover>
     </div>
     <div class="row">
-      <span class="sublabel">Palette:</span>
+      <span class="sublabel">{{ t('inspector.slideLayout.palette') }}</span>
       <div style="flex: 1; margin-left: 10px;" @click="themeColorsSettingVisible = true">
         <ColorListButton :colors="theme.themeColors" />
       </div>
@@ -180,6 +180,7 @@ import GradientBar from '@/components/GradientBar.vue'
 import Divider from '@/components/Divider.vue'
 import Modal from '@/components/Modal.vue'
 import ThemeColorsSetting from '../SlideDesignPanel/ThemeColorsSetting.vue'
+import { t } from '@/i18n'
 
 const slidesStore = useSlidesStore()
 const { slides, currentSlide, slideIndex, viewportRatio, theme } = storeToRefs(slidesStore)

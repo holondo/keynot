@@ -19,16 +19,16 @@
     <Divider :margin="10" />
 
     <!-- Fill Section -->
-    <div class="section-title">Fill</div>
+    <div class="section-title">{{ t('inspector.style.fill') }}</div>
     <div class="control-row label-value-row">
       <Select
         style="width: 48%;"
         :value="fillType"
         @update:value="val => setFillType(val as string)"
         :options="[
-          { label: 'Color Fill', value: 'color' },
-          { label: 'Gradient Fill', value: 'gradient' },
-          { label: 'No Fill', value: 'none' },
+          { label: t('inspector.slideLayout.colorFill'), value: 'color' },
+          { label: t('inspector.slideLayout.gradientFill'), value: 'gradient' },
+          { label: t('inspector.transition.none'), value: 'none' },
         ]"
       />
       <Popover trigger="click" style="width: 48%;" v-if="fillType === 'color'">
@@ -57,7 +57,7 @@
     <Divider :margin="10" />
 
     <!-- Border Section -->
-    <div class="section-title">Border</div>
+    <div class="section-title">{{ t('inspector.style.stroke') }}</div>
     <div class="control-row outline-row">
       <Select
         style="width: 40%;"
@@ -96,7 +96,7 @@
       <div class="disclosure-header" @click="shadowOpen = !shadowOpen">
         <div class="disclosure-title">
           <i-icon-park-outline:right class="disclosure-arrow" :class="{ open: shadowOpen }" />
-          <span>Shadow</span>
+          <span>{{ t('inspector.style.shadow') }}</span>
         </div>
         <div class="disclosure-summary" @click.stop>
           <Select
@@ -104,8 +104,8 @@
             :value="hasShadow ? 'drop' : 'none'"
             @update:value="val => toggleShadow(val === 'drop')"
             :options="[
-              { label: 'Drop Shadow', value: 'drop' },
-              { label: 'None', value: 'none' },
+              { label: t('inspector.style.shadow'), value: 'drop' },
+              { label: t('inspector.transition.none'), value: 'none' },
             ]"
           />
         </div>
@@ -148,7 +148,7 @@
     <Divider :margin="10" />
 
     <!-- Opacity Slider -->
-    <div class="section-title">Opacity</div>
+    <div class="section-title">{{ t('inspector.style.opacity') }}</div>
     <div class="control-row opacity-row">
       <Slider
         style="flex: 1;"
@@ -186,6 +186,7 @@ import Divider from '@/components/Divider.vue'
 import Popover from '@/components/Popover.vue'
 import ColorButton from '@/components/ColorButton.vue'
 import ColorPicker from '@/components/ColorPicker/index.vue'
+import { t } from '@/i18n'
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()

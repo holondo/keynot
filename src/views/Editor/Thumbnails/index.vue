@@ -70,7 +70,7 @@
 
     <div class="navigator-footer">
       <div class="add-slide">
-        <div class="btn" @click="createSlide()"><i-icon-park-outline:plus class="icon" />Add Slide</div>
+        <div class="btn" @click="createSlide()"><i-icon-park-outline:plus class="icon" />{{ t('thumbnails.addSlide') }}</div>
         <Popover trigger="click" placement="top-start" v-model:value="presetLayoutPopoverVisible" center>
           <template #content>
             <Templates 
@@ -78,7 +78,7 @@
               @selectAll="({ slides, theme }) => { insertAllTemplates({ slides, theme }); presetLayoutPopoverVisible = false }"
             />
           </template>
-          <div class="select-btn" v-tooltip="'Choose Slide Layout'"><i-icon-park-outline:up /></div>
+          <div class="select-btn" :title="t('toolbar.chooseTheme')"><i-icon-park-outline:up /></div>
         </Popover>
       </div>
     </div>
@@ -89,6 +89,7 @@
 import { computed, nextTick, ref, watch, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore, useKeyboardStore } from '@/store'
+import { t } from '@/i18n'
 import type { Slide, SlideTheme } from '@/types/slides'
 import { isElementInViewport } from '@/utils/element'
 import type { ContextmenuItem } from '@/components/Contextmenu/types'
@@ -286,22 +287,22 @@ const { enterScreening, enterScreeningFromStart } = useScreening()
 const contextmenusThumbnails = (): ContextmenuItem[] => {
   return [
     {
-      text: 'Paste Slide',
+      text: t('thumbnails.paste'),
       subText: 'Ctrl + V',
       handler: pasteSlide,
     },
     {
-      text: 'Select All Slides',
+      text: t('menu.editSelectAll'),
       subText: 'Ctrl + A',
       handler: selectAllSlide,
     },
     {
-      text: 'New Slide',
+      text: t('thumbnails.addSlide'),
       subText: 'Enter',
       handler: createSlide,
     },
     {
-      text: 'Start Slideshow',
+      text: t('toolbar.playSlideshow'),
       subText: 'F5',
       handler: enterScreeningFromStart,
     },
@@ -311,38 +312,38 @@ const contextmenusThumbnails = (): ContextmenuItem[] => {
 const contextmenusThumbnailItem = (): ContextmenuItem[] => {
   return [
     {
-      text: 'Cut',
+      text: t('thumbnails.cut'),
       subText: 'Ctrl + X',
       handler: cutSlide,
     },
     {
-      text: 'Copy',
+      text: t('thumbnails.copy'),
       subText: 'Ctrl + C',
       handler: copySlide,
     },
     {
-      text: 'Paste',
+      text: t('thumbnails.paste'),
       subText: 'Ctrl + V',
       handler: pasteSlide,
     },
     {
-      text: 'Select All',
+      text: t('menu.editSelectAll'),
       subText: 'Ctrl + A',
       handler: selectAllSlide,
     },
     { divider: true },
     {
-      text: 'New Slide',
+      text: t('thumbnails.addSlide'),
       subText: 'Enter',
       handler: createSlide,
     },
     {
-      text: 'Duplicate Slide (Keep Continuity)',
+      text: t('thumbnails.duplicateSlide'),
       subText: 'Ctrl + D',
       handler: copyAndPasteSlide,
     },
     {
-      text: 'Delete Slide',
+      text: t('thumbnails.deleteSlide'),
       subText: 'Delete',
       handler: () => deleteSlide(),
     },
@@ -353,7 +354,7 @@ const contextmenusThumbnailItem = (): ContextmenuItem[] => {
     },
     { divider: true },
     {
-      text: 'Play from This Slide',
+      text: t('toolbar.playFromCurrent'),
       subText: 'Shift + F5',
       handler: enterScreening,
     },

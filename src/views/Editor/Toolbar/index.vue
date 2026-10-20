@@ -54,6 +54,7 @@
 import { computed, onErrorCaptured, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore } from '@/store'
+import { t } from '@/i18n'
 import Tabs from '@/components/Tabs.vue'
 
 // Format Tabs
@@ -90,66 +91,66 @@ onErrorCaptured((err) => {
 const currentTabs = computed(() => {
   if (inspectorMode.value === 'animate') {
     if (activeElementIdList.value.length) {
-      return [{ label: 'Builds', key: 'builds' }]
+      return [{ label: t('inspector.tabs.builds'), key: 'builds' }]
     }
-    return [{ label: 'Transition', key: 'transition' }]
+    return [{ label: t('inspector.tabs.transition'), key: 'transition' }]
   }
 
   if (inspectorMode.value === 'document') {
-    return [{ label: 'Document', key: 'document' }]
+    return [{ label: t('inspector.tabs.document'), key: 'document' }]
   }
 
   // Format mode: dynamic tabs based on selected object
   if (!activeElementIdList.value.length) {
-    return [{ label: 'Slide Layout', key: 'slideLayout' }]
+    return [{ label: t('inspector.tabs.slideLayout'), key: 'slideLayout' }]
   }
 
   if (activeElementIdList.value.length > 1) {
     return [
-      { label: 'Style', key: 'style' },
-      { label: 'Arrange', key: 'arrange' },
+      { label: t('inspector.tabs.style'), key: 'style' },
+      { label: t('inspector.tabs.arrange'), key: 'arrange' },
     ]
   }
 
   const el = handleElement.value
-  if (!el) return [{ label: 'Slide Layout', key: 'slideLayout' }]
+  if (!el) return [{ label: t('inspector.tabs.slideLayout'), key: 'slideLayout' }]
 
   switch (el.type) {
     case 'text':
       return [
-        { label: 'Style', key: 'style' },
-        { label: 'Text', key: 'text' },
-        { label: 'Arrange', key: 'arrange' },
+        { label: t('inspector.tabs.style'), key: 'style' },
+        { label: t('inspector.tabs.text'), key: 'text' },
+        { label: t('inspector.tabs.arrange'), key: 'arrange' },
       ]
     case 'shape':
       return [
-        { label: 'Style', key: 'style' },
-        { label: 'Text', key: 'text' },
-        { label: 'Arrange', key: 'arrange' },
+        { label: t('inspector.tabs.style'), key: 'style' },
+        { label: t('inspector.tabs.text'), key: 'text' },
+        { label: t('inspector.tabs.arrange'), key: 'arrange' },
       ]
     case 'image':
       return [
-        { label: 'Style', key: 'style' },
-        { label: 'Image', key: 'image' },
-        { label: 'Arrange', key: 'arrange' },
+        { label: t('inspector.tabs.style'), key: 'style' },
+        { label: t('inspector.tabs.image'), key: 'image' },
+        { label: t('inspector.tabs.arrange'), key: 'arrange' },
       ]
     case 'table':
       if (selectedTableCells.value.length > 0) {
         return [
-          { label: 'Table', key: 'table' },
-          { label: 'Cell', key: 'cell' },
-          { label: 'Data', key: 'data' },
-          { label: 'Arrange', key: 'arrange' },
+          { label: t('inspector.tabs.table'), key: 'table' },
+          { label: t('inspector.tabs.cell'), key: 'cell' },
+          { label: t('inspector.tabs.data'), key: 'data' },
+          { label: t('inspector.tabs.arrange'), key: 'arrange' },
         ]
       }
       return [
-        { label: 'Table', key: 'table' },
-        { label: 'Arrange', key: 'arrange' },
+        { label: t('inspector.tabs.table'), key: 'table' },
+        { label: t('inspector.tabs.arrange'), key: 'arrange' },
       ]
     case 'chart':
       return [
-        { label: 'Chart', key: 'chart' },
-        { label: 'Arrange', key: 'arrange' },
+        { label: t('toolbar.insertChart'), key: 'chart' },
+        { label: t('inspector.tabs.arrange'), key: 'arrange' },
       ]
     case 'line':
     case 'latex':
@@ -157,8 +158,8 @@ const currentTabs = computed(() => {
     case 'audio':
     default:
       return [
-        { label: 'Style', key: 'style' },
-        { label: 'Arrange', key: 'arrange' },
+        { label: t('inspector.tabs.style'), key: 'style' },
+        { label: t('inspector.tabs.arrange'), key: 'arrange' },
       ]
   }
 })

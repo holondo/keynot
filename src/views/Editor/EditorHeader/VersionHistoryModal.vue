@@ -2,23 +2,23 @@
   <div class="version-history-modal">
     <div class="header-row">
       <div class="header-titles">
-        <div class="modal-title">Browse All Versions</div>
-        <div class="modal-subtitle">Browse, preview, and restore previous checkpoints of this presentation.</div>
+        <div class="modal-title">{{ t('versions.title') }}</div>
+        <div class="modal-subtitle">{{ t('versions.savedVersions') }}</div>
       </div>
       <Button type="primary" class="create-checkpoint-btn" @click="handleCreateCheckpoint">
-        <i-icon-park-outline:plus /> <span>Save Checkpoint Now</span>
+        <i-icon-park-outline:plus /> <span>{{ t('common.save') }}</span>
       </Button>
     </div>
 
     <div class="checkpoint-creator-bar" v-if="showCustomNameInput">
       <Input
         v-model:value="newVersionLabel"
-        placeholder="Enter checkpoint name (e.g., Before Table formatting)..."
+        placeholder="Enter checkpoint name..."
         style="flex: 1;"
         @enter="submitNewCheckpoint"
       />
-      <Button type="primary" size="small" @click="submitNewCheckpoint">Save</Button>
-      <Button size="small" @click="showCustomNameInput = false">Cancel</Button>
+      <Button type="primary" size="small" @click="submitNewCheckpoint">{{ t('common.save') }}</Button>
+      <Button size="small" @click="showCustomNameInput = false">{{ t('common.cancel') }}</Button>
     </div>
 
     <div class="version-list" v-if="checkpoints.length">
@@ -33,7 +33,7 @@
           <div class="version-title">
             <i-icon-park-outline:time class="time-icon" />
             <span class="label-text">{{ item.label }}</span>
-            <span class="active-badge" v-if="selectedVersionId === item.id">Selected</span>
+            <span class="active-badge" v-if="selectedVersionId === item.id">{{ t('versions.preview') }}</span>
           </div>
           <div class="version-meta">
             <span>{{ item.slideCount }} slides</span>
@@ -43,10 +43,10 @@
         </div>
         <div class="version-actions" @click.stop>
           <Button size="small" type="primary" @click="handleRestore(item)">
-            Restore
+            {{ t('versions.restore') }}
           </Button>
           <Button size="small" @click="handleDelete(item.id)">
-            Delete
+            {{ t('versions.delete') }}
           </Button>
         </div>
       </div>
@@ -54,16 +54,15 @@
 
     <div class="empty-state" v-else>
       <i-icon-park-outline:history-query class="empty-icon" />
-      <div class="empty-title">No Version Checkpoints Yet</div>
-      <div class="empty-desc">Create a checkpoint anytime to preserve a milestone before making major edits.</div>
+      <div class="empty-title">{{ t('versions.noVersions') }}</div>
       <Button type="primary" @click="handleCreateCheckpoint" style="margin-top: 12px;">
-        Create First Checkpoint
+        {{ t('common.save') }}
       </Button>
     </div>
 
     <div class="footer-row">
-      <span class="checkpoint-count" v-if="checkpoints.length">{{ checkpoints.length }} checkpoint(s) saved</span>
-      <Button type="primary" @click="emit('close')">Done</Button>
+      <span class="checkpoint-count" v-if="checkpoints.length">{{ checkpoints.length }} checkpoint(s)</span>
+      <Button type="primary" @click="emit('close')">{{ t('versions.close') }}</Button>
     </div>
   </div>
 </template>
@@ -81,6 +80,7 @@ import {
 } from '@/utils/database'
 import useHistorySnapshot from '@/hooks/useHistorySnapshot'
 import message from '@/utils/message'
+import { t } from '@/i18n'
 import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
 

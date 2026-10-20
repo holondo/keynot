@@ -1,6 +1,6 @@
 <template>
   <div class="keynote-data-tab" v-if="currentTable">
-    <div class="section-title">Data Format</div>
+    <div class="section-title">{{ t('inspector.data.format') }}</div>
     
     <div class="control-row">
       <Select
@@ -14,7 +14,7 @@
     <!-- Number options -->
     <template v-if="currentFormatKind === 'number'">
       <div class="control-row label-value-row">
-        <span class="row-label">Decimals</span>
+        <span class="row-label">{{ t('inspector.data.decimals') }}</span>
         <NumberInput
           style="width: 80px;"
           :min="0"
@@ -36,7 +36,7 @@
     <!-- Currency options -->
     <template v-else-if="currentFormatKind === 'currency'">
       <div class="control-row label-value-row">
-        <span class="row-label">Currency</span>
+        <span class="row-label">{{ t('inspector.data.currency') }}</span>
         <Select
           style="width: 140px;"
           :value="currentCurrency"
@@ -45,7 +45,7 @@
         />
       </div>
       <div class="control-row label-value-row">
-        <span class="row-label">Decimals</span>
+        <span class="row-label">{{ t('inspector.data.decimals') }}</span>
         <NumberInput
           style="width: 80px;"
           :min="0"
@@ -59,7 +59,7 @@
     <!-- Percentage options -->
     <template v-else-if="currentFormatKind === 'percentage'">
       <div class="control-row label-value-row">
-        <span class="row-label">Decimals</span>
+        <span class="row-label">{{ t('inspector.data.decimals') }}</span>
         <NumberInput
           style="width: 80px;"
           :min="0"
@@ -73,7 +73,7 @@
     <!-- Scientific options -->
     <template v-else-if="currentFormatKind === 'scientific'">
       <div class="control-row label-value-row">
-        <span class="row-label">Decimals</span>
+        <span class="row-label">{{ t('inspector.data.decimals') }}</span>
         <NumberInput
           style="width: 80px;"
           :min="0"
@@ -106,6 +106,8 @@ import NumberInput from '@/components/NumberInput.vue'
 import Checkbox from '@/components/Checkbox.vue'
 import Divider from '@/components/Divider.vue'
 
+import { t } from '@/i18n'
+
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
 const { handleElement, handleElementId, selectedTableCells } = storeToRefs(mainStore)
@@ -113,16 +115,16 @@ const { addHistorySnapshot } = useHistorySnapshot()
 
 const currentTable = computed(() => handleElement.value as PPTTableElement)
 
-const formatOptions = [
-  { label: 'Automatic', value: 'automatic' },
-  { label: 'Number', value: 'number' },
-  { label: 'Currency', value: 'currency' },
-  { label: 'Percentage', value: 'percentage' },
-  { label: 'Fraction', value: 'fraction' },
-  { label: 'Scientific', value: 'scientific' },
-  { label: 'Text', value: 'text' },
-  { label: 'Date and Time', value: 'dateTime' },
-]
+const formatOptions = computed(() => [
+  { label: t('inspector.data.automatic'), value: 'automatic' },
+  { label: t('inspector.data.number'), value: 'number' },
+  { label: t('inspector.data.currency'), value: 'currency' },
+  { label: t('inspector.data.percentage'), value: 'percentage' },
+  { label: t('inspector.data.fraction'), value: 'fraction' },
+  { label: t('inspector.data.scientific'), value: 'scientific' },
+  { label: t('inspector.data.text'), value: 'text' },
+  { label: t('inspector.data.dateTime'), value: 'dateTime' },
+])
 
 const currencyOptions = [
   { label: 'USD ($)', value: 'USD' },

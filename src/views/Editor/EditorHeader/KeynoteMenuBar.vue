@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
 import { KEYNOTE_MENUS, type KeynoteCommand } from '@/commands/keynoteCommands'
+import { t } from '@/i18n'
 import MenuBranch from './MenuBranch.vue'
 
 const props = withDefaults(defineProps<{
@@ -38,12 +39,17 @@ const resolvedMenus = computed(() => {
     const children = command.children ? resolveCommands(command.children) : undefined
     return {
       ...command,
+      label: t(command.id, command.label),
       children,
       checked: checked.has(command.id),
       disabled: command.disabled || disabled.has(command.id) || !!(children?.length && children.every(child => child.disabled)),
     }
   })
-  return KEYNOTE_MENUS.map(menu => ({ ...menu, commands: resolveCommands(menu.commands) }))
+  return KEYNOTE_MENUS.map(menu => ({
+    ...menu,
+    label: t(menu.id, menu.label),
+    commands: resolveCommands(menu.commands),
+  }))
 })
 const closeMenus = () => { openMenu.value = '' }
 const toggleMenu = (id: string) => { openMenu.value = openMenu.value === id ? '' : id }

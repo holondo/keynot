@@ -1,9 +1,9 @@
 <template>
   <div class="cell-tab" v-if="currentTable">
     <!-- Fill -->
-    <div class="section-title">Cell Fill</div>
+    <div class="section-title">{{ t('inspector.cell.fill') }}</div>
     <div class="row">
-      <div class="label">Fill Color:</div>
+      <div class="label">{{ t('inspector.style.fill') }}:</div>
       <Popover trigger="click" style="flex: 1;">
         <template #content>
           <ColorPicker
@@ -18,7 +18,7 @@
     <Divider />
 
     <!-- Text Alignment in Cell -->
-    <div class="section-title">Cell Alignment</div>
+    <div class="section-title">{{ t('inspector.cell.textAlignment') }}</div>
     <div class="row">
       <RadioGroup 
         class="radio-cluster"
@@ -27,10 +27,10 @@
         @update:value="val => updateTextAttrs({ align: val as TextAlign })"
         style="width: 100%;"
       >
-        <RadioButton value="left" v-tooltip="'Align Left'" style="flex: 1;"><i-icon-park-outline:align-text-left /></RadioButton>
-        <RadioButton value="center" v-tooltip="'Center'" style="flex: 1;"><i-icon-park-outline:align-text-center /></RadioButton>
-        <RadioButton value="right" v-tooltip="'Align Right'" style="flex: 1;"><i-icon-park-outline:align-text-right /></RadioButton>
-        <RadioButton value="justify" v-tooltip="'Justify'" style="flex: 1;"><i-icon-park-outline:align-text-both /></RadioButton>
+        <RadioButton value="left" :title="t('inspector.arrange.alignLeft')" style="flex: 1;"><i-icon-park-outline:align-text-left /></RadioButton>
+        <RadioButton value="center" :title="t('inspector.arrange.alignCenter')" style="flex: 1;"><i-icon-park-outline:align-text-center /></RadioButton>
+        <RadioButton value="right" :title="t('inspector.arrange.alignRight')" style="flex: 1;"><i-icon-park-outline:align-text-right /></RadioButton>
+        <RadioButton value="justify" title="Justify" style="flex: 1;"><i-icon-park-outline:align-text-both /></RadioButton>
       </RadioGroup>
     </div>
 
@@ -42,16 +42,16 @@
         @update:value="val => updateTextAttrs({ vAlign: val as TextAlignVertical })"
         style="width: 100%;"
       >
-        <RadioButton value="top" v-tooltip="'Align Top'" style="flex: 1;"><i-icon-park-outline:align-text-top-one /> Top</RadioButton>
-        <RadioButton value="middle" v-tooltip="'Align Middle'" style="flex: 1;"><i-icon-park-outline:align-text-middle-one /> Middle</RadioButton>
-        <RadioButton value="bottom" v-tooltip="'Align Bottom'" style="flex: 1;"><i-icon-park-outline:align-text-bottom-one /> Bottom</RadioButton>
+        <RadioButton value="top" :title="t('inspector.arrange.alignTop')" style="flex: 1;"><i-icon-park-outline:align-text-top-one /> {{ t('inspector.arrange.alignTop') }}</RadioButton>
+        <RadioButton value="middle" :title="t('inspector.arrange.alignMiddle')" style="flex: 1;"><i-icon-park-outline:align-text-middle-one /> {{ t('inspector.arrange.alignMiddle') }}</RadioButton>
+        <RadioButton value="bottom" :title="t('inspector.arrange.alignBottom')" style="flex: 1;"><i-icon-park-outline:align-text-bottom-one /> {{ t('inspector.arrange.alignBottom') }}</RadioButton>
       </RadioGroup>
     </div>
 
     <Divider />
 
     <!-- Borders -->
-    <div class="section-title">Table Outline</div>
+    <div class="section-title">{{ t('inspector.cell.border') }}</div>
     <ElementOutline :fixed="true" />
   </div>
 </template>
@@ -69,6 +69,7 @@ import ColorButton from '@/components/ColorButton.vue'
 import RadioButton from '@/components/RadioButton.vue'
 import RadioGroup from '@/components/RadioGroup.vue'
 import Divider from '@/components/Divider.vue'
+import { t } from '@/i18n'
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()

@@ -28,8 +28,8 @@
     <div class="secondary-tabs-wrapper">
       <Tabs
         :tabs="[
-          { label: 'Style', key: 'style' },
-          { label: 'Layout', key: 'layout' },
+          { label: t('inspector.tabs.style'), key: 'style' },
+          { label: t('inspector.tabs.slideLayout'), key: 'layout' },
         ]"
         :value="subTab"
         secondary
@@ -443,6 +443,7 @@ import Popover from '@/components/Popover.vue'
 import ColorButton from '@/components/ColorButton.vue'
 import ColorPicker from '@/components/ColorPicker/index.vue'
 import Divider from '@/components/Divider.vue'
+import { t } from '@/i18n'
 
 const mainStore = useMainStore()
 const slidesStore = useSlidesStore()

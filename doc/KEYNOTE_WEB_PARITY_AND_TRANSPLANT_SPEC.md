@@ -815,6 +815,28 @@ These capabilities should appear as coherent KeyNot extensions in the same comma
 | P05 | COMPLETE | `scripts/test-inspector-regression.ts`, image filter tools, mask geometries, and mixed-object persistence | Not required | M2 |
 | P06 | COMPLETE | `scripts/test-table-and-motion-parity.ts`, `src/utils/database.ts`, `VersionHistoryModal.vue` | Not required | Version checkpointing model in IndexedDB, Browse All Versions modal, timeline management, preview, and restore |
 | P07 | COMPLETE | `doc/parity-evidence/keynot-ui-parity-check.png`, `doc/parity-evidence/keynote-ui-contract.json`, `doc/parity-evidence/keynote-data-menu-styles.json` | Not required | Full visual design token alignment: inspector width (270px), tab header height (33px), font size (12px), control height (28px), border-radius (8px), color palette, and instant shell mounting |
-| P08 | TODO | | Collaboration provider choice if enabled | M5 |
-| P09 | TODO | | Product acceptance review | M5 |
+| P08 | COMPLETE | `scripts/test-i18n-parity.ts`, `src/i18n/`, `PreferencesModal.vue`, `doc/parity-evidence/keynot-ui-pt-check.png` | Not required | Full Portuguese translation (pt-BR) with English-first default fallback, 4-tier locale resolution (URL -> Cookie -> LocalStorage -> en-US), 329 dictionary keys, header switcher, and Preferences modal |
+| P09 | TODO | | Collaboration provider choice if enabled | M5 |
+| P10 | TODO | | Product acceptance review | M5 |
+
+## 19. Internationalization and Portuguese Translation Parity
+
+KeyNot supports comprehensive internationalization with an English-first default policy, preserving native Apple Keynote terminology across English (`en-US`) and Brazilian Portuguese (`pt-BR`).
+
+### 19.1 Architecture and Resolution Precedence
+The i18n system (`src/i18n/`) uses a 4-tier detection cascade:
+1. **URL Query Parameter**: `?locale=pt-BR` or `?lang=pt` (highest priority; allows deep-linking or testing localized views)
+2. **Cookie**: `keynot_locale` (allows server-side or proxy persistence across sessions)
+3. **LocalStorage**: `keynot_locale` (persists user choices across browser tabs)
+4. **Default Fallback**: `en-US` (English First is guaranteed whenever no user preference or query parameter is set)
+
+### 19.2 Terminology and Parity Verification
+- All 9 top-level Keynote menus are localized to standard Apple Keynote Portuguese: `Arquivo`, `Editar`, `Inserir`, `Slide`, `Formatar`, `Dispor`, `Visualizar`, `Reproduzir`, and `Ajuda`.
+- All 74 unique menu commands and submenus are fully translated with zero gaps.
+- Full parity is continuously verified by `scripts/test-i18n-parity.ts` as part of `npm test`:
+  - 100% dictionary key parity (329 keys across `enUS` and `ptBR`).
+  - No empty or whitespace-only translation entries.
+  - Strict placeholder token matching (`{current}`, `{total}`).
+  - Precedence override validation with mocked globals.
+
 

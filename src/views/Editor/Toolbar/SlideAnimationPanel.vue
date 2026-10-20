@@ -3,7 +3,7 @@
     <div class="panel-section-header">
       <div class="header-title-wrap">
         <i-icon-park-outline:switch class="header-icon" />
-        <span class="header-title">Slide Transition</span>
+        <span class="header-title">{{ t('inspector.tabs.transition') }}</span>
       </div>
       <span class="active-badge">{{ currentAnimationLabel }}</span>
     </div>
@@ -113,35 +113,35 @@
       </div>
 
       <div class="config-row">
-        <div class="config-label">Acceleration:</div>
+        <div class="config-label">{{ t('inspector.transition.acceleration') }}:</div>
         <Select
           :value="transitionConfig.acceleration || 'easeInOut'"
           @update:value="updateAcceleration"
           style="width: 60%;"
           :options="[
-            { label: 'Ease In & Ease Out', value: 'easeInOut' },
-            { label: 'Ease In', value: 'easeIn' },
-            { label: 'Ease Out', value: 'easeOut' },
-            { label: 'Constant', value: 'constant' },
+            { label: t('inspector.transition.easeInOut'), value: 'easeInOut' },
+            { label: t('inspector.transition.easeIn'), value: 'easeIn' },
+            { label: t('inspector.transition.easeOut'), value: 'easeOut' },
+            { label: t('inspector.transition.linear'), value: 'constant' },
           ]"
         />
       </div>
 
       <div class="config-row">
-        <div class="config-label">Start Transition:</div>
+        <div class="config-label">{{ t('inspector.transition.start') }}:</div>
         <Select
           :value="transitionConfig.startMode || 'click'"
           @update:value="updateStartMode"
           style="width: 60%;"
           :options="[
-            { label: 'On Click', value: 'click' },
-            { label: 'Automatically', value: 'auto' },
+            { label: t('inspector.transition.onClick'), value: 'click' },
+            { label: t('inspector.transition.automatically'), value: 'auto' },
           ]"
         />
       </div>
 
       <div class="config-row" v-if="transitionConfig.startMode === 'auto'">
-        <div class="config-label">Delay (ms):</div>
+        <div class="config-label">{{ t('inspector.transition.delay') }} (ms):</div>
         <NumberInput
           :min="0"
           :max="10000"
@@ -257,6 +257,7 @@ import {
 import useHistorySnapshot from '@/hooks/useHistorySnapshot'
 import useSelectElement from '@/hooks/useSelectElement'
 import message from '@/utils/message'
+import { t } from '@/i18n'
 import Button from '@/components/Button.vue'
 import Divider from '@/components/Divider.vue'
 import NumberInput from '@/components/NumberInput.vue'

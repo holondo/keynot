@@ -5,47 +5,47 @@
       <!-- View Capsule (Apple Keynote Style) -->
       <Popover trigger="click" v-model:value="viewMenuVisible" placement="bottom-start" :offset="8">
         <template #content>
-          <div class="view-menu-section-title">Presentation View</div>
+          <div class="view-menu-section-title">{{ t('toolbar.presentationView') }}</div>
           <PopoverMenuItem class="popover-menu-item" @click="setEditorView('navigator')">
-            <i-icon-park-outline:layout-two class="icon" /> Navigator
+            <i-icon-park-outline:layout-two class="icon" /> {{ t('toolbar.navigator') }}
             <span class="sub-check" v-if="editorViewMode === 'navigator'">✓</span>
           </PopoverMenuItem>
           <PopoverMenuItem class="popover-menu-item" @click="setEditorView('slideOnly')">
-            <i-icon-park-outline:expand-left class="icon" /> Slide Only
+            <i-icon-park-outline:expand-left class="icon" /> {{ t('toolbar.slideOnly') }}
             <span class="sub-check" v-if="editorViewMode === 'slideOnly'">✓</span>
           </PopoverMenuItem>
           <PopoverMenuItem class="popover-menu-item" @click="setEditorView('lightTable')">
-            <i-icon-park-outline:view-grid-card class="icon" /> Light Table
+            <i-icon-park-outline:view-grid-card class="icon" /> {{ t('toolbar.lightTable') }}
             <span class="sub-check" v-if="editorViewMode === 'lightTable'">✓</span>
           </PopoverMenuItem>
 
           <Divider :margin="6" />
 
-          <div class="view-menu-section-title">Overlays &amp; Panes</div>
+          <div class="view-menu-section-title">{{ t('toolbar.overlaysPanes') }}</div>
           <PopoverMenuItem class="popover-menu-item" @click="togglePresenterNotes(); viewMenuVisible = false">
-            <i-icon-park-outline:notes class="icon" /> Presenter Notes (Alt+P)
+            <i-icon-park-outline:notes class="icon" /> {{ t('toolbar.presenterNotes') }}
             <span class="sub-check" v-if="showPresenterNotes">✓</span>
           </PopoverMenuItem>
           <PopoverMenuItem class="popover-menu-item" @click="toggleRuler(); viewMenuVisible = false">
-            <i-icon-park-outline:ruler class="icon" /> Rulers
+            <i-icon-park-outline:ruler class="icon" /> {{ t('toolbar.rulers') }}
             <span class="sub-check" v-if="showRuler">✓</span>
           </PopoverMenuItem>
           <PopoverMenuItem class="popover-menu-item" @click="toggleSelectPanel(); viewMenuVisible = false">
-            <i-icon-park-outline:move-one class="icon" /> Object List
+            <i-icon-park-outline:move-one class="icon" /> {{ t('toolbar.objectList') }}
             <span class="sub-check" v-if="showSelectPanel">✓</span>
           </PopoverMenuItem>
           <PopoverMenuItem class="popover-menu-item" @click="toggleNotesPanel(); viewMenuVisible = false">
-            <i-icon-park-outline:comment class="icon" /> Comments Pane
+            <i-icon-park-outline:comment class="icon" /> {{ t('toolbar.commentsPane') }}
             <span class="sub-check" v-if="showNotesPanel">✓</span>
           </PopoverMenuItem>
 
           <Divider :margin="6" />
 
           <PopoverMenuItem class="popover-menu-item" @click="toggleSearchPanel(); viewMenuVisible = false">
-            <i-icon-park-outline:search class="icon" /> Find &amp; Replace (Ctrl+F)
+            <i-icon-park-outline:search class="icon" /> {{ t('toolbar.findReplace') }}
           </PopoverMenuItem>
         </template>
-        <div class="keynote-pill-btn icon-only" :class="{ active: editorViewMode !== 'navigator' || showPresenterNotes || showSelectPanel || showRuler }" v-tooltip="'View Options'">
+        <div class="keynote-pill-btn icon-only" :class="{ active: editorViewMode !== 'navigator' || showPresenterNotes || showSelectPanel || showRuler }" :title="t('toolbar.viewOptions')">
           <i-icon-park-outline:layout-two class="main-icon" />
           <i-icon-park-outline:down class="mini-caret" />
         </div>
@@ -60,9 +60,9 @@
             :key="item"
             @click="applyCanvasPresetScale(item)"
           >{{ item }}%</PopoverMenuItem>
-          <PopoverMenuItem center @click="resetCanvas(); canvasScaleVisible = false">Fit Slide</PopoverMenuItem>
+          <PopoverMenuItem center @click="resetCanvas(); canvasScaleVisible = false">{{ t('toolbar.fitSlide') }}</PopoverMenuItem>
         </template>
-        <div class="keynote-pill-btn zoom-pill" v-tooltip="'Zoom Level'">
+        <div class="keynote-pill-btn zoom-pill" :title="t('toolbar.zoomLevel')">
           <span class="zoom-value">{{ canvasScalePercentage }}</span>
           <i-icon-park-outline:down class="mini-caret" />
         </div>
@@ -72,41 +72,41 @@
 
       <!-- Play Floating Capsule -->
       <div class="keynote-pill-capsule play-capsule">
-        <div class="capsule-item play-main" @click="enterScreening()" v-tooltip="'Play Slideshow (F5)'">
+        <div class="capsule-item play-main" @click="enterScreening()" :title="t('toolbar.playSlideshow')">
           <i-icon-park-outline:play-one class="play-icon" />
         </div>
         <Popover trigger="click" v-model:value="playMenuVisible" placement="bottom" :offset="8">
           <template #content>
             <PopoverMenuItem class="popover-menu-item" @click="enterScreeningFromStart(); playMenuVisible = false">
-              <i-icon-park-outline:slide-two class="icon" /> Play from Beginning (F5)
+              <i-icon-park-outline:slide-two class="icon" /> {{ t('toolbar.playFromBeginning') }}
             </PopoverMenuItem>
             <PopoverMenuItem class="popover-menu-item" @click="enterScreening(); playMenuVisible = false">
-              <i-icon-park-outline:ppt class="icon" /> Play from Current Slide (Shift+F5)
+              <i-icon-park-outline:ppt class="icon" /> {{ t('toolbar.playFromCurrent') }}
             </PopoverMenuItem>
           </template>
-          <div class="capsule-caret" v-tooltip="'Playback Options'"><i-icon-park-outline:down /></div>
+          <div class="capsule-caret" :title="t('toolbar.playbackOptions')"><i-icon-park-outline:down /></div>
         </Popover>
       </div>
 
       <!-- Add Slide Floating Capsule -->
       <div class="keynote-pill-capsule add-slide-capsule">
-        <div class="capsule-item" @click="createSlide()" v-tooltip="'Add Slide (Enter)'">
+        <div class="capsule-item" @click="createSlide()" :title="t('toolbar.addSlide')">
           <i-icon-park-outline:plus class="main-icon" />
         </div>
         <Popover trigger="click" v-model:value="templateMenuVisible" placement="bottom-start" :offset="8">
           <template #content>
             <PopoverMenuItem class="popover-menu-item" @click="openThemeChooser(); templateMenuVisible = false">
-              <i-icon-park-outline:theme class="icon" /> Choose a Theme...
+              <i-icon-park-outline:theme class="icon" /> {{ t('toolbar.chooseTheme') }}
             </PopoverMenuItem>
             <PopoverMenuItem class="popover-menu-item" @click="createSlide(); templateMenuVisible = false">
-              <i-icon-park-outline:plus class="icon" /> Blank Slide
+              <i-icon-park-outline:plus class="icon" /> {{ t('toolbar.addSlide') }}
             </PopoverMenuItem>
             <Templates
               @select="slide => { createSlideByTemplate(slide); templateMenuVisible = false }"
               @selectAll="({ slides, theme }) => { insertAllTemplates({ slides, theme }); templateMenuVisible = false }"
             />
           </template>
-          <div class="capsule-caret" v-tooltip="'Slide Layouts & Themes'"><i-icon-park-outline:down /></div>
+          <div class="capsule-caret" :title="t('toolbar.addSlide')"><i-icon-park-outline:down /></div>
         </Popover>
       </div>
 
@@ -114,7 +114,7 @@
       <div 
         class="keynote-pill-btn ai-capsule-btn" 
         @click="openAIPPTDialog()" 
-        v-tooltip="'KeyNot AI Deck Studio — Generate presentations from prompt'"
+        :title="t('toolbar.aiStudio')"
       >
         <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none">
           <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="url(#sparkle-grad)" />
@@ -125,17 +125,17 @@
             </linearGradient>
           </defs>
         </svg>
-        <span class="ai-label">AI Studio</span>
+        <span class="ai-label">{{ t('toolbar.aiStudio') }}</span>
       </div>
 
       <div class="pill-divider"></div>
 
       <!-- Undo / Redo Capsule -->
       <div class="keynote-pill-capsule undo-capsule">
-        <div class="capsule-item" :class="{ disable: !canUndo }" @click="undo()" v-tooltip="'Undo (Ctrl+Z)'">
+        <div class="capsule-item" :class="{ disable: !canUndo }" @click="undo()" :title="t('toolbar.undo')">
           <i-icon-park-outline:back class="main-icon" />
         </div>
-        <div class="capsule-item" :class="{ disable: !canRedo }" @click="redo()" v-tooltip="'Redo (Ctrl+Y)'">
+        <div class="capsule-item" :class="{ disable: !canRedo }" @click="redo()" :title="t('toolbar.redo')">
           <i-icon-park-outline:next class="main-icon" />
         </div>
       </div>
@@ -298,7 +298,7 @@
           class="inspector-item"
           :class="{ active: activeInspectorGroup === 'format' }"
           @click="switchInspectorGroup('format')"
-          v-tooltip="'Format Inspector'"
+          :title="t('toolbar.formatInspector')"
         >
           <i-icon-park-outline:platte class="main-icon" />
         </div>
@@ -307,7 +307,7 @@
           class="inspector-item"
           :class="{ active: activeInspectorGroup === 'animate' }"
           @click="switchInspectorGroup('animate')"
-          v-tooltip="'Animate Inspector (Transitions & Builds)'"
+          :title="t('toolbar.animateInspector')"
         >
           <i-icon-park-outline:effects class="main-icon" />
         </div>
@@ -316,7 +316,7 @@
           class="inspector-item"
           :class="{ active: activeInspectorGroup === 'document' }"
           @click="switchInspectorGroup('document')"
-          v-tooltip="'Document Setup'"
+          :title="t('toolbar.documentInspector')"
         >
           <i-icon-park-outline:doc-detail class="main-icon" />
         </div>
@@ -358,6 +358,7 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore, useSnapshotStore } from '@/store'
+import { t } from '@/i18n'
 import { getImageDataURL } from '@/utils/image'
 import type { ShapePoolItem } from '@/configs/shapes'
 import type { LinePoolItem } from '@/configs/lines'

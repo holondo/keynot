@@ -7,19 +7,19 @@
             <div class="ai-menu" @click="openAIPPTDialog(); mainMenuVisible = false">
               <div class="icon"><i-custom:click /></div>
               <div class="aippt-content">
-                <div class="aippt"><span>KeyNot AI Deck Studio</span></div>
-                <div class="aippt-subtitle">Generate structured slides from a topic prompt</div>
+                <div class="aippt"><span>{{ t('header.aiStudioTitle') }}</span></div>
+                <div class="aippt-subtitle">{{ t('header.aiStudioSubtitle') }}</div>
               </div>
             </div>
           </div>
           <Divider :margin="10" />
           <div class="import-section">
-            <div class="import-label">Open / Import Presentation</div>
+            <div class="import-label">{{ t('header.importSectionTitle') }}</div>
             <div class="import-grid">
               <FileInput class="import-block keynote-block" accept=".key,application/vnd.apple.keynote" @change="files => handleKeynoteImport(files)">
                 <span class="icon"><i-icon-park-outline:key-one /></span>
                 <span class="label">.KEY</span>
-                <span class="sub-label">(Apple Keynote)</span>
+                <span class="sub-label">{{ t('header.importKeynoteDesc') }}</span>
               </FileInput>
               <FileInput class="import-block" accept="application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx" @change="files => {
                 importPPTXFile(files)
@@ -27,7 +27,7 @@
               }">
                 <span class="icon"><i-custom:file-ppt /></span>
                 <span class="label">PPTX</span>
-                <span class="sub-label">(PowerPoint)</span>
+                <span class="sub-label">{{ t('header.importPptxDesc') }}</span>
               </FileInput>
               <FileInput class="import-block" accept=".pptist,.keynot,.slate,.json" @change="files => {
                 importSpecificFile(files)
@@ -35,21 +35,22 @@
               }">
                 <span class="icon"><i-custom:file-pptist /></span>
                 <span class="label">KEYNOT</span>
-                <span class="sub-label">(Project File)</span>
+                <span class="sub-label">{{ t('header.importKeynotDesc') }}</span>
               </FileInput>
             </div>
           </div>
           <Divider :margin="10" />
-          <PopoverMenuItem class="popover-menu-item" @click="projectManagerVisible = true; mainMenuVisible = false"><i-icon-park-outline:folder-open class="icon" /> All Presentations (Workspace)</PopoverMenuItem>
-          <PopoverMenuItem class="popover-menu-item" @click="compatibilityModalVisible = true; mainMenuVisible = false"><i-icon-park-outline:check-correct class="icon" /> Keynote Compatibility Report</PopoverMenuItem>
-          <PopoverMenuItem class="popover-menu-item" @click="setDialogForExport('keynote')"><i-icon-park-outline:download class="icon" /> Export to Keynote (.key) / PPTX / PDF</PopoverMenuItem>
+          <PopoverMenuItem class="popover-menu-item" @click="projectManagerVisible = true; mainMenuVisible = false"><i-icon-park-outline:folder-open class="icon" /> {{ t('header.allPresentations') }}</PopoverMenuItem>
+          <PopoverMenuItem class="popover-menu-item" @click="compatibilityModalVisible = true; mainMenuVisible = false"><i-icon-park-outline:check-correct class="icon" /> {{ t('header.compatibilityReport') }}</PopoverMenuItem>
+          <PopoverMenuItem class="popover-menu-item" @click="setDialogForExport('keynote')"><i-icon-park-outline:download class="icon" /> {{ t('header.exportCopy') }}</PopoverMenuItem>
           <Divider :margin="10" />
-          <PopoverMenuItem class="popover-menu-item" @click="openThemeChooser(); mainMenuVisible = false"><i-icon-park-outline:theme class="icon" /> Choose a Theme...</PopoverMenuItem>
-          <PopoverMenuItem class="popover-menu-item" @click="resetSlides(); mainMenuVisible = false"><i-icon-park-outline:refresh class="icon" /> New Blank Presentation</PopoverMenuItem>
-          <PopoverMenuItem class="popover-menu-item" @click="openMarkupPanel(); mainMenuVisible = false"><i-icon-park-outline:mark class="icon" /> Slide Structure Tags</PopoverMenuItem>
-          <PopoverMenuItem class="popover-menu-item" @click="mainMenuVisible = false; hotkeyDrawerVisible = true"><i-icon-park-outline:command class="icon" /> Keyboard Shortcuts</PopoverMenuItem>
+          <PopoverMenuItem class="popover-menu-item" @click="openThemeChooser(); mainMenuVisible = false"><i-icon-park-outline:theme class="icon" /> {{ t('header.chooseTheme') }}</PopoverMenuItem>
+          <PopoverMenuItem class="popover-menu-item" @click="resetSlides(); mainMenuVisible = false"><i-icon-park-outline:refresh class="icon" /> {{ t('header.newBlank') }}</PopoverMenuItem>
+          <PopoverMenuItem class="popover-menu-item" @click="openMarkupPanel(); mainMenuVisible = false"><i-icon-park-outline:mark class="icon" /> {{ t('header.slideTags') }}</PopoverMenuItem>
+          <PopoverMenuItem class="popover-menu-item" @click="mainMenuVisible = false; hotkeyDrawerVisible = true"><i-icon-park-outline:command class="icon" /> {{ t('header.shortcuts') }}</PopoverMenuItem>
+          <PopoverMenuItem class="popover-menu-item" @click="mainMenuVisible = false; preferencesModalVisible = true"><i-icon-park-outline:setting-two class="icon" /> {{ t('header.preferences') }}</PopoverMenuItem>
           <Divider :margin="10" />
-          <div class="statement">KeyNot • Apple Keynote Web Studio (Offline-First PWA)</div>
+          <div class="statement">{{ t('header.statement') }}</div>
         </template>
         <div class="app-menu-btn" v-tooltip="'KeyNot File Menu & Import'">
           <span class="keynot-podium-icon">
@@ -90,16 +91,16 @@
         class="save-status-pill"
         :class="saveStatus"
         @click="projectManagerVisible = true"
-        v-tooltip="'Click to manage local presentations or export a backup'"
+        :title="t('header.manageTooltip')"
       >
         <span class="dot"></span>
-        <span v-if="saveStatus === 'saving'">Saving…</span>
-        <span v-else-if="saveStatus === 'backed_up'">Backed Up</span>
-        <span v-else-if="saveStatus === 'unsaved'">Edited</span>
-        <span v-else>Edited • Saved</span>
+        <span v-if="saveStatus === 'saving'">{{ t('header.saving') }}</span>
+        <span v-else-if="saveStatus === 'backed_up'">{{ t('header.backedUp') }}</span>
+        <span v-else-if="saveStatus === 'unsaved'">{{ t('header.unsaved') }}</span>
+        <span v-else>{{ t('header.saved') }}</span>
       </div>
 
-      <div class="offline-pill" v-if="isOffline" v-tooltip="'Working offline — all changes saved locally in IndexedDB'">
+      <div class="offline-pill" v-if="isOffline">
         Offline
       </div>
     </div>
@@ -108,7 +109,7 @@
       <div
         class="header-pill report-pill"
         v-if="compatibilityReport"
-        v-tooltip="'View Keynote Import Fidelity Report'"
+        :title="t('header.compatibilityReport')"
         @click="compatibilityModalVisible = true"
       >
         <i-icon-park-outline:check-correct class="icon" />
@@ -118,22 +119,57 @@
       <FileInput
         class="header-pill"
         accept=".key,application/vnd.apple.keynote,.pptx"
-        v-tooltip="'Open Apple Keynote (.key) or PowerPoint (.pptx)'"
         @change="files => handleQuickFileOpen(files)"
       >
         <i-icon-park-outline:folder-open class="icon" />
         <span>Open .key</span>
       </FileInput>
 
-      <div class="header-pill" v-tooltip="'Export Presentation (.key, .pptx, PDF)'" @click="setDialogForExport('keynote')">
+      <div class="header-pill" @click="setDialogForExport('keynote')">
         <i-icon-park-outline:share class="icon" />
-        <span>Share / Export</span>
+        <span>{{ t('header.export') }}</span>
+      </div>
+
+      <!-- Language Selector Capsule (English first default, switch to Portuguese) -->
+      <Popover trigger="click" placement="bottom-end" v-model:value="languageMenuVisible">
+        <template #content>
+          <div class="lang-popover-menu">
+            <div class="lang-popover-header">{{ t('header.language') }}</div>
+            <div
+              class="lang-popover-item"
+              :class="{ active: currentLocale === 'en-US' }"
+              @click="setLocale('en-US'); languageMenuVisible = false"
+            >
+              <span class="flag">🇺🇸</span>
+              <span class="name">English</span>
+              <span class="check" v-if="currentLocale === 'en-US'">✓</span>
+            </div>
+            <div
+              class="lang-popover-item"
+              :class="{ active: currentLocale === 'pt-BR' }"
+              @click="setLocale('pt-BR'); languageMenuVisible = false"
+            >
+              <span class="flag">🇧🇷</span>
+              <span class="name">Português (Brasil)</span>
+              <span class="check" v-if="currentLocale === 'pt-BR'">✓</span>
+            </div>
+          </div>
+        </template>
+        <div class="header-pill lang-pill" :title="t('header.language')">
+          <span class="lang-flag">{{ currentLocale === 'pt-BR' ? '🇧🇷' : '🇺🇸' }}</span>
+          <span class="lang-code">{{ currentLocale === 'pt-BR' ? 'PT' : 'EN' }}</span>
+          <i-icon-park-outline:down class="caret" />
+        </div>
+      </Popover>
+
+      <!-- Preferences Button -->
+      <div class="header-pill icon-only" :title="t('header.preferences')" @click="preferencesModalVisible = true">
+        <i-icon-park-outline:setting-two class="icon" />
       </div>
 
       <div
         class="header-pill primary-pill"
         v-if="deferredInstallPrompt"
-        v-tooltip="'Install KeyNot as a Desktop App'"
         @click="installPWA()"
       >
         <i-icon-park-outline:computer class="icon" />
@@ -160,6 +196,10 @@
 
     <Modal v-model:visible="versionHistoryVisible" :width="620">
       <VersionHistoryModal @close="versionHistoryVisible = false" />
+    </Modal>
+
+    <Modal v-model:visible="preferencesModalVisible" :width="560">
+      <PreferencesModal @close="preferencesModalVisible = false" />
     </Modal>
 
     <Modal v-model:visible="mediaInputVisible" :width="520">
@@ -207,6 +247,8 @@ import HotkeyDoc from './HotkeyDoc.vue'
 import CompatibilityReportModal from './CompatibilityReportModal.vue'
 import ProjectManagerModal from './ProjectManagerModal.vue'
 import VersionHistoryModal from './VersionHistoryModal.vue'
+import PreferencesModal from './PreferencesModal.vue'
+import { useI18n } from '@/i18n'
 import MediaInput from '@/views/Editor/CanvasTool/MediaInput.vue'
 import LaTeXEditor from '@/components/LaTeXEditor/index.vue'
 import FileInput from '@/components/FileInput.vue'
@@ -289,7 +331,10 @@ const checkedMenuCommandIds = computed(() => [
   currentSlide.value?.skipped ? 'slide.skip' : '',
 ].filter(Boolean))
 
+const { currentLocale, setLocale, t } = useI18n()
 const mainMenuVisible = ref(false)
+const languageMenuVisible = ref(false)
+const preferencesModalVisible = ref(false)
 const hotkeyDrawerVisible = ref(false)
 const compatibilityModalVisible = ref(false)
 const projectManagerVisible = ref(false)
@@ -708,6 +753,79 @@ const openThemeChooser = () => {
 
     &:hover {
       background: #0062cc;
+    }
+  }
+
+  &.icon-only {
+    padding: 0 7px;
+  }
+
+  &.lang-pill {
+    padding: 0 8px;
+    gap: 4px;
+    font-weight: 600;
+    font-size: 11px;
+
+    .lang-flag {
+      font-size: 12px;
+    }
+
+    .lang-code {
+      letter-spacing: 0.2px;
+    }
+
+    .caret {
+      font-size: 8px;
+      color: var(--text-tertiary, #86868b);
+    }
+  }
+}
+
+.lang-popover-menu {
+  min-width: 170px;
+  padding: 4px;
+
+  .lang-popover-header {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary, #86868b);
+    padding: 4px 8px 6px;
+  }
+
+  .lang-popover-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    color: var(--text-primary, #1d1d1f);
+    cursor: pointer;
+    transition: background 0.12s;
+
+    .flag {
+      font-size: 14px;
+    }
+
+    .name {
+      flex: 1;
+    }
+
+    .check {
+      color: var(--accent-color, #007aff);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    &:hover {
+      background: var(--bg-hover, rgba(0, 0, 0, 0.05));
+    }
+
+    &.active {
+      font-weight: 600;
+      color: var(--accent-color, #007aff);
     }
   }
 }
